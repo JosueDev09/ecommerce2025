@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState,useEffect } from "react";
+
 
 const footerLinks = {
   company: [
@@ -65,7 +66,7 @@ const socialLinks = [
 export function Footer() {
 
     const [email, setEmail] = useState("");
-
+    const [mounted, setMounted] = useState(false);
     const handleSubscribe = () => {
         if (email) {
         console.log("Suscrito:", email);
@@ -73,7 +74,11 @@ export function Footer() {
         }
     };
 
-    
+     if (!mounted) return null; // evita SSR mismatch
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     return(
        <>
@@ -216,8 +221,8 @@ export function Footer() {
           {/* Copyright */}
           <div className="border-t border-white/10 pt-8 text-center">
             <p className="text-white/50 text-sm">
-              © {new Date().getFullYear()} Ecommerce. Todos los derechos reservados. Hecho con{" "}
-              <span className="text-red-500">♥</span> para ti.
+              © 2025 Esymbel Store. Todos los derechos reservados.
+              {/* <span className="text-red-500">♥</span> para ti. */}
             </p>
           </div>
         </div>
