@@ -1,73 +1,58 @@
 "use client";
 import { motion } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const categories = [
-  {
-    name: "Electrónica",
-    image: "https://images.pexels.com/photos/356056/pexels-photo-356056.jpeg?auto=compress&cs=tinysrgb&w=800",
-    icon: (
-      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      </svg>
-    ),
-    count: 245,
-  },
-  {
-    name: "Moda",
-    image: "https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=800",
-    icon: (
-      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-      </svg>
-    ),
-    count: 380,
-  },
-  // {
-  //   name: "Hogar",
-  //   image: "https://images.pexels.com/photos/1350789/pexels-photo-1350789.jpeg?auto=compress&cs=tinysrgb&w=800",
+ // {
+  //   name: "Electrónica",
+  //   image: "https://images.pexels.com/photos/356056/pexels-photo-356056.jpeg?auto=compress&cs=tinysrgb&w=800",
   //   icon: (
   //     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  //       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+  //       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
   //     </svg>
   //   ),
-  //   count: 156,
+  //   count: 245,
   // },
-  {
-    name: "Deportes",
-    image: "https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=800",
-    icon: (
-      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
-    count: 198,
-  },
-  // {
-  //   name: "Libros",
-  //   image: "https://images.pexels.com/photos/1301585/pexels-photo-1301585.jpeg?auto=compress&cs=tinysrgb&w=800",
-  //   icon: (
-  //     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  //       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-  //     </svg>
-  //   ),
-  //   count: 423,
-  // },
-  // {
-  //   name: "Juguetes",
-  //   image: "https://images.pexels.com/photos/163696/toy-car-bus-toy-red-163696.jpeg?auto=compress&cs=tinysrgb&w=800",
-  //   icon: (
-  //     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  //       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-  //     </svg>
-  //   ),
-  //   count: 287,
-  // },
+
 ];
 
 export default function Categories() {
   const ref = useRef<HTMLDivElement>(null);
+  const [categorias, setCategorias] = useState<{ intCategoria: number; strNombre: string }[]>([]);
+
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/graphql', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+           query: `
+              query {
+                obtenerCategorias {
+                  intCategoria
+                  strNombre
+                }
+              }
+            `,
+          }),
+        });
+        if (!response.ok) {
+          throw new Error(`Error HTTP ${response.status}`);
+        }
+        const data = await response.json();
+        //console.log('Fetched categories:', data.data.obtenerCategorias);
+        setCategorias(data.data.obtenerCategorias);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategorias();
+
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -131,10 +116,10 @@ export default function Categories() {
           viewport={{ once: true, amount: 0.2 }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
         >
-          {categories.map((category, idx) => (
+          {categorias.map((category, idx) => (
             <motion.a
               key={idx}
-              href={`/category/${category.name.toLowerCase()}`}
+              href={`/category/${category.strNombre.toLowerCase()}`}
               variants={itemVariants}   
               whileHover={{ scale: 1.03, y: -8 }}
               whileTap={{ scale: 0.98 }}
@@ -143,8 +128,8 @@ export default function Categories() {
               {/* Imagen de fondo */}
               <div className="relative h-56 overflow-hidden">
                 <img
-                  src={category.image}
-                  alt={category.name}
+                  src="https://images.pexels.com/photos/356056/pexels-photo-356056.jpeg?auto=compress&cs=tinysrgb&w=800"
+                  alt={category.strNombre}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 {/* Overlay gradiente */}
@@ -152,17 +137,19 @@ export default function Categories() {
                 
                 {/* Icono flotante */}
                 <div className="absolute top-4 right-4 p-3 rounded-full bg-white/90 backdrop-blur-sm text-[#3A6EA5] shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  {category.icon}
+                   <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
                 </div>
               </div>
 
               {/* Contenido */}
               <div className="p-6">
                 <h3 className="text-2xl font-bold text-[#1A1A1A] mb-2 group-hover:text-[#3A6EA5] transition-colors duration-300">
-                  {category.name}
+                  {category.strNombre}
                 </h3>
                 <p className="text-[#1A1A1A]/60 text-sm">
-                  {category.count} productos disponibles
+                  <span className="text-bold">100</span> productos disponibles
                 </p>
 
                 {/* Indicador hover */}
