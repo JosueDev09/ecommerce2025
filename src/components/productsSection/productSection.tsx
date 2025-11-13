@@ -115,8 +115,10 @@ export default function Products() {
           ? { ...p, cantidad: p.cantidad + 1 }
           : p
       );
+      localStorage.setItem('carrito', JSON.stringify(itemCarrito));
     } else {
       // Si no existe, lo agrega
+       localStorage.setItem('carrito', JSON.stringify(itemCarrito));
       return [...prev, itemCarrito];
     }
   });
