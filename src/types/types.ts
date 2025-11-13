@@ -1,11 +1,29 @@
-export interface Producto {
+export interface Productos{
   intProducto: number;
   strNombre: string;
-  strImagen: string;
+  strSKU?: string;
+  strMarca?: string;
+  strDescripcion: string;
   dblPrecio: number;
-  dblPrecioDescuento?: number | null;
-  bolTieneDescuento: boolean;
-  tbCategoria?: { strNombre: string };
+  strImagen: string;
+  bolActivo: boolean;
+  bolDestacado?: boolean;
+  strEstado?: string;
+  bolTieneDescuento?: boolean;
+  dblPrecioDescuento?: number;
+  intPorcentajeDescuento?: number;
+  datInicioDescuento?: string;
+  datFinDescuento?: string;
+  strEtiquetas?: string;
+  jsonVariantes?: string;
+  jsonImagenes?: string;
+  datCreacion: string;
+  datActualizacion?: string;
+  tbCategoria: {
+    intCategoria: number;
+    strNombre: string;
+  };
+ 
 }
 
 export interface ItemCarrito {
