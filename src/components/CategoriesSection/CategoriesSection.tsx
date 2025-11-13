@@ -54,6 +54,8 @@ export default function Categories() {
 
   }, []);
 
+
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {

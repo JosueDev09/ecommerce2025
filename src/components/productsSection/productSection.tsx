@@ -1,6 +1,8 @@
 "use client";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { VariantesSelector } from "@/lib/getVariantes";
+import { Producto, ItemCarrito } from "@/types/types"; // si tienes tipos definidos
 
 interface Productos{
   intProducto: number;
@@ -36,6 +38,8 @@ export default function Products() {
   const [activeFilter, setActiveFilter] = useState("Todos");
   const [productos, setProductos] = useState<Productos[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedVariants, setSelectedVariants] = useState<Record<number, { color: string | null; talla: string | null }>>({});
+  const [carrito, setCarrito] = useState<ItemCarrito[]>([]);
   // const filters = ["Todos", "Electrónica", "Deportes", "Moda"];
 
     useEffect(() => {
@@ -51,13 +55,26 @@ export default function Products() {
             query: `
               query {
                 obtenerProductos {
-                  intProducto 
+                  intProducto
                   strNombre
+                  strSKU
+                  strMarca
                   strDescripcion
                   dblPrecio
                   strImagen
                   bolActivo
                   bolDestacado
+                  strEstado
+                  bolTieneDescuento
+                  dblPrecioDescuento
+                  intPorcentajeDescuento
+                  datInicioDescuento
+                  datFinDescuento
+                  strEtiquetas
+                  jsonVariantes
+                  jsonImagenes
+                  datCreacion
+                  datActualizacion
                   tbCategoria {
                     intCategoria
                     strNombre
@@ -71,7 +88,7 @@ export default function Products() {
           throw new Error(`Error HTTP ${response.status}`);
         }
         const data = await response.json();
-       // console.log('Fetched products:', data.data.obtenerProductos);
+        console.log('Fetched products:', data.data.obtenerProductos);
         setProductos(data.data.obtenerProductos);
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -80,11 +97,59 @@ export default function Products() {
 
     fetchProductos().then(() => setLoading(false));
   }, []);
-      
 
-  const filteredProducts = activeFilter === "Todos" 
-    ? productos 
-    : productos.filter(p => p.tbCategoria.strNombre === activeFilter);
+  const handleVariantChange = (productId: number, color: string | null, talla: string | null) => {
+    setSelectedVariants(prev => ({
+      ...prev,
+      [productId]: { color, talla }
+    }));
+  };
+
+  const agregarCarrito = (producto: Productos) => {
+  const variants = selectedVariants[producto.intProducto];
+
+  // Datos seleccionados por el usuario
+  const colorSeleccionado = variants?.color || null;
+  const tallaSeleccionada = variants?.talla || null;
+
+  // Construyes el objeto limpio para el carrito
+  const itemCarrito: ItemCarrito = {
+    id: producto.intProducto,
+    nombre: producto.strNombre,
+    precio: producto.dblPrecio,
+    precioDescuento: producto.dblPrecioDescuento || null,
+    tieneDescuento: producto.bolTieneDescuento || false,
+    color: colorSeleccionado,
+    talla: tallaSeleccionada,
+    imagen: producto.strImagen,
+    categoria: producto.tbCategoria?.strNombre || "",
+    cantidad: 1,
+  };
+  // Agregas al carrito (depende de cómo lo manejes: localStorage, Zustand, Redux, etc.)
+  setCarrito((prev) => {
+    // Verifica si ya existe el producto (por id, color, talla)
+    const existe = prev.find(
+      (p) =>
+        p.id === itemCarrito.id &&
+        p.color === itemCarrito.color &&
+        p.talla === itemCarrito.talla
+    );
+
+    if (existe) {
+      // Si ya existe, aumenta cantidad
+      return prev.map((p) =>
+        p.id === itemCarrito.id &&
+        p.color === itemCarrito.color &&
+        p.talla === itemCarrito.talla
+          ? { ...p, cantidad: p.cantidad + 1 }
+          : p
+      );
+    } else {
+      // Si no existe, lo agrega
+      return [...prev, itemCarrito];
+    }
+  });
+};
   
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -162,7 +227,7 @@ export default function Products() {
         {/* 🔹 Grid de productos */}
         <motion.div
           variants={containerVariants}
-           initial="hidden"
+          initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
@@ -177,9 +242,9 @@ export default function Products() {
               {/* Badge */}
               {product.strEtiquetas  && (
                 <div className={`absolute top-3 left-3 z-10 px-3 py-1 rounded-full text-xs font-semibold shadow-lg ${
-                  product.strEtiquetas === "Nuevo" 
+                  product.strEtiquetas === "nuevo" 
                     ? "bg-[#3A6EA5] text-white" 
-                    : product.strEtiquetas === "Oferta"
+                    : product.strEtiquetas === "oferta"
                     ? "bg-[#E6C89C] text-[#1A1A1A]"
                     : "bg-[#8BAAAD] text-white"
                 }`}>
@@ -233,18 +298,35 @@ export default function Products() {
                 <span className="text-xs text-[#1A1A1A]/60">(0)</span>
                 </div>
 
+                {/* Variantes */}
+                {product.jsonVariantes && (
+                  <VariantesSelector 
+                    product={product} 
+                    onVariantChange={(color: string | null, talla: string | null) => handleVariantChange(product.intProducto, color, talla)}
+                  />
+                )}
+                
                 {/* Precio */}
-                <div className="flex items-baseline gap-2 mb-4">
+              <div className="flex items-baseline gap-2 mb-4">
+                {product.bolTieneDescuento ? (
+                  <>
+                    <span className="text-2xl font-bold text-[#1A1A1A]">
+                      ${product.dblPrecioDescuento?.toLocaleString()}
+                    </span>
+                    <span className="text-sm text-[#1A1A1A]/40 line-through">
+                      ${product.dblPrecio.toLocaleString()}
+                    </span>
+                  </>
+                ) : (
                   <span className="text-2xl font-bold text-[#1A1A1A]">
                     ${product.dblPrecio.toLocaleString()}
                   </span>
-                  <span className="text-sm text-[#1A1A1A]/40 line-through">
-                    ${product.dblPrecio.toLocaleString()}
-                  </span>
-                </div>
+                )}
+              </div>
 
                 {/* Botón agregar al carrito */}
-                <button className="w-full py-2.5 rounded-xl bg-[#3A6EA5] text-white font-medium hover:bg-[#2E5A8C] transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                <button className="w-full py-2.5 rounded-xl bg-[#3A6EA5] text-white font-medium hover:bg-[#2E5A8C] transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                   onClick={() => agregarCarrito(product)}>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 8h14m-10 0a1 1 0 11-2 0 1 1 0 012 0zm8 0a1 1 0 11-2 0 1 1 0 012 0z" />
                   </svg>
