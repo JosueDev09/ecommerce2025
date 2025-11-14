@@ -1,5 +1,6 @@
 import '@/styles/globals.css';
 import MenuLayout from '@/components/menu/menu-layout';
+import { TiendaProvider } from '@/context/TiendaContext';
 
 
 export const metadata = {
@@ -9,8 +10,10 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <MenuLayout>
-      {children}
-    </MenuLayout>
+    <TiendaProvider>
+      <MenuLayout>
+        {children}
+      </MenuLayout>
+    </TiendaProvider>
   );
 }

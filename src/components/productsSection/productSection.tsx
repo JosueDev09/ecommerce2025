@@ -1,128 +1,36 @@
 "use client";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { VariantesSelector } from "@/lib/getVariantes";
-import { Productos, ItemCarrito } from "@/types/types"; // si tienes tipos definidos
+import { useTienda } from "@/context/TiendaContext";
+import { pre } from "framer-motion/client";
+import { Check } from "lucide-react";
+import { createProductSlug } from "@/lib/slugify";
 
 
 export default function Products() {
-  const [activeFilter, setActiveFilter] = useState("Todos");
-  const [productos, setProductos] = useState<Productos[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedVariants, setSelectedVariants] = useState<Record<number, { color: string | null; talla: string | null }>>({});
-  const [carrito, setCarrito] = useState<ItemCarrito[]>([]);
-  // const filters = ["Todos", "Electrónica", "Deportes", "Moda"];
+  const [showSuccess, setShowSuccess] = useState(false);
+ const {
+    productos,
+    agregarCarrito,
+    handleVariantChange,
+    getCantidadPorProducto,
+    loading,
+  } = useTienda();
 
-    useEffect(() => {
-    const fetchProductos = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/api/graphql', { 
-          method: 'POST',
-          headers: {
-            
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            query: `
-              query {
-                obtenerProductos {
-                  intProducto
-                  strNombre
-                  strSKU
-                  strMarca
-                  strDescripcion
-                  dblPrecio
-                  strImagen
-                  bolActivo
-                  bolDestacado
-                  strEstado
-                  bolTieneDescuento
-                  dblPrecioDescuento
-                  intPorcentajeDescuento
-                  datInicioDescuento
-                  datFinDescuento
-                  strEtiquetas
-                  jsonVariantes
-                  jsonImagenes
-                  datCreacion
-                  datActualizacion
-                  tbCategoria {
-                    intCategoria
-                    strNombre
-                  }
-                }
-              }
-            `,
-          }),
-        });
-        if (!response.ok) {
-          throw new Error(`Error HTTP ${response.status}`);
-        }
-        const data = await response.json();
-        console.log('Fetched products:', data.data.obtenerProductos);
-        setProductos(data.data.obtenerProductos);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      } 
-    };
-
-    fetchProductos().then(() => setLoading(false));
-  }, []);
-
-  const handleVariantChange = (productId: number, color: string | null, talla: string | null) => {
-    setSelectedVariants(prev => ({
-      ...prev,
-      [productId]: { color, talla }
-    }));
+  const handleAgregarCarrito = (product: any) => {
+    agregarCarrito(product);
+    setShowSuccess(true);
+    
+    // Ocultar el mensaje después de 3 segundos
+    setTimeout(() => {
+      setShowSuccess(false);
+    }, 3000);
   };
 
-  const agregarCarrito = (producto: Productos) => {
-  const variants = selectedVariants[producto.intProducto];
+  if (loading) return <p>Cargando productos...</p>;
 
-  // Datos seleccionados por el usuario
-  const colorSeleccionado = variants?.color || null;
-  const tallaSeleccionada = variants?.talla || null;
-
-  // Construyes el objeto limpio para el carrito
-  const itemCarrito: ItemCarrito = {
-    id: producto.intProducto,
-    nombre: producto.strNombre,
-    precio: producto.dblPrecio,
-    precioDescuento: producto.dblPrecioDescuento || null,
-    tieneDescuento: producto.bolTieneDescuento || false,
-    color: colorSeleccionado,
-    talla: tallaSeleccionada,
-    imagen: producto.strImagen,
-    categoria: producto.tbCategoria?.strNombre || "",
-    cantidad: 1,
-  };
-  // Agregas al carrito (depende de cómo lo manejes: localStorage, Zustand, Redux, etc.)
-  setCarrito((prev) => {
-    // Verifica si ya existe el producto (por id, color, talla)
-    const existe = prev.find(
-      (p) =>
-        p.id === itemCarrito.id &&
-        p.color === itemCarrito.color &&
-        p.talla === itemCarrito.talla
-    );
-
-    if (existe) {
-      // Si ya existe, aumenta cantidad
-      return prev.map((p) =>
-        p.id === itemCarrito.id &&
-        p.color === itemCarrito.color &&
-        p.talla === itemCarrito.talla
-          ? { ...p, cantidad: p.cantidad + 1 }
-          : p
-      );
-      localStorage.setItem('carrito', JSON.stringify(itemCarrito));
-    } else {
-      // Si no existe, lo agrega
-       localStorage.setItem('carrito', JSON.stringify(itemCarrito));
-      return [...prev, itemCarrito];
-    }
-  });
-};
   
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -153,6 +61,33 @@ export default function Products() {
       {/* 🔹 Decoraciones de fondo */}
       <div className="absolute top-32 right-20 w-96 h-96 bg-[#3A6EA5]/15 rounded-full blur-[140px]" />
       <div className="absolute bottom-40 left-20 w-80 h-80 bg-[#E6C89C]/25 rounded-full blur-[120px]" />
+
+      {/* Success Message - Toast Notification */}
+      {showSuccess && (
+        <motion.div
+          initial={{ opacity: 0, x: 100, scale: 0.8 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          exit={{ opacity: 0, x: 100, scale: 0.8 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="fixed top-6 right-6 z-[9999] bg-white border-l-4 border-emerald-500 rounded-xl shadow-2xl p-4 flex items-center gap-3 max-w-md"
+        >
+          <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0 animate-pulse">
+            <Check className="w-6 h-6 text-white" />
+          </div>
+          <div className="flex-1">
+            <p className="font-bold text-emerald-900 text-base">¡Producto agregado!</p>
+            <p className="text-sm text-emerald-700">Se ha añadido al carrito exitosamente</p>
+          </div>
+          <button 
+            onClick={() => setShowSuccess(false)}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </motion.div>
+      )}
 
       <div className="relative max-w-7xl mx-auto px-6">
         {/* 🔹 Encabezado */}
@@ -241,18 +176,22 @@ export default function Products() {
                 />
                 {/* Overlay con botón de vista rápida */}
                 <div className="absolute inset-0 bg-[#1A1A1A]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <button className="px-6 py-2.5 rounded-full bg-white text-[#3A6EA5] font-medium hover:bg-[#3A6EA5] hover:text-white transition-all duration-300 transform scale-90 group-hover:scale-100">
-                    Vista rápida
-                  </button>
+                  <Link href={`/producto/${createProductSlug(product.strNombre)}`}>
+                    <button className="px-6 py-2.5 rounded-full bg-white text-[#3A6EA5] font-medium hover:bg-[#3A6EA5] hover:text-white transition-all duration-300 transform scale-90 group-hover:scale-100">
+                      Ver detalles
+                    </button>
+                  </Link>
                 </div>
               </div>
 
               {/* Contenido */}
               <div className="p-5">
                 <p className="text-xs text-[#3A6EA5] font-medium mb-2">{product.tbCategoria.strNombre}</p>
-                <h3 className="text-lg font-bold text-[#1A1A1A] mb-2 line-clamp-2 group-hover:text-[#3A6EA5] transition-colors duration-300">
-                  {product.strNombre}
-                </h3>
+                <Link href={`/producto/${createProductSlug(product.strNombre)}`}>
+                  <h3 className="text-lg font-bold text-[#1A1A1A] mb-2 line-clamp-2 group-hover:text-[#3A6EA5] transition-colors duration-300 cursor-pointer">
+                    {product.strNombre}
+                  </h3>
+                </Link>
 
                 {/* Rating */}
                 <div className="flex items-center gap-2 mb-3">
@@ -299,7 +238,7 @@ export default function Products() {
 
                 {/* Botón agregar al carrito */}
                 <button className="w-full py-2.5 rounded-xl bg-[#3A6EA5] text-white font-medium hover:bg-[#2E5A8C] transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
-                   onClick={() => agregarCarrito(product)}>
+                   onClick={() => handleAgregarCarrito(product)}>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 8h14m-10 0a1 1 0 11-2 0 1 1 0 012 0zm8 0a1 1 0 11-2 0 1 1 0 012 0z" />
                   </svg>

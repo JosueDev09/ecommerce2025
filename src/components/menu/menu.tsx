@@ -2,6 +2,8 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Productos } from "@/types/types"; // si tienes tipos definidos
+import { useTienda } from "@/context/TiendaContext";
 
 const nav = [
   {
@@ -87,13 +89,22 @@ export default function Menu() {
   const [scroll, setScroll] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-
-  const productos = [
-    { id: 1, name: "Playera Oversized", price: 399, image: "https://images.pexels.com/photos/7679720/pexels-photo-7679720.jpeg?auto=compress&cs=tinysrgb&w=800" },
-    { id: 2, name: "Sudadera Minimal", price: 699, image: "https://images.pexels.com/photos/5650048/pexels-photo-5650048.jpeg?auto=compress&cs=tinysrgb&w=800" },
-    { id: 3, name: "Gorra Classic", price: 249, image: "https://images.pexels.com/photos/9985212/pexels-photo-9985212.jpeg?auto=compress&cs=tinysrgb&w=800" },
-  ];
-
+  const {
+    productos,
+    agregarCarrito,
+    handleVariantChange,
+    getCantidadPorProducto,
+    getResumenCarrito,
+    carrito,
+    loading,
+    aumentarCantidad,
+    disminuirCantidad,
+    eliminarDelCarrito
+  } = useTienda();
+  
+  // Calcular cantidad total de productos en el carrito ANTES del return
+  const cantidadCarrito = carrito.reduce((acc, p) => acc + p.cantidad, 0);
+   
     useEffect(() => {
         setMounted(true); // 🔹 asegura render solo en cliente
 
@@ -114,7 +125,10 @@ export default function Menu() {
           }
         }
       };
-
+      
+      //console.log('Cantidad en carrito:', getResumenCarrito());
+     
+      //console.log('Cantidad en carrito:', cantidadCarrito);
   return (
     <>
       {/* 🔹 Navbar Desktop */}
@@ -191,7 +205,7 @@ export default function Menu() {
             />
           </svg>
           <span className="absolute -top-1 -right-1 bg-[#E6C89C] text-xs px-1.5 py-0.5 rounded-full text-black font-bold">
-            {productos.length}
+            {cantidadCarrito}
           </span>
         </button>
       </header>
@@ -225,7 +239,7 @@ export default function Menu() {
                     <h2 className="text-2xl font-bold bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] bg-clip-text text-transparent">
                       Tu Carrito
                     </h2>
-                    <p className="text-sm text-gray-500 mt-1">{productos.length} productos</p>
+                    <p className="text-sm text-gray-500 mt-1">{cantidadCarrito} productos</p>
                   </div>
                   <button
                     onClick={() => setCartOpen(false)}
@@ -240,11 +254,11 @@ export default function Menu() {
 
               {/* Contenido del carrito */}
               <div className="flex-1 overflow-y-auto p-6">
-                {productos.length > 0 ? (
+                {cantidadCarrito > 0 ? (
                   <div className="space-y-4">
-                    {productos.map((p, index) => (
+                    {carrito.map((p, index) => (
                       <motion.div
-                        key={p.id}
+                        key={`${p.id}-${p.color}-${p.talla}-${index}`}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
@@ -253,33 +267,48 @@ export default function Menu() {
                         <div className="flex gap-4">
                           <div className="relative">
                             <img
-                              src={p.image}
-                              alt={p.name}
+                              src={p.imagen}
+                              alt={p.nombre}
                               className="w-24 h-24 rounded-xl object-cover"
                             />
                             <div className="absolute -top-2 -right-2 bg-[#E6C89C] text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-lg">
-                              1
+                             {p.cantidad}
                             </div>
                           </div>
                           
                           <div className="flex-1 flex flex-col justify-between">
                             <div>
                               <h3 className="font-semibold text-[#1A1A1A] group-hover:text-[#3A6EA5] transition-colors">
-                                {p.name}
+                                {p.nombre}
                               </h3>
-                              <p className="text-sm text-gray-500 mt-1">Talla: M</p>
+                              <div className="flex gap-2 mt-1">
+                                {p.color && (
+                                  <p className="text-xs text-gray-500">Color: {p.color}</p>
+                                )}
+                                {p.talla && (
+                                  <p className="text-xs text-gray-500">Talla: {p.talla}</p>
+                                )}
+                              </div>
                             </div>
                             
                             <div className="flex items-center justify-between">
-                              <p className="text-lg font-bold text-[#3A6EA5]">${p.price}</p>
+                              <p className="text-lg font-bold text-[#3A6EA5]">
+                                ${p.tieneDescuento && p.precioDescuento ? p.precioDescuento * p.cantidad : p.precio * p.cantidad}
+                              </p>
                               
                               {/* Controles de cantidad */}
                               <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
-                                <button className="w-7 h-7 rounded-md bg-white hover:bg-[#3A6EA5] hover:text-white transition-all duration-300 flex items-center justify-center text-gray-600 font-bold shadow-sm">
+                                <button 
+                                  onClick={() => disminuirCantidad(p.id, p.color || null, p.talla || null)}
+                                  className="w-7 h-7 rounded-md bg-white hover:bg-[#3A6EA5] hover:text-white transition-all duration-300 flex items-center justify-center text-gray-600 font-bold shadow-sm"
+                                >
                                   −
                                 </button>
-                                <span className="w-8 text-center font-semibold text-sm">1</span>
-                                <button className="w-7 h-7 rounded-md bg-white hover:bg-[#3A6EA5] hover:text-white transition-all duration-300 flex items-center justify-center text-gray-600 font-bold shadow-sm">
+                                <span className="w-8 text-center font-semibold text-sm">{p.cantidad}</span>
+                                <button 
+                                  onClick={() => aumentarCantidad(p.id, p.color || null, p.talla || null)}
+                                  className="w-7 h-7 rounded-md bg-white hover:bg-[#3A6EA5] hover:text-white transition-all duration-300 flex items-center justify-center text-gray-600 font-bold shadow-sm"
+                                >
                                   +
                                 </button>
                               </div>
@@ -287,7 +316,10 @@ export default function Menu() {
                           </div>
                           
                           {/* Botón eliminar */}
-                          <button className="self-start p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-all duration-300">
+                          <button 
+                            onClick={() => eliminarDelCarrito(p.id, p.color || null, p.talla || null)}
+                            className="self-start p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-all duration-300"
+                          >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
@@ -310,13 +342,18 @@ export default function Menu() {
               </div>
 
               {/* Footer con totales y botón */}
-              {productos.length > 0 && (
+              {carrito.length > 0 && (
                 <div className="bg-white border-t border-gray-200 p-6 shadow-lg">
                   {/* Resumen de costos */}
                   <div className="space-y-3 mb-5">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Subtotal</span>
-                      <span className="font-medium">${productos.reduce((acc, p) => acc + p.price, 0)}</span>
+                      <span className="font-medium">
+                        ${carrito.reduce((acc, p) => {
+                          const precio = p.tieneDescuento && p.precioDescuento ? p.precioDescuento : p.precio;
+                          return acc + (precio * p.cantidad);
+                        }, 0).toFixed(2)}
+                      </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Envío</span>
@@ -325,7 +362,10 @@ export default function Menu() {
                     <div className="border-t border-dashed border-gray-300 pt-3 flex justify-between items-center">
                       <span className="text-lg font-bold text-[#1A1A1A]">Total</span>
                       <span className="text-2xl font-bold bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] bg-clip-text text-transparent">
-                        ${productos.reduce((acc, p) => acc + p.price, 0)}
+                        ${carrito.reduce((acc, p) => {
+                          const precio = p.tieneDescuento && p.precioDescuento ? p.precioDescuento : p.precio;
+                          return acc + (precio * p.cantidad);
+                        }, 0).toFixed(2)}
                       </span>
                     </div>
                   </div>
