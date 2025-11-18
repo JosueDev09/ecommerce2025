@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Productos } from "@/types/types"; // si tienes tipos definidos
 import { useTienda } from "@/context/TiendaContext";
+import { useRouter } from 'next/navigation';
 
 const nav = [
   {
@@ -89,6 +90,7 @@ export default function Menu() {
   const [scroll, setScroll] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const router = useRouter();
   const {
     productos,
     agregarCarrito,
@@ -371,12 +373,15 @@ export default function Menu() {
                   </div>
 
                   {/* Botón de finalizar compra */}
-                  <button className="w-full py-4 bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] text-white rounded-xl font-semibold hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 group">
+                  <a 
+                  href="/cart"
+                  className="w-full py-4 bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] text-white rounded-xl font-semibold hover:shadow-xl hover:scale-[1.02] 
+                  active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 group cursor-pointer">
                     <span>Finalizar Compra</span>
                     <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
-                  </button>
+                  </a>
                   
                   {/* Mensaje de seguridad */}
                   <p className="text-xs text-center text-gray-500 mt-3 flex items-center justify-center gap-1">

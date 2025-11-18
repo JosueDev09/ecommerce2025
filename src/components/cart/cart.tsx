@@ -1,79 +1,85 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect, use } from "react";
+import { Productos } from "@/types/types";
+import { useTienda } from "@/context/TiendaContext";
+import { useProductFilters } from "@/hooks/productHooks";
+import { s } from "framer-motion/client";
 
-const initialCartItems = [
-  {
-    id: 1,
-    name: "Auriculares Inalámbricos Pro",
-    price: 2499,
-    quantity: 1,
-    image: "https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=400",
-    color: "Negro",
-    stock: 15,
-  },
-  {
-    id: 2,
-    name: "Smartwatch Fitness Edition",
-    price: 4999,
-    quantity: 2,
-    image: "https://images.pexels.com/photos/437037/pexels-photo-437037.jpeg?auto=compress&cs=tinysrgb&w=400",
-    color: "Plata",
-    stock: 8,
-  },
-  {
-    id: 3,
-    name: "Zapatillas Running Elite",
-    price: 3799,
-    quantity: 1,
-    image: "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=400",
-    color: "Azul",
-    stock: 20,
-  },
-];
+
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState(initialCartItems);
+  const [mounted, setMounted] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [promoApplied, setPromoApplied] = useState(false);
+  const { itemVariants } = useProductFilters();
+  const { carrito,eliminarDelCarrito, aumentarCantidad, disminuirCantidad } = useTienda();
 
-  const updateQuantity = (id: number, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    setCartItems(prev =>
-      prev.map(item =>
-        item.id === id ? { ...item, quantity: Math.min(newQuantity, item.stock) } : item
-      )
-    );
-  };
+  // Esperar a que el componente esté montado en el cliente
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  const removeItem = (id: number) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
-  };
 
-  const applyPromo = () => {
-    if (promoCode.toLowerCase() === "descuento10") {
-      setDiscount(0.1);
-      setPromoApplied(true);
-    } else if (promoCode.toLowerCase() === "verano20") {
-      setDiscount(0.2);
-      setPromoApplied(true);
-    } else {
-      setPromoApplied(false);
-      setDiscount(0);
+ // console.log("Carrito actual:", carrito);
+
+  const applyPromo = async () => {
+      try {
+      //  console.log("🔄 Cargando producto con slug:", slug);
+        const response = await fetch("http://localhost:3000/api/graphql", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: `
+               query ($strCodigo: String!) {
+                obtenerDescuentosCodigos(strCodigo: $strCodigo) {
+                intDescuentoCodigo
+                strCodigo
+                dblPorcentajeDescuento
+                datFechaInicio
+                datFechaFin
+                bolActivo                                
+                }
+              }
+            `,
+             variables: { strCodigo: promoCode },
+             
+          }),
+        });
+        console.log("Response del codigo de descuento:", response);
+        const result = await response.json();
+        const descuentos = result.data.obtenerDescuentosCodigos;
+        if (descuentos.length > 0) {
+          const descuentoValido = descuentos[0];
+        }
+      } catch (error) {
+        console.error("Error encontrando el codigo de descuento:", error);
+      }
     }
-  };
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+
+  const subtotal = carrito.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
   const discountAmount = subtotal * discount;
   const shipping = subtotal > 5000 ? 0 : 299;
   const total = subtotal - discountAmount + shipping;
 
-  const itemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: 20, transition: { duration: 0.3 } },
-  };
+  // No renderizar hasta que esté montado en el cliente
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#F5F5F5] to-[#FFFFFF] py-12 px-4 md:px-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#3A6EA5] mx-auto mb-4"></div>
+          <p className="text-[#1A1A1A]/70">Cargando carrito...</p>
+        </div>
+      </div>
+    );
+  }
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F5F5F5] to-[#FFFFFF] py-12 px-4 md:px-6">
@@ -96,11 +102,11 @@ export default function CartPage() {
             </span>
           </h1>
           <p className="text-[#1A1A1A]/70">
-            {cartItems.length} {cartItems.length === 1 ? "producto" : "productos"} en tu carrito
+            {carrito.length} {carrito.length === 1 ? "producto" : "productos"} en tu carrito
           </p>
         </motion.div>
 
-        {cartItems.length === 0 ? (
+        {carrito.length === 0 ? (
           /* Carrito vacío */
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -129,7 +135,7 @@ export default function CartPage() {
             {/* Lista de productos */}
             <div className="lg:col-span-2 space-y-4">
               <AnimatePresence mode="popLayout">
-                {cartItems.map((item) => (
+                {carrito.map((item) => (
                   <motion.div
                     key={item.id}
                     variants={itemVariants}
@@ -143,8 +149,8 @@ export default function CartPage() {
                       {/* Imagen del producto */}
                       <div className="relative flex-shrink-0 w-28 h-28 rounded-xl overflow-hidden bg-[#F5F5F5]">
                         <img
-                          src={item.image}
-                          alt={item.name}
+                          src=""
+                          alt={item.nombre}
                           className="w-full h-full object-cover"
                         />
                       </div>
@@ -154,12 +160,12 @@ export default function CartPage() {
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <h3 className="text-lg font-bold text-[#1A1A1A] mb-1">
-                              {item.name}
+                              {item.nombre}
                             </h3>
                             <p className="text-sm text-[#1A1A1A]/60">Color: {item.color}</p>
                           </div>
                           <button
-                            onClick={() => removeItem(item.id)}
+                             onClick={() => eliminarDelCarrito(item.id, item.color || null, item.talla || null)}
                             className="p-2 rounded-full hover:bg-red-50 text-[#1A1A1A]/40 hover:text-red-500 transition-all duration-300"
                           >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -174,37 +180,48 @@ export default function CartPage() {
                             <span className="text-sm text-[#1A1A1A]/60">Cantidad:</span>
                             <div className="flex items-center gap-2 bg-[#F5F5F5] rounded-lg p-1">
                               <button
-                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                onClick={() => disminuirCantidad(item.id, item.color || null, item.talla || null)}
                                 className="w-8 h-8 rounded-md hover:bg-white transition-colors flex items-center justify-center text-[#3A6EA5] font-bold"
                               >
                                 −
                               </button>
                               <span className="w-12 text-center font-semibold text-[#1A1A1A]">
-                                {item.quantity}
+                                {item.cantidad}
                               </span>
                               <button
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                disabled={item.quantity >= item.stock}
+                                onClick={() => aumentarCantidad(item.id, item.color || null, item.talla || null)}
+                                disabled={item.cantidad >= (item.stock || 0)}
                                 className="w-8 h-8 rounded-md hover:bg-white transition-colors flex items-center justify-center text-[#3A6EA5] font-bold disabled:opacity-40 disabled:cursor-not-allowed"
                               >
                                 +
                               </button>
                             </div>
+                            {/* Mostrar stock disponible */}
+                            {item.stock! >= 100 && (
+                              <span className="text-xs text-[#1A1A1A]/50 ml-2">
+                                Stock: <span className="text-green-600">Disponible</span>
+                              </span>
+                            )}
+                              {item.stock! < 3 && (
+                              <span className="text-xs text-[#1A1A1A]/50 ml-2">
+                                Stock: <span className="text-red-600">Solo quedan {item.stock} unidades</span>
+                              </span>
+                            )}
                           </div>
 
                           {/* Precio */}
                           <div className="text-right">
                             <div className="text-2xl font-bold text-[#3A6EA5]">
-                              ${(item.price * item.quantity).toLocaleString()}
+                              ${(item.precio * item.cantidad).toLocaleString()}
                             </div>
                             <div className="text-sm text-[#1A1A1A]/60">
-                              ${item.price.toLocaleString()} c/u
+                              ${item.precio.toLocaleString()} c/u
                             </div>
                           </div>
                         </div>
 
                         {/* Stock warning */}
-                        {item.quantity >= item.stock && (
+                        {item.cantidad >= 3 && (
                           <div className="mt-3 text-xs text-amber-600 bg-amber-50 px-3 py-1 rounded-lg inline-block">
                             Stock máximo disponible
                           </div>
@@ -267,7 +284,7 @@ export default function CartPage() {
                   )}
                   {!promoApplied && promoCode && (
                     <div className="mt-2 text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg">
-                      Código inválido. Prueba: DESCUENTO10 o VERANO20
+                      Código inválido.
                     </div>
                   )}
                 </div>

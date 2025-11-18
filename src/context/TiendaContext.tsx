@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, use, useContext, useEffect, useState } from "react";
 import { Productos, ItemCarrito } from "@/types/types";
 
 interface TiendaContextType {
@@ -63,6 +63,7 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
                   strEtiquetas
                   jsonVariantes
                   jsonImagenes
+                  intStock
                   datCreacion
                   datActualizacion
                   tbCategoria {
@@ -89,6 +90,7 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
 
     fetchProductos();
   }, []);
+
 
   // 💾 Guardar carrito cada vez que cambia
   useEffect(() => {
@@ -123,6 +125,7 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
       imagen: producto.strImagen,
       categoria: producto.tbCategoria?.strNombre || "",
       cantidad: 1,
+      stock: producto.intStock || 0, // 👈 AGREGADO: Incluir stock al agregar
     };
 
     setCarrito((prev) => {
@@ -134,6 +137,11 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
       );
 
       if (existe) {
+        // Validar que no exceda el stock
+        if (existe.cantidad >= (existe.stock || 0)) {
+          console.warn(`⚠️ Stock máximo alcanzado para "${producto.strNombre}"`);
+          return prev; // No aumentar si ya llegó al límite
+        }
         console.log(`✅ Producto "${producto.strNombre}" cantidad aumentada`);
         return prev.map((p) =>
           p.id === itemCarrito.id &&
@@ -161,11 +169,17 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
   // ➕ Aumentar cantidad de un producto en el carrito
   const aumentarCantidad = (id: number, color: string | null, talla: string | null) => {
     setCarrito((prev) =>
-      prev.map((p) =>
-        p.id === id && p.color === color && p.talla === talla
-          ? { ...p, cantidad: p.cantidad + 1 }
-          : p
-      )
+      prev.map((p) => {
+        if (p.id === id && p.color === color && p.talla === talla) {
+          // Validar que no exceda el stock
+          if (p.cantidad >= (p.stock || 0)) {
+            console.warn(`⚠️ Stock máximo alcanzado para "${p.nombre}"`);
+            return p; // No aumentar
+          }
+          return { ...p, cantidad: p.cantidad + 1 };
+        }
+        return p;
+      })
     );
    // console.log(`➕ Cantidad aumentada para producto ID: ${id}`);
   };
@@ -202,6 +216,11 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
       color: p.color || null,
       talla: p.talla || null,
     }));
+  };
+
+  const validarCodigoDescuento = (codigo: string) => {
+    // Lógica para validar el código de descuento
+    
   };
 
 

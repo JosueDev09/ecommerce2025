@@ -17,6 +17,7 @@ export interface Productos{
   strEtiquetas?: string;
   jsonVariantes?: string;
   jsonImagenes?: string;
+  intStock?: number; // 👈 AGREGADO: Stock disponible
   datCreacion: string;
   datActualizacion?: string;
   tbCategoria: {
@@ -37,4 +38,5 @@ export interface ItemCarrito {
   imagen: string;
   categoria?: string;
   cantidad: number;
+  stock?: number; // 👈 AGREGADO: Stock disponible al momento de agregar
 }
