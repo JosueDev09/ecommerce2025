@@ -22,10 +22,9 @@ export default function ProductsPage() {
 
   // Función para validar si el descuento está activo
     const esDescuentoActivo = (product: any) => {
+
       if (
-        !product.bolTieneDescuento ||
-        !product.datInicioDescuento ||
-        !product.datFinDescuento
+        !product.bolTieneDescuento || !product.datInicioDescuento || !product.datFinDescuento
       ) {
         return false;
       }
