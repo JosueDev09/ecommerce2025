@@ -7,6 +7,7 @@ import { useTienda } from "@/context/TiendaContext";
 import { pre } from "framer-motion/client";
 import { Check } from "lucide-react";
 import { createProductSlug } from "@/lib/slugify";
+import { formatFecha } from "@/utils/formatearFechas";
 
 
 export default function Products() {
@@ -18,6 +19,27 @@ export default function Products() {
     getCantidadPorProducto,
     loading,
   } = useTienda();
+
+    // Función para validar si el descuento está activo
+    const esDescuentoActivo = (product: any) => {
+      if (
+        !product.bolTieneDescuento ||
+        !product.datInicioDescuento ||
+        !product.datFinDescuento
+      ) {
+        return false;
+      }
+
+      const ahora = Date.now(); // número
+      const inicio = Number(product.datInicioDescuento); // número
+      const fin = Number(product.datFinDescuento);       // número
+
+      // Solo para ver las fechas formateadas en consola (opcional)
+      // console.log("Fecha inicio:", formatFecha(inicio));
+      // console.log("Fecha fin:", formatFecha(fin));
+
+      return formatFecha(ahora) >= formatFecha(inicio) && formatFecha(ahora) <= formatFecha(fin);
+    };
 
   const handleAgregarCarrito = (product: any) => {
     agregarCarrito(product);
@@ -220,7 +242,7 @@ export default function Products() {
                 
                 {/* Precio */}
               <div className="flex items-baseline gap-2 mb-4">
-                {product.bolTieneDescuento ? (
+                {esDescuentoActivo(product) ? (
                   <>
                     <span className="text-2xl font-bold text-[#1A1A1A]">
                       ${product.dblPrecioDescuento?.toLocaleString()}
@@ -228,6 +250,11 @@ export default function Products() {
                     <span className="text-sm text-[#1A1A1A]/40 line-through">
                       ${product.dblPrecio.toLocaleString()}
                     </span>
+                    {product.intPorcentajeDescuento && (
+                      <span className="text-xs px-2 py-1 rounded-full bg-emerald-500 text-white font-semibold">
+                        -{product.intPorcentajeDescuento}%
+                      </span>
+                    )}
                   </>
                 ) : (
                   <span className="text-2xl font-bold text-[#1A1A1A]">

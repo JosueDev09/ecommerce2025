@@ -5,6 +5,9 @@ import { Productos } from "@/types/types";
 import { useTienda } from "@/context/TiendaContext";
 import { useProductFilters } from "@/hooks/productHooks";
 import { s } from "framer-motion/client";
+import { Check, X } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 
 
@@ -15,54 +18,39 @@ export default function CartPage() {
   const [promoApplied, setPromoApplied] = useState(false);
   const { itemVariants } = useProductFilters();
   const { carrito,eliminarDelCarrito, aumentarCantidad, disminuirCantidad } = useTienda();
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const { isAuthenticated, setRedirectPath } = useAuth();
+  const router = useRouter();
 
   // Esperar a que el componente esté montado en el cliente
   useEffect(() => {
     setMounted(true);
   }, []);
 
-
- // console.log("Carrito actual:", carrito);
-
-  const applyPromo = async () => {
-      try {
-      //  console.log("🔄 Cargando producto con slug:", slug);
-        const response = await fetch("http://localhost:3000/api/graphql", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            query: `
-               query ($strCodigo: String!) {
-                obtenerDescuentosCodigos(strCodigo: $strCodigo) {
-                intDescuentoCodigo
-                strCodigo
-                dblPorcentajeDescuento
-                datFechaInicio
-                datFechaFin
-                bolActivo                                
-                }
-              }
-            `,
-             variables: { strCodigo: promoCode },
-             
-          }),
-        });
-        console.log("Response del codigo de descuento:", response);
-        const result = await response.json();
-        const descuentos = result.data.obtenerDescuentosCodigos;
-        if (descuentos.length > 0) {
-          const descuentoValido = descuentos[0];
-        }
-      } catch (error) {
-        console.error("Error encontrando el codigo de descuento:", error);
-      }
+  // Función para obtener el precio final de un producto (con o sin descuento)
+  const obtenerPrecioFinal = (item: any) => {
+    // Si el item tiene descuento aplicado desde el carrito, usarlo
+    if (item.tieneDescuento && item.precioDescuento) {
+      return item.precioDescuento;
     }
+    return item.precio;
+  };
 
 
+  // 🛒 Función para proceder al pago
+  const handleCheckout = () => {
+    if (!isAuthenticated) {
+      // Si no está autenticado, guardar la ruta actual y redirigir al login
+      setRedirectPath("/processBuy");
+      router.push("/login");
+    } else {
+      // Si está autenticado, ir al proceso de compra
+      router.push("/processBuy");
+    }
+  };
 
-  const subtotal = carrito.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+  const subtotal = carrito.reduce((sum, item) => sum + obtenerPrecioFinal(item) * item.cantidad, 0);
   const discountAmount = subtotal * discount;
   const shipping = subtotal > 5000 ? 0 : 299;
   const total = subtotal - discountAmount + shipping;
@@ -87,6 +75,7 @@ export default function CartPage() {
       <div className="absolute top-20 right-0 w-96 h-96 bg-[#3A6EA5]/10 rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute bottom-40 left-0 w-80 h-80 bg-[#E6C89C]/15 rounded-full blur-[130px] pointer-events-none" />
 
+       
       <div className="relative max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -163,6 +152,11 @@ export default function CartPage() {
                               {item.nombre}
                             </h3>
                             <p className="text-sm text-[#1A1A1A]/60">Color: {item.color}</p>
+                            {item.tieneDescuento && item.precioDescuento && (
+                              <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-emerald-500 text-white text-xs font-semibold">
+                                Con descuento
+                              </span>
+                            )}
                           </div>
                           <button
                              onClick={() => eliminarDelCarrito(item.id, item.color || null, item.talla || null)}
@@ -204,26 +198,42 @@ export default function CartPage() {
                             )}
                               {item.stock! < 3 && (
                               <span className="text-xs text-[#1A1A1A]/50 ml-2">
-                                Stock: <span className="text-red-600">Solo quedan {item.stock} unidades</span>
+                                Stock: <span className="text-red-600">Quedan pocas unidades.</span>
                               </span>
                             )}
                           </div>
 
                           {/* Precio */}
                           <div className="text-right">
-                            <div className="text-2xl font-bold text-[#3A6EA5]">
-                              ${(item.precio * item.cantidad).toLocaleString()}
-                            </div>
-                            <div className="text-sm text-[#1A1A1A]/60">
-                              ${item.precio.toLocaleString()} c/u
-                            </div>
+                            {item.tieneDescuento && item.precioDescuento ? (
+                              <>
+                                <div className="text-2xl font-bold text-[#3A6EA5]">
+                                  ${(item.precioDescuento * item.cantidad).toLocaleString()}
+                                </div>
+                                <div className="text-sm text-[#1A1A1A]/40 line-through">
+                                  ${(item.precio * item.cantidad).toLocaleString()}
+                                </div>
+                                <div className="text-xs text-[#1A1A1A]/60">
+                                  ${item.precioDescuento.toLocaleString()} c/u
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className="text-2xl font-bold text-[#3A6EA5]">
+                                  ${(item.precio * item.cantidad).toLocaleString()}
+                                </div>
+                                <div className="text-sm text-[#1A1A1A]/60">
+                                  ${item.precio.toLocaleString()} c/u
+                                </div>
+                              </>
+                            )}
                           </div>
                         </div>
 
                         {/* Stock warning */}
                         {item.cantidad >= 3 && (
                           <div className="mt-3 text-xs text-amber-600 bg-amber-50 px-3 py-1 rounded-lg inline-block">
-                            Stock máximo disponible
+                            Cantidad de unidades por cliente alcanzada.
                           </div>
                         )}
                       </div>
@@ -257,37 +267,6 @@ export default function CartPage() {
               <div className="bg-white rounded-2xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.08)] sticky top-6">
                 <h2 className="text-xl font-bold text-[#1A1A1A] mb-6">Resumen del Pedido</h2>
 
-                {/* Código promocional */}
-                <div className="mb-6">
-                  <label className="text-sm font-medium text-[#1A1A1A] mb-2 block">
-                    Código Promocional
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={promoCode}
-                      onChange={(e) => setPromoCode(e.target.value)}
-                      placeholder="Ingresa tu código"
-                      className="flex-1 px-4 py-2.5 rounded-lg border border-[#F5F5F5] focus:outline-none focus:ring-2 focus:ring-[#3A6EA5]/20 text-sm"
-                    />
-                    <button
-                      onClick={applyPromo}
-                      className="px-4 py-2.5 rounded-lg bg-[#3A6EA5] text-white text-sm font-medium hover:bg-[#2E5A8C] transition-colors"
-                    >
-                      Aplicar
-                    </button>
-                  </div>
-                  {promoApplied && (
-                    <div className="mt-2 text-xs text-green-600 bg-green-50 px-3 py-2 rounded-lg">
-                      ✓ Código aplicado: {discount * 100}% de descuento
-                    </div>
-                  )}
-                  {!promoApplied && promoCode && (
-                    <div className="mt-2 text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg">
-                      Código inválido.
-                    </div>
-                  )}
-                </div>
 
                 {/* Desglose de precios */}
                 <div className="space-y-3 mb-6 pb-6 border-b border-[#F5F5F5]">
@@ -295,6 +274,7 @@ export default function CartPage() {
                     <span>Subtotal</span>
                     <span>${subtotal.toLocaleString()}</span>
                   </div>
+                 
                   {discount > 0 && (
                     <div className="flex justify-between text-green-600">
                       <span>Descuento ({discount * 100}%)</span>
@@ -321,7 +301,10 @@ export default function CartPage() {
                 </div>
 
                 {/* Botón de checkout */}
-                <button className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] text-white font-semibold hover:shadow-lg transition-all duration-300 mb-3 flex items-center justify-center gap-2">
+                <button 
+                  onClick={handleCheckout}
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] text-white font-semibold hover:shadow-lg transition-all duration-300 mb-3 flex items-center justify-center gap-2"
+                >
                   Proceder al pago
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />

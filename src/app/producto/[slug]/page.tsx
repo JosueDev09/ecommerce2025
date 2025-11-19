@@ -20,6 +20,19 @@ export default function ProductoDetalle() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
 
+  // Función para validar si el descuento está activo
+  const esDescuentoActivo = (producto: Productos | null) => {
+    if (!producto || !producto.bolTieneDescuento || !producto.datInicioDescuento || !producto.datFinDescuento) {
+      return false;
+    }
+
+    const ahora = new Date();
+    const fechaInicio = new Date(producto.datInicioDescuento);
+    const fechaFin = new Date(producto.datFinDescuento);
+
+    return ahora >= fechaInicio && ahora <= fechaFin;
+  };
+
   // Cargar producto
   useEffect(() => {
     const fetchProducto = async () => {
@@ -295,7 +308,7 @@ export default function ProductoDetalle() {
 
             {/* Precio */}
             <div className="flex items-baseline gap-4 mb-6 pb-6 border-b border-[#F5F5F5]">
-              {producto.bolTieneDescuento ? (
+              {esDescuentoActivo(producto) ? (
                 <>
                   <span className="text-4xl font-bold text-[#3A6EA5]">
                     ${producto.dblPrecioDescuento?.toLocaleString()}
@@ -303,9 +316,11 @@ export default function ProductoDetalle() {
                   <span className="text-2xl text-[#1A1A1A]/40 line-through">
                     ${producto.dblPrecio.toLocaleString()}
                   </span>
-                  <span className="px-3 py-1 rounded-full bg-emerald-500 text-white text-sm font-semibold">
-                    -{producto.intPorcentajeDescuento}%
-                  </span>
+                  {producto.intPorcentajeDescuento && (
+                    <span className="px-3 py-1 rounded-full bg-emerald-500 text-white text-sm font-semibold">
+                      -{producto.intPorcentajeDescuento}%
+                    </span>
+                  )}
                 </>
               ) : (
                 <span className="text-4xl font-bold text-[#3A6EA5]">

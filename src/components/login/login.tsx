@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function AuthPage() {
   const [mode, setMode] = useState('login'); // 'login', 'register', 'guest'
@@ -10,24 +12,144 @@ export default function AuthPage() {
     name: '',
     confirmPassword: ''
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  
+  const { login, continueAsGuest, getRedirectPath } = useAuth();
+  const router = useRouter();
 
   const handleInputChange = (e:any) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError(''); // Limpiar error al escribir
   };
 
-  const handleSubmit = (e:any) => {
+  const handleSubmit = async (e:any) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
+
     if (mode === 'login') {
-      console.log('Iniciando sesión:', formData.email);
+      try {
+        // Llamar a tu API de GraphQL para login
+        const response = await fetch("http://localhost:3000/api/graphql", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: `
+              mutation ($strCorreo: String!, $strContrasena: String!) {
+                loginUsuario(strCorreo: $strCorreo, strContrasena: $strContrasena) {
+                  token
+                  usuario {
+                    intUsuario
+                    strNombre
+                    strCorreo
+                    strTelefono
+                  }
+                }
+              }
+            `,
+            variables: {
+              strCorreo: formData.email,
+              strContrasena: formData.password
+            },
+          }),
+        });
+
+        const result = await response.json();
+
+        if (result.errors) {
+          setError(result.errors[0].message || 'Error al iniciar sesión');
+          setLoading(false);
+          return;
+        }
+
+        const { token, usuario } = result.data.loginUsuario;
+        
+        // Guardar en contexto
+        login(token, usuario);
+        
+        // Redirigir a la página anterior o al checkout
+        const redirectPath = getRedirectPath();
+        router.push(redirectPath);
+        
+      } catch (error) {
+        console.error('Error al iniciar sesión:', error);
+        setError('Error de conexión. Intenta de nuevo.');
+      }
+      
     } else if (mode === 'register') {
-      console.log('Registrando usuario:', formData);
+      try {
+        // Validar que las contraseñas coincidan
+        if (formData.password !== formData.confirmPassword) {
+          setError('Las contraseñas no coinciden');
+          setLoading(false);
+          return;
+        }
+
+        // Llamar a tu API de GraphQL para registro
+        const response = await fetch("http://localhost:3000/api/graphql", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: `
+              mutation ($input: UsuarioInput!) {
+                crearUsuario(input: $input) {
+                  token
+                  usuario {
+                    intUsuario
+                    strNombre
+                    strCorreo
+                    strTelefono
+                  }
+                }
+              }
+            `,
+            variables: {
+              input: {
+                strNombre: formData.name,
+                strCorreo: formData.email,
+                strContrasena: formData.password
+              }
+            },
+          }),
+        });
+
+        const result = await response.json();
+
+        if (result.errors) {
+          setError(result.errors[0].message || 'Error al registrarse');
+          setLoading(false);
+          return;
+        }
+
+        const { token, usuario } = result.data.crearUsuario;
+        
+        // Guardar en contexto
+        login(token, usuario);
+        
+        // Redirigir a la página anterior o al checkout
+        const redirectPath = getRedirectPath();
+        router.push(redirectPath);
+        
+      } catch (error) {
+        console.error('Error al registrarse:', error);
+        setError('Error de conexión. Intenta de nuevo.');
+      }
     }
-    // Aquí iría la lógica de autenticación
+    
+    setLoading(false);
   };
 
   const handleGuestContinue = () => {
-    console.log('Continuar como invitado');
-    // Redirigir al ecommerce
+    continueAsGuest();
+    
+    // Redirigir a la página anterior o al checkout
+    const redirectPath = getRedirectPath();
+    router.push(redirectPath);
   };
 
   return (
@@ -135,6 +257,16 @@ export default function AuthPage() {
               </button>
             </div>
 
+            {/* Mensaje de error */}
+            {error && (
+              <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 flex items-center gap-2 text-red-600 text-sm">
+                <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {error}
+              </div>
+            )}
+
             {/* Formulario de Login */}
             {mode === 'login' && (
               <form onSubmit={handleSubmit} className="space-y-5">
@@ -180,9 +312,20 @@ export default function AuthPage() {
 
                 <button
                   type="submit"
-                  className="w-full py-4 bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] text-white rounded-xl font-semibold hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                  disabled={loading}
+                  className="w-full py-4 bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] text-white rounded-xl font-semibold hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
-                  Iniciar Sesión
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Iniciando sesión...
+                    </span>
+                  ) : (
+                    'Iniciar Sesión'
+                  )}
                 </button>
               </form>
             )}
@@ -259,9 +402,20 @@ export default function AuthPage() {
 
                 <button
                   type="submit"
-                  className="w-full py-4 bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] text-white rounded-xl font-semibold hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                  disabled={loading}
+                  className="w-full py-4 bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] text-white rounded-xl font-semibold hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
-                  Crear Cuenta
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Creando cuenta...
+                    </span>
+                  ) : (
+                    'Crear Cuenta'
+                  )}
                 </button>
               </form>
             )}

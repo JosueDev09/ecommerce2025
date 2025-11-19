@@ -1,6 +1,7 @@
 "use client";
 import React, { createContext, use, useContext, useEffect, useState } from "react";
 import { Productos, ItemCarrito } from "@/types/types";
+import { formatFecha } from "@/utils/formatearFechas";
 
 interface TiendaContextType {
   productos: Productos[];
@@ -114,12 +115,35 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
     const colorSeleccionado = variants.color || null;
     const tallaSeleccionada = variants.talla || null;
 
+    // Validar si el descuento está activo
+    const esDescuentoActivo = () => {
+      if (
+              !producto.bolTieneDescuento ||
+              !producto.datInicioDescuento ||
+              !producto.datFinDescuento
+            ) {
+              return false;
+            }
+      
+            const ahora = Date.now(); // número
+            const inicio = Number(producto.datInicioDescuento); // número
+            const fin = Number(producto.datFinDescuento);       // número
+      
+            // Solo para ver las fechas formateadas en consola (opcional)
+            // console.log("Fecha inicio:", formatFecha(inicio));
+            // console.log("Fecha fin:", formatFecha(fin));
+      
+            return formatFecha(ahora) >= formatFecha(inicio) && formatFecha(ahora) <= formatFecha(fin);
+    };
+
+    const descuentoActivo = esDescuentoActivo();
+
     const itemCarrito: ItemCarrito = {
       id: producto.intProducto,
       nombre: producto.strNombre,
       precio: producto.dblPrecio,
-      precioDescuento: producto.dblPrecioDescuento || null,
-      tieneDescuento: producto.bolTieneDescuento || false,
+      precioDescuento: descuentoActivo ? (producto.dblPrecioDescuento || null) : null,
+      tieneDescuento: descuentoActivo,
       color: colorSeleccionado,
       talla: tallaSeleccionada,
       imagen: producto.strImagen,
@@ -176,7 +200,12 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
             console.warn(`⚠️ Stock máximo alcanzado para "${p.nombre}"`);
             return p; // No aumentar
           }
-          return { ...p, cantidad: p.cantidad + 1 };
+          if(p.cantidad < 3){
+             return { ...p, cantidad: p.cantidad + 1 };
+          } else {
+            return p; // No aumentar si ya llegó al límite
+          }
+         
         }
         return p;
       })

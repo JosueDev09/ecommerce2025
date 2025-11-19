@@ -280,15 +280,18 @@ export default function Menu() {
                           
                           <div className="flex-1 flex flex-col justify-between">
                             <div>
-                              <h3 className="font-semibold text-[#1A1A1A] group-hover:text-[#3A6EA5] transition-colors">
-                                {p.nombre}
-                              </h3>
-                              <div className="flex gap-2 mt-1">
+                              <div>
+                                <p className="font-semibold text-[#1A1A1A] line-clamp-1">{p.nombre}</p>
                                 {p.color && (
                                   <p className="text-xs text-gray-500">Color: {p.color}</p>
                                 )}
                                 {p.talla && (
                                   <p className="text-xs text-gray-500">Talla: {p.talla}</p>
+                                )}
+                                {p.tieneDescuento && p.precioDescuento && (
+                                  <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-semibold">
+                                    Descuento
+                                  </span>
                                 )}
                               </div>
                             </div>

@@ -48,6 +48,7 @@ export function useProductFilters() {
                       strEtiquetas
                       jsonVariantes
                       jsonImagenes
+                      intStock
                       datCreacion
                       datActualizacion
                       tbCategoria {
