@@ -138,7 +138,7 @@ export default function CartPage() {
                       {/* Imagen del producto */}
                       <div className="relative flex-shrink-0 w-28 h-28 rounded-xl overflow-hidden bg-[#F5F5F5]">
                         <img
-                          src=""
+                          src={item.imagen}
                           alt={item.nombre}
                           className="w-full h-full object-cover"
                         />
