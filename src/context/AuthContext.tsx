@@ -2,9 +2,9 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface User {
-  intUsuario: number;
   strNombre: string;
-  strCorreo: string;
+  strUsuario: string;
+  strCorreo?: string;
   strTelefono?: string;
 }
 
@@ -53,6 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(newToken);
     setUser(userData);
     setIsGuest(false);
+    
     
     if (typeof window !== "undefined") {
       localStorage.setItem("authToken", newToken);

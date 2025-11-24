@@ -7,14 +7,15 @@ import { useRouter } from 'next/navigation';
 export default function AuthPage() {
   const [mode, setMode] = useState('login'); // 'login', 'register', 'guest'
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    strUsuario: '',
+    strContra: '',
     name: '',
     confirmPassword: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+  const [strUsuario, setUsuario] = useState("");
+  const [strContra, setContra] = useState("");
   const { login, continueAsGuest, getRedirectPath } = useAuth();
   const router = useRouter();
 
@@ -27,6 +28,7 @@ export default function AuthPage() {
     e.preventDefault();
     setLoading(true);
     setError('');
+   console.log(formData);
 
     if (mode === 'login') {
       try {
@@ -36,28 +38,43 @@ export default function AuthPage() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            query: `
-              mutation ($strCorreo: String!, $strContrasena: String!) {
-                loginUsuario(strCorreo: $strCorreo, strContrasena: $strContrasena) {
-                  token
-                  usuario {
-                    intUsuario
+           body: JSON.stringify({
+          query: `
+            mutation Login($data: LoginInput!) {
+              login(data: $data) {
+                token
+                usuario {
+                  ... on Empleado {
+                    intEmpleado
                     strNombre
-                    strCorreo
+                    strUsuario
+                    strRol,
+                    strTelefono,
+                    strEmail
+                  }
+                  ... on Cliente {
+                    intCliente
+                    strUsuario
+                    strEmail
                     strTelefono
+                    strNombre
+                    
                   }
                 }
               }
-            `,
-            variables: {
-              strCorreo: formData.email,
-              strContrasena: formData.password
+            }
+          `,
+          variables: {
+            data: {
+              strUsuario: formData.strUsuario,
+              strContra: formData.strContra,
             },
-          }),
+          },
+        }),
         });
-
+       
         const result = await response.json();
+        
 
         if (result.errors) {
           setError(result.errors[0].message || 'Error al iniciar sesión');
@@ -65,7 +82,20 @@ export default function AuthPage() {
           return;
         }
 
-        const { token, usuario } = result.data.loginUsuario;
+        console.log("Usuario completo:", result.data);
+        const token = result.data.login.token;  
+        const usuarioData = result.data.login.usuario;
+        
+        // Construir objeto de usuario con la estructura correcta
+        const usuario = {
+          strNombre: usuarioData.strUsuario, // Por ahora usamos el usuario como nombre
+          strUsuario: usuarioData.strUsuario,
+          strCorreo: usuarioData.strEmail || usuarioData.strUsuario,
+          strTelefono: usuarioData.strTelefono || "",
+        };
+
+        
+        console.log("Token:", token);
         
         // Guardar en contexto
         login(token, usuario);
@@ -82,7 +112,7 @@ export default function AuthPage() {
     } else if (mode === 'register') {
       try {
         // Validar que las contraseñas coincidan
-        if (formData.password !== formData.confirmPassword) {
+        if (formData.strContra !== formData.confirmPassword) {
           setError('Las contraseñas no coinciden');
           setLoading(false);
           return;
@@ -110,9 +140,8 @@ export default function AuthPage() {
             `,
             variables: {
               input: {
-                strNombre: formData.name,
-                strCorreo: formData.email,
-                strContrasena: formData.password
+                strCorreo: formData.strUsuario,
+                strContrasena: formData.strContra
               }
             },
           }),
@@ -126,7 +155,17 @@ export default function AuthPage() {
           return;
         }
 
-        const { token, usuario } = result.data.crearUsuario;
+        const { token, usuario: usuarioData } = result.data.crearUsuario;
+        
+        // Construir objeto de usuario con la estructura correcta
+        const usuario = {
+          strNombre: usuarioData.strNombre || formData.name,
+          strUsuario: usuarioData.strCorreo || formData.strUsuario,
+          strCorreo: usuarioData.strCorreo || formData.strUsuario,
+          strTelefono: usuarioData.strTelefono || "",
+        };
+        
+        console.log("Usuario registrado:", usuario);
         
         // Guardar en contexto
         login(token, usuario);
@@ -168,7 +207,7 @@ export default function AuthPage() {
         <div className="flex items-center justify-between lg:justify-start lg:gap-8 mb-4">
             {/* Botón regresar */}
             <a
-            href="/"
+            onClick={() => router.push('/')}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 border-[#3A6EA5]/30 text-[#3A6EA5] font-semibold text-sm hover:bg-[#3A6EA5]/10 hover:border-[#3A6EA5]/50 transition-all duration-300"
             >
             <svg
@@ -272,14 +311,14 @@ export default function AuthPage() {
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Correo electrónico
+                    Nombre de usuario
                   </label>
                   <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
+                    type="text"
+                    name="strUsuario"
+                    value={formData.strUsuario}
                     onChange={handleInputChange}
-                    placeholder="tu@email.com"
+                    placeholder="Usuario123"
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all"
                     required
                   />
@@ -291,8 +330,8 @@ export default function AuthPage() {
                   </label>
                   <input
                     type="password"
-                    name="password"
-                    value={formData.password}
+                    name="strContra"
+                    value={formData.strContra}
                     onChange={handleInputChange}
                     placeholder="••••••••"
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all"
@@ -312,7 +351,7 @@ export default function AuthPage() {
 
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading}                
                   className="w-full py-4 bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] text-white rounded-xl font-semibold hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
                   {loading ? (
@@ -354,10 +393,10 @@ export default function AuthPage() {
                   </label>
                   <input
                     type="email"
-                    name="email"
-                    value={formData.email}
+                    name="strUsuario"
+                    value={formData.strUsuario}
                     onChange={handleInputChange}
-                    placeholder="tu@email.com"
+                    placeholder="Usuario123"
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all"
                     required
                   />
@@ -369,8 +408,8 @@ export default function AuthPage() {
                   </label>
                   <input
                     type="password"
-                    name="password"
-                    value={formData.password}
+                    name="strContra"
+                    value={formData.strContra}
                     onChange={handleInputChange}
                     placeholder="••••••••"
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all"

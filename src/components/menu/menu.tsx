@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Productos } from "@/types/types"; // si tienes tipos definidos
 import { useTienda } from "@/context/TiendaContext";
 import { useRouter } from 'next/navigation';
+import { useAuth } from "@/context/AuthContext";
 
 const nav = [
   {
@@ -90,32 +91,45 @@ export default function Menu() {
   const [scroll, setScroll] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  
   const router = useRouter();
+
+  // Cargar auth y tienda solo si está montado
+  const authContext = useAuth();
+  const tiendaContext = useTienda();
+
+  const { isAuthenticated, isGuest,user } = authContext;
   const {
-    productos,
-    agregarCarrito,
-    handleVariantChange,
-    getCantidadPorProducto,
-    getResumenCarrito,
-    carrito,
-    loading,
+    carrito = [],
     aumentarCantidad,
     disminuirCantidad,
     eliminarDelCarrito
-  } = useTienda();
+  } = tiendaContext;
+
+  // Calcular cantidad total de productos en el carrito
+  const cantidadCarrito = mounted ? carrito.reduce((acc, p) => acc + p.cantidad, 0) : 0;
+
+  // Establecer mounted cuando el componente esté en el cliente
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
-  // Calcular cantidad total de productos en el carrito ANTES del return
-  const cantidadCarrito = carrito.reduce((acc, p) => acc + p.cantidad, 0);
+  // Función para manejar click en el icono de usuario
+  const handleUserClick = () => {
+    if (isAuthenticated && !isGuest) {
+      router.push('/dashboard');
+    } else {
+      router.push('/login');
+    }
+  };
    
-    useEffect(() => {
-        setMounted(true); // 🔹 asegura render solo en cliente
+  useEffect(() => {
+    const handleScroll = () => setScroll(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-        const handleScroll = () => setScroll(window.scrollY > 50);
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-      }, []);
-
-      if (!mounted) return null; // evita SSR mismatch
+  if (!mounted) return null; // evita SSR mismatch
 
       const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
         if (href.startsWith("#")) {
@@ -144,7 +158,7 @@ export default function Menu() {
       >
         {/* Logo */}
         <div className="text-2xl font-bold bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] bg-clip-text text-transparent">
-          <a href="/" className="font-bold tracking-tight">Ecommerce</a>
+          <a onClick={() => router.push('/')} className="font-bold tracking-tight">Ecommerce</a>
         </div>
 
         {/* Links */}
@@ -166,13 +180,14 @@ export default function Menu() {
           ))}
         </nav>
         {/* 👤 Usuario / Iniciar Sesión */}
-          <a
-            href="/login"
-            className="relative p-2 left-[37px] top-[2px] rounded-xl hover:bg-[#3A6EA5]/10 transition-all duration-300"
-            title="Iniciar sesión"
-          >
+        <button
+          onClick={handleUserClick}
+          className="relative p-2 left-[37px] top-[2px] rounded-xl hover:bg-[#3A6EA5]/10 transition-all duration-300 group"
+          title={isAuthenticated && !isGuest ? `Hola, ${user}` : "Iniciar sesión"}
+        >
+          <div className="flex items-center gap-2">
             <svg
-              className="w-8 h-8  text-[#3A6EA5]"
+              className="w-8 h-8 text-[#3A6EA5]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -184,8 +199,16 @@ export default function Menu() {
                 d="M5.121 17.804A9 9 0 0112 15a9 9 0 016.879 2.804M12 12a4 4 0 100-8 4 4 0 000 8z"
               />
             </svg>
-
-          </a>
+            {isAuthenticated && !isGuest && (
+              <div className="hidden xl:block text-left">
+                <p className="text-xs text-gray-500">Hola,</p>
+                <p className="text-sm font-semibold text-[#3A6EA5] truncate max-w-[100px]">
+                  {user?.strNombre || ""}
+                </p>
+              </div>
+            )}
+          </div>
+        </button>
         
 
         {/* 🛒 Carrito Icon */}

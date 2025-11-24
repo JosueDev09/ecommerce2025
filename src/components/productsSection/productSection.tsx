@@ -192,7 +192,7 @@ export default function Products() {
               {/* Imagen */}
               <div className="relative h-64 overflow-hidden bg-[#F5F5F5]">
                 <img
-                  src="https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/iphone-17-pro-model-unselect-gallery-2-202509_GEO_MX?wid=5120&hei=2880&fmt=webp&qlt=90&.v=dU9qRExIQUlQTzVKeDd1V1dtUE1MUWFRQXQ2R0JQTk5udUZxTkR3ZVlpTEJBSVhDREVhQVF4eThVb2E3Y2VibTYrcU5CYm51V0Nra1JFSWxzZmF3NEE3b3pFWnhZZ2g0M0pRR0pEdHVSRUVtYkFqYmVJbENIK1gycDVvVjJtTEZhNHNsSjNVUDRGQ01ucUJrbVdONTBR&traceId=1"
+                  src={product.jsonImagenes}
                   alt={product.strNombre}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />

@@ -22,16 +22,24 @@ const TiendaContext = createContext<TiendaContextType | undefined>(undefined);
 export function TiendaProvider({ children }: { children: React.ReactNode }) {
   const [productos, setProductos] = useState<Productos[]>([]);
   const [selectedVariants, setSelectedVariants] = useState<Record<number, { color: string | null; talla: string | null }>>({});
-  const [carrito, setCarrito] = useState<ItemCarrito[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const guardado = localStorage.getItem("carrito");
-      return guardado ? JSON.parse(guardado) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [carrito, setCarrito] = useState<ItemCarrito[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  // Cargar carrito desde localStorage solo en el cliente
+  useEffect(() => {
+    setMounted(true);
+    if (typeof window !== "undefined") {
+      try {
+        const guardado = localStorage.getItem("carrito");
+        if (guardado) {
+          setCarrito(JSON.parse(guardado));
+        }
+      } catch (error) {
+        console.error("Error al cargar carrito:", error);
+      }
+    }
+  }, []);
 
   // 🛒 Cargar productos desde GraphQL
   useEffect(() => {
@@ -95,11 +103,12 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
 
   // 💾 Guardar carrito cada vez que cambia
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    // Solo guardar si el componente ya está montado y no es la carga inicial
+    if (mounted && typeof window !== "undefined") {
       localStorage.setItem("carrito", JSON.stringify(carrito));
      // console.log("🛒 Carrito actualizado en localStorage:", carrito);
     }
-  }, [carrito]);
+  }, [carrito, mounted]);
 
   // 🎨 Manejo de variantes (color/talla)
   const handleVariantChange = (productId: number, color: string | null, talla: string | null) => {
@@ -138,6 +147,8 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
 
     const descuentoActivo = esDescuentoActivo();
 
+    //console.log("Agregar al carrito",itemCarrito)
+
     const itemCarrito: ItemCarrito = {
       id: producto.intProducto,
       nombre: producto.strNombre,
@@ -146,7 +157,7 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
       tieneDescuento: descuentoActivo,
       color: colorSeleccionado,
       talla: tallaSeleccionada,
-      imagen: producto.strImagen,
+      imagen: producto.jsonImagenes || "",
       categoria: producto.tbCategoria?.strNombre || "",
       cantidad: 1,
       stock: producto.intStock || 0, // 👈 AGREGADO: Incluir stock al agregar
