@@ -58,7 +58,7 @@ export default function OrderSummary({
           <div key={index} className="flex gap-3 pb-3 border-b border-gray-100 last:border-0">
             <div className="w-16 h-16 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden">
               <img
-                src="https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/iphone-17-pro-model-unselect-gallery-2-202509_GEO_MX?wid=5120&hei=2880&fmt=webp&qlt=90&.v=dU9qRExIQUlQTzVKeDd1V1dtUE1MUWFRQXQ2R0JQTk5udUZxTkR3ZVlpTEJBSVhDREVhQVF4eThVb2E3Y2VibTYrcU5CYm51V0Nra1JFSWxzZmF3NEE3b3pFWnhZZ2g0M0pRR0pEdHVSRUVtYkFqYmVJbENIK1gycDVvVjJtTEZhNHNsSjNVUDRGQ01ucUJrbVdONTBR&traceId=1"
+               src={item.imagen}
                 alt={item.nombre}
                 className="w-full h-full object-cover"
               />

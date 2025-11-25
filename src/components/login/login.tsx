@@ -9,7 +9,7 @@ export default function AuthPage() {
   const [formData, setFormData] = useState({
     strUsuario: '',
     strContra: '',
-    name: '',
+    strNombre: '',
     confirmPassword: ''
   });
   const [loading, setLoading] = useState(false);
@@ -82,20 +82,20 @@ export default function AuthPage() {
           return;
         }
 
-        console.log("Usuario completo:", result.data);
+        //console.log("Usuario completo:", result.data);
         const token = result.data.login.token;  
         const usuarioData = result.data.login.usuario;
         
         // Construir objeto de usuario con la estructura correcta
         const usuario = {
-          strNombre: usuarioData.strUsuario, // Por ahora usamos el usuario como nombre
+          strNombre: usuarioData.strNombre, // Usar el nombre real del servidor
           strUsuario: usuarioData.strUsuario,
           strCorreo: usuarioData.strEmail || usuarioData.strUsuario,
           strTelefono: usuarioData.strTelefono || "",
         };
 
-        
-        console.log("Token:", token);
+        console.log("✅ Usuario construido para login:", usuario);
+        //console.log("Token:", token);
         
         // Guardar en contexto
         login(token, usuario);
@@ -159,7 +159,7 @@ export default function AuthPage() {
         
         // Construir objeto de usuario con la estructura correcta
         const usuario = {
-          strNombre: usuarioData.strNombre || formData.name,
+          strNombre: usuarioData.strNombre || formData.strNombre,
           strUsuario: usuarioData.strCorreo || formData.strUsuario,
           strCorreo: usuarioData.strCorreo || formData.strUsuario,
           strTelefono: usuarioData.strTelefono || "",
@@ -378,8 +378,8 @@ export default function AuthPage() {
                   </label>
                   <input
                     type="text"
-                    name="name"
-                    value={formData.name}
+                    name="strNombre"
+                    value={formData.strNombre}
                     onChange={handleInputChange}
                     placeholder="Juan Pérez"
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all"
