@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface User {
+  intCliente?: number; // ID del cliente en la base de datos
   strNombre: string;
   strUsuario: string;
   strCorreo?: string;

@@ -9,6 +9,7 @@ import { aplicarPromocion } from "@/hooks/aplicarCodigoPromocion";
 import { useCheckoutForm } from "@/hooks/useCheckoutForm";
 import { useCheckoutCalculations } from "@/hooks/useCheckoutCalculations";
 import { useCheckoutSections } from "@/hooks/useCheckoutSections";
+import { useCheckoutSubmit } from "@/hooks/useCheckoutSubmit";
 import ContactInfoSection from "@/components/checkout/ContactInfoSection";
 import ShippingAddressSection from "@/components/checkout/ShippingAddressSection";
 import ShippingMethodSection from "@/components/checkout/ShippingMethodSection";
@@ -33,6 +34,9 @@ export default function ProcessBuyPage() {
     total, 
     obtenerPrecioFinal 
   } = useCheckoutCalculations(carrito as any, formData, discount);
+  
+  // Hook para procesar la compra
+  const { finalizarCompra, isProcessing, error: checkoutError } = useCheckoutSubmit();
 
   useEffect(() => {
     setMounted(true);
@@ -42,10 +46,19 @@ export default function ProcessBuyPage() {
     }
   }, [carrito, router]);
 
-  const handleFinalizarCompra = () => {
-    console.log("Datos de la compra:", formData);
-    alert("¡Compra procesada exitosamente!");
-    router.push("/");
+  const handleFinalizarCompra = async () => {
+    console.log("🛒 Iniciando proceso de compra...");
+    console.log("📋 Datos del formulario:", formData);
+    
+    const resultado = await finalizarCompra(formData as any, total);
+    
+    if (resultado.success) {
+      console.log("✅ Compra exitosa!", resultado);
+      // El hook ya redirige a la página de confirmación
+    } else {
+      console.error("❌ Error en la compra:", resultado.error);
+      alert(`Error: ${resultado.error}`);
+    }
   };
 
   if (!mounted) {
@@ -170,14 +183,34 @@ export default function ProcessBuyPage() {
 
             {/* Botón finalizar compra */}
             {completedSections.includes(4) && (
-              <motion.button
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                onClick={handleFinalizarCompra}
-                className="w-full py-4 rounded-lg bg-green-600 text-white font-bold text-lg hover:bg-green-700 transition-colors shadow-lg"
               >
-                Finalizar compra - ${total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
-              </motion.button>
+                {checkoutError && (
+                  <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+                    ❌ {checkoutError}
+                  </div>
+                )}
+                
+                <button
+                  onClick={handleFinalizarCompra}
+                  disabled={isProcessing}
+                  className="w-full py-4 rounded-lg bg-green-600 text-white font-bold text-lg hover:bg-green-700 transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isProcessing ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Procesando compra...
+                    </>
+                  ) : (
+                    `Finalizar compra - $${total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`
+                  )}
+                </button>
+              </motion.div>
             )}
           </div>
 

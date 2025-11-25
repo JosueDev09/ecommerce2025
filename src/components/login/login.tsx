@@ -88,6 +88,7 @@ export default function AuthPage() {
         
         // Construir objeto de usuario con la estructura correcta
         const usuario = {
+          intCliente: usuarioData.intCliente || usuarioData.intEmpleado, // ID del cliente/empleado
           strNombre: usuarioData.strNombre, // Usar el nombre real del servidor
           strUsuario: usuarioData.strUsuario,
           strCorreo: usuarioData.strEmail || usuarioData.strUsuario,
