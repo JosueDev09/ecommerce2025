@@ -65,14 +65,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // 🚪 Logout - limpiar todo
   const logout = () => {
+    // Obtener el usuario actual antes de limpiar
+    const currentUser = user?.strUsuario || "guest";
+    
     setToken(null);
     setUser(null);
     setIsGuest(false);
     
     if (typeof window !== "undefined") {
+      // Limpiar el carrito del usuario actual
+      const carritoKey = `carrito_${currentUser}`;
+      localStorage.removeItem(carritoKey);
+      
+      // Limpiar datos de autenticación
       localStorage.removeItem("authToken");
       localStorage.removeItem("authUser");
       localStorage.removeItem("isGuest");
+      
+      // console.log(`🚪 Sesión cerrada. Carrito de ${currentUser} limpiado.`);
     }
   };
 

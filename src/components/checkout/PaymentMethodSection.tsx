@@ -1,6 +1,8 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, CreditCard, Package, ChevronDown, ChevronUp } from "lucide-react";
+import { Check, CreditCard, Package, ChevronDown, ChevronUp, Plus, Trash2, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { usePaymentCards } from "@/hooks/usePaymentCards";
 import CreditCardForm from "./CreditCardForm";
 
 interface PaymentMethodSectionProps {
@@ -13,6 +15,7 @@ interface PaymentMethodSectionProps {
   cardType: "visa" | "mastercard" | "amex" | "unknown";
   esTarjetaElegibleMSI: boolean;
   total: number;
+  setFormData: (data: any) => void;
 }
 
 export default function PaymentMethodSection({
@@ -25,10 +28,107 @@ export default function PaymentMethodSection({
   cardType,
   esTarjetaElegibleMSI,
   total,
+  setFormData,
 }: PaymentMethodSectionProps) {
+  const { loading, error, cards, selectedCardId, selectCard, saveCard, deleteCard, hasCards } = usePaymentCards();
+  const [isAddingNewCard, setIsAddingNewCard] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null);
+
+  // Auto-completar con tarjeta seleccionada
+  useEffect(() => {
+    if (selectedCardId && cards.length > 0 && formData.metodoPago === "tarjeta" && !isAddingNewCard) {
+      const selectedCard = cards.find(card => card.intTarjeta === selectedCardId);
+      
+      if (selectedCard) {
+        console.log("💳 Auto-completando tarjeta seleccionada:", selectedCard);
+        setFormData((prev: any) => ({
+          ...prev,
+          numeroTarjeta: `**** **** **** ${selectedCard.strNumeroTarjeta}`,
+          nombreTarjeta: selectedCard.strNombreTarjeta,
+          tipoTarjeta: selectedCard.strTipoTarjeta,
+          fechaExpiracion: selectedCard.strFechaExpiracion,
+          usandoTarjetaGuardada: true,
+        }));
+      }
+    }
+  }, [selectedCardId, cards, formData.metodoPago, isAddingNewCard]);
+
   const isFormValid = formData.metodoPago && 
     (formData.metodoPago !== "tarjeta" || 
-      (formData.numeroTarjeta && formData.nombreTarjeta && formData.fechaExpiracion && formData.cvv && formData.tipoTarjeta));
+      (formData.usandoTarjetaGuardada || // Si usa tarjeta guardada, no requiere CVV
+        (formData.numeroTarjeta && formData.nombreTarjeta && formData.fechaExpiracion && formData.cvv && formData.tipoTarjeta)));
+
+  const handleSaveNewCard = async () => {
+    if (!formData.numeroTarjeta || !formData.nombreTarjeta || !formData.fechaExpiracion || !formData.tipoTarjeta) {
+      alert("Por favor completa todos los campos de la tarjeta");
+      return;
+    }
+
+    // Extraer solo los últimos 4 dígitos
+    const ultimosCuatroDigitos = formData.numeroTarjeta.replace(/\s/g, '').slice(-4);
+
+    const cardData = {
+      strNumeroTarjeta: ultimosCuatroDigitos,
+      strNombreTarjeta: formData.nombreTarjeta,
+      strTipoTarjeta: formData.tipoTarjeta,
+      strFechaExpiracion: formData.fechaExpiracion,
+    };
+
+    const savedCard = await saveCard(cardData, true);
+    
+    if (savedCard) {
+      console.log("✅ Tarjeta guardada exitosamente");
+      setIsAddingNewCard(false);
+      handleSectionComplete(4);
+    } else {
+      console.error("❌ Error al guardar la tarjeta");
+    }
+  };
+
+  const handleSelectCard = (intTarjeta: number) => {
+    selectCard(intTarjeta);
+    setIsAddingNewCard(false);
+    setFormData((prev: any) => ({
+      ...prev,
+      usandoTarjetaGuardada: true,
+    }));
+  };
+
+  const handleNewCard = () => {
+    setIsAddingNewCard(true);
+    // Limpiar el formulario
+    setFormData((prev: any) => ({
+      ...prev,
+      numeroTarjeta: "",
+      nombreTarjeta: "",
+      fechaExpiracion: "",
+      cvv: "",
+      tipoTarjeta: "",
+      mesesSinIntereses: "",
+      usandoTarjetaGuardada: false,
+    }));
+  };
+
+  const handleDeleteCard = async (intTarjeta: number) => {
+    const success = await deleteCard(intTarjeta);
+    if (success) {
+      console.log("✅ Tarjeta eliminada");
+      setShowDeleteConfirm(null);
+    }
+  };
+
+  const getCardIcon = (tipo: string) => {
+    switch (tipo.toLowerCase()) {
+      case "visa":
+        return "💳 Visa";
+      case "mastercard":
+        return "💳 Mastercard";
+      case "amex":
+        return "💳 Amex";
+      default:
+        return "💳";
+    }
+  };
 
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200">
@@ -134,22 +234,168 @@ export default function PaymentMethodSection({
               </div>
 
               {formData.metodoPago === "tarjeta" && (
-                <CreditCardForm
-                  formData={formData}
-                  handleInputChange={handleInputChange}
-                  cardType={cardType}
-                  esTarjetaElegibleMSI={esTarjetaElegibleMSI}
-                  total={total}
-                />
+                <div className="space-y-4">
+                  {/* Selector de tarjetas guardadas */}
+                  {hasCards && !isAddingNewCard && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-semibold text-gray-700">Mis tarjetas guardadas</h4>
+                        <button
+                          onClick={handleNewCard}
+                          className="text-sm text-[#3A6EA5] hover:text-[#2E5A8C] font-medium flex items-center gap-1"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Nueva tarjeta
+                        </button>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        {cards.map((card) => (
+                          <div key={card.intTarjeta} className="relative">
+                            <label
+                              className={`block p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                                selectedCardId === card.intTarjeta
+                                  ? "border-[#3A6EA5] bg-blue-50"
+                                  : "border-gray-200 hover:border-gray-300"
+                              }`}
+                            >
+                              <div className="flex items-start gap-3">
+                                <input
+                                  type="radio"
+                                  name="selectedCard"
+                                  checked={selectedCardId === card.intTarjeta}
+                                  onChange={() => handleSelectCard(card.intTarjeta!)}
+                                  className="mt-1"
+                                />
+                                <div className="flex-1">
+                                  <div className="flex items-center justify-between">
+                                    <p className="font-medium text-gray-900">
+                                      {getCardIcon(card.strTipoTarjeta)} •••• {card.strNumeroTarjeta}
+                                    </p>
+                                    <button
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        setShowDeleteConfirm(card.intTarjeta!);
+                                      }}
+                                      className="text-red-500 hover:text-red-700 p-1"
+                                      title="Eliminar tarjeta"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                  <p className="text-sm text-gray-600 mt-1">{card.strNombreTarjeta}</p>
+                                  <p className="text-xs text-gray-500">Expira: {card.strFechaExpiracion}</p>
+                                </div>
+                              </div>
+                            </label>
+                            
+                            {/* Modal de confirmación de eliminación */}
+                            {showDeleteConfirm === card.intTarjeta && (
+                              <div className="absolute inset-0 bg-white rounded-lg border-2 border-red-500 p-4 z-10">
+                                <p className="text-sm font-medium text-gray-900 mb-2">
+                                  ¿Eliminar esta tarjeta?
+                                </p>
+                                <p className="text-xs text-gray-600 mb-3">
+                                  Esta acción no se puede deshacer
+                                </p>
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => handleDeleteCard(card.intTarjeta!)}
+                                    disabled={loading}
+                                    className="flex-1 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 disabled:opacity-50"
+                                  >
+                                    {loading ? "Eliminando..." : "Eliminar"}
+                                  </button>
+                                  <button
+                                    onClick={() => setShowDeleteConfirm(null)}
+                                    className="flex-1 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300"
+                                  >
+                                    Cancelar
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Mensaje de error si hay */}
+                      {error && (
+                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                          {error}
+                        </div>
+                      )}
+
+                      {/* Botón continuar con tarjeta seleccionada */}
+                      <button
+                        onClick={() => handleSectionComplete(4)}
+                        disabled={!selectedCardId}
+                        className="w-full py-3 rounded-lg bg-[#3A6EA5] text-white font-semibold hover:bg-[#2E5A8C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Continuar con esta tarjeta
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Formulario de nueva tarjeta */}
+                  {(!hasCards || isAddingNewCard) && (
+                    <>
+                      {isAddingNewCard && (
+                        <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+                          <h4 className="text-sm font-semibold text-gray-700">Nueva tarjeta</h4>
+                          <button
+                            onClick={() => setIsAddingNewCard(false)}
+                            className="text-sm text-gray-500 hover:text-gray-700"
+                          >
+                            ← Volver a mis tarjetas
+                          </button>
+                        </div>
+                      )}
+
+                      <CreditCardForm
+                        formData={formData}
+                        handleInputChange={handleInputChange}
+                        cardType={cardType}
+                        esTarjetaElegibleMSI={esTarjetaElegibleMSI}
+                        total={total}
+                      />
+
+                      {/* Mensaje de error si hay */}
+                      {error && (
+                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                          {error}
+                        </div>
+                      )}
+
+                      <button
+                        onClick={handleSaveNewCard}
+                        disabled={!formData.numeroTarjeta || !formData.nombreTarjeta || !formData.fechaExpiracion || !formData.cvv || loading}
+                        className="w-full py-3 rounded-lg bg-[#3A6EA5] text-white font-semibold hover:bg-[#2E5A8C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      >
+                        {loading ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <span>Continuando con el pago...</span>
+                          </>
+                        ) : (
+                          <span>Continuar con el pago</span>
+                        )}
+                      </button>
+                    </>
+                  )}
+                </div>
               )}
 
-              <button
-                onClick={() => handleSectionComplete(4)}
-                disabled={!isFormValid}
-                className="w-full py-3 rounded-lg bg-[#3A6EA5] text-white font-semibold hover:bg-[#2E5A8C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Confirmar método de pago
-              </button>
+              {/* Botón para otros métodos de pago (PayPal, Efectivo) */}
+              {formData.metodoPago && formData.metodoPago !== "tarjeta" && (
+                <button
+                  onClick={() => handleSectionComplete(4)}
+                  disabled={!isFormValid}
+                  className="w-full py-3 rounded-lg bg-[#3A6EA5] text-white font-semibold hover:bg-[#2E5A8C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Confirmar método de pago
+                </button>
+              )}
             </div>
           </motion.div>
         )}

@@ -95,7 +95,7 @@ export default function AuthPage() {
           strTelefono: usuarioData.strTelefono || "",
         };
 
-        console.log("✅ Usuario construido para login:", usuario);
+       // console.log("✅ Usuario construido para login:", usuario);
         //console.log("Token:", token);
         
         // Guardar en contexto
@@ -166,7 +166,7 @@ export default function AuthPage() {
           strTelefono: usuarioData.strTelefono || "",
         };
         
-        console.log("Usuario registrado:", usuario);
+      //  console.log("Usuario registrado:", usuario);
         
         // Guardar en contexto
         login(token, usuario);

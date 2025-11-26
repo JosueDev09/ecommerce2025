@@ -22,7 +22,7 @@ export default function DashboardPage() {
   const { isAuthenticated, isGuest, logout,user } = useAuth();
   const [mounted, setMounted] = useState(false);
 
-  console.log("🔍 DashboardPage - Usuario:", user)
+ // console.log("🔍 DashboardPage - Usuario:", user)
   useEffect(() => {
     setMounted(true);
   }, []);

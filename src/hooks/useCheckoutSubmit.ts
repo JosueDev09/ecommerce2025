@@ -132,9 +132,16 @@ export const useCheckoutSubmit = () => {
   };
 
   /**
-   * PASO 3: Crear pedido con items
+   * PASO 3: Crear pedido con items, dirección y método de envío
    */
-  const crearPedido = async (intCliente: number, total: number) => {
+  const crearPedido = async (
+    intCliente: number, 
+    intDireccion: number | null,
+    formData: CheckoutData,
+    subtotal: number,
+    costoEnvio: number,
+    total: number
+  ) => {
     try {
       // Construir items del pedido desde el carrito
       const items = carrito.map((item) => ({
@@ -156,15 +163,23 @@ export const useCheckoutSubmit = () => {
             mutation CrearPedido($data: PedidoInput!) {
               crearPedido(data: $data) {
                 intPedido
+                dblSubtotal
+                dblCostoEnvio
                 dblTotal
                 strEstado
+                strMetodoEnvio
               }
             }
           `,
           variables: {
             data: {
               intCliente,
+              intDireccion,
+              dblSubtotal: subtotal,
+              dblCostoEnvio: costoEnvio,
               dblTotal: total,
+              strMetodoEnvio: formData.metodoEnvio,
+              strNotasEnvio: formData.referencias || null,
               items,
             },
           },
@@ -244,7 +259,7 @@ export const useCheckoutSubmit = () => {
   /**
    * FUNCIÓN PRINCIPAL: Procesar toda la compra
    */
-  const finalizarCompra = async (formData: CheckoutData, total: number) => {
+  const finalizarCompra = async (formData: CheckoutData, subtotal: number, costoEnvio: number, total: number) => {
     setIsProcessing(true);
     setError(null);
 
@@ -257,7 +272,6 @@ export const useCheckoutSubmit = () => {
         intCliente = await crearClienteInvitado(formData);
       } else {
         // Cliente ya existe, obtener su ID
-        // Asumiendo que tienes el ID en el contexto de auth
         intCliente = user?.intCliente || 0;
         
         if (!intCliente) {
@@ -267,14 +281,20 @@ export const useCheckoutSubmit = () => {
 
       console.log("✅ Cliente ID:", intCliente);
 
-      // PASO 2: Guardar dirección
-      console.log("📍 Guardando dirección...");
-      const intDireccion = await guardarDireccion(intCliente, formData);
-      console.log("✅ Dirección guardada:", intDireccion);
+      // PASO 2: Guardar dirección (solo si no es "recoger en tienda")
+      let intDireccion: number | null = null;
+      
+      if (formData.metodoEnvio !== "recoger") {
+        console.log("📍 Guardando dirección...");
+        intDireccion = await guardarDireccion(intCliente, formData);
+        console.log("✅ Dirección guardada:", intDireccion);
+      } else {
+        console.log("🏪 Pedido para recoger en tienda, sin dirección de envío");
+      }
 
-      // PASO 3: Crear pedido
+      // PASO 3: Crear pedido con método de envío
       console.log("🛒 Creando pedido...");
-      const intPedido = await crearPedido(intCliente, total);
+      const intPedido = await crearPedido(intCliente, intDireccion, formData, subtotal, costoEnvio, total);
       console.log("✅ Pedido creado:", intPedido);
 
       // PASO 4: Procesar pago

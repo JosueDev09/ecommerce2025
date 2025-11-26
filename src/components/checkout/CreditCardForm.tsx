@@ -148,7 +148,7 @@ export default function CreditCardForm({
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all text-base"
               >
-                <option value="">Pago de contado</option>
+                <option value="0">Pago de contado</option>
                 <option value="3">3 meses sin intereses</option>
                 <option value="6">6 meses sin intereses</option>
                 <option value="9">9 meses sin intereses</option>

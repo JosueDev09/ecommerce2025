@@ -49,8 +49,11 @@ export default function ProcessBuyPage() {
   const handleFinalizarCompra = async () => {
     console.log("🛒 Iniciando proceso de compra...");
     console.log("📋 Datos del formulario:", formData);
+    console.log("💰 Subtotal:", subtotal);
+    console.log("🚚 Costo de envío:", envio);
+    console.log("💵 Total:", total);
     
-    const resultado = await finalizarCompra(formData as any, total);
+    const resultado = await finalizarCompra(formData as any, subtotal, envio, total);
     
     if (resultado.success) {
       console.log("✅ Compra exitosa!", resultado);
@@ -157,6 +160,7 @@ export default function ProcessBuyPage() {
               completedSections={completedSections}
               toggleSection={toggleSection}
               handleSectionComplete={handleSectionComplete}
+              setFormData={setFormData}
             />
 
             <ShippingMethodSection
@@ -179,6 +183,7 @@ export default function ProcessBuyPage() {
               cardType={cardType}
               esTarjetaElegibleMSI={esTarjetaElegibleMSI}
               total={total}
+              setFormData={setFormData}
             />
 
             {/* Botón finalizar compra */}

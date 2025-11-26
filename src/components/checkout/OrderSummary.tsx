@@ -39,7 +39,7 @@ export default function OrderSummary({
 }: OrderSummaryProps) {
   const pagoMensual = mesesSinIntereses && mesesSinIntereses > 0 
     ? total / mesesSinIntereses 
-    : 0;
+    : "";
 
   return (
     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 sticky top-6">
@@ -170,7 +170,8 @@ export default function OrderSummary({
           </div>
 
           {/* Información de MSI */}
-          {metodoPago === 'tarjeta' && mesesSinIntereses && mesesSinIntereses > 0 && (
+         
+          {metodoPago === 'tarjeta' && (mesesSinIntereses && mesesSinIntereses > 0) && (
             <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm font-semibold text-blue-900 mb-1">
                 Meses Sin Intereses

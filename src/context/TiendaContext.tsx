@@ -2,6 +2,7 @@
 import React, { createContext, use, useContext, useEffect, useState } from "react";
 import { Productos, ItemCarrito } from "@/types/types";
 import { formatFecha } from "@/utils/formatearFechas";
+import { useAuth } from "./AuthContext";
 
 interface TiendaContextType {
   productos: Productos[];
@@ -15,6 +16,7 @@ interface TiendaContextType {
   handleVariantChange: (productId: number, color: string | null, talla: string | null) => void;
   getCantidadPorProducto: (id: number) => number;
   getResumenCarrito: () => Array<{ nombre: string; cantidad: number; color: string | null; talla: string | null }>;
+  limpiarCarrito: () => void;
 }
 
 const TiendaContext = createContext<TiendaContextType | undefined>(undefined);
@@ -25,21 +27,74 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
   const [carrito, setCarrito] = useState<ItemCarrito[]>([]);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   // Cargar carrito desde localStorage solo en el cliente
   useEffect(() => {
     setMounted(true);
     if (typeof window !== "undefined") {
       try {
-        const guardado = localStorage.getItem("carrito");
+        // Obtener el usuario actual del localStorage
+        const storedUser = localStorage.getItem("authUser");
+        const userId = storedUser ? JSON.parse(storedUser).strUsuario : "guest";
+        setCurrentUserId(userId);
+
+        // Cargar el carrito específico del usuario
+        const carritoKey = `carrito_${userId}`;
+        const guardado = localStorage.getItem(carritoKey);
         if (guardado) {
           setCarrito(JSON.parse(guardado));
+        } else {
+          setCarrito([]); // Asegurar que esté vacío si no hay datos
         }
       } catch (error) {
         console.error("Error al cargar carrito:", error);
       }
     }
   }, []);
+
+  // Detectar cambio de usuario y limpiar carrito (escuchar cambios en localStorage)
+  useEffect(() => {
+    if (typeof window === "undefined" || !mounted) return;
+
+    const checkUserChange = () => {
+      const storedUser = localStorage.getItem("authUser");
+      const userId = storedUser ? JSON.parse(storedUser).strUsuario : "guest";
+
+      // Si el usuario cambió, actualizar el carrito
+      if (currentUserId && userId !== currentUserId) {
+       // console.log(`👤 Usuario cambió de ${currentUserId} a ${userId}. Actualizando carrito...`);
+        setCurrentUserId(userId);
+
+        // Cargar el carrito del nuevo usuario
+        const carritoKey = `carrito_${userId}`;
+        const guardado = localStorage.getItem(carritoKey);
+        if (guardado) {
+          setCarrito(JSON.parse(guardado));
+        } else {
+          setCarrito([]); // Carrito vacío para el nuevo usuario
+        }
+      }
+      
+      // Si se eliminó el authUser (logout), limpiar carrito
+      if (!storedUser && currentUserId !== "guest") {
+       // console.log(`🚪 Usuario cerró sesión. Limpiando carrito...`);
+        setCurrentUserId("guest");
+        setCarrito([]);
+      }
+    };
+
+    // Verificar cambios cada 500ms (detecta cambios de logout/login)
+    const interval = setInterval(checkUserChange, 500);
+
+    // También escuchar eventos de storage
+    window.addEventListener("storage", checkUserChange);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("storage", checkUserChange);
+    };
+  }, [mounted, currentUserId]);
 
   // 🛒 Cargar productos desde GraphQL
   useEffect(() => {
@@ -101,14 +156,15 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
 
-  // 💾 Guardar carrito cada vez que cambia
+  // 💾 Guardar carrito cada vez que cambia (asociado al usuario)
   useEffect(() => {
     // Solo guardar si el componente ya está montado y no es la carga inicial
-    if (mounted && typeof window !== "undefined") {
-      localStorage.setItem("carrito", JSON.stringify(carrito));
-     // console.log("🛒 Carrito actualizado en localStorage:", carrito);
+    if (mounted && typeof window !== "undefined" && currentUserId) {
+      const carritoKey = `carrito_${currentUserId}`;
+      localStorage.setItem(carritoKey, JSON.stringify(carrito));
+   //   console.log(`🛒 Carrito guardado para usuario ${currentUserId}:`, carrito.length, "items");
     }
-  }, [carrito, mounted]);
+  }, [carrito, mounted, currentUserId]);
 
   // 🎨 Manejo de variantes (color/talla)
   const handleVariantChange = (productId: number, color: string | null, talla: string | null) => {
@@ -186,7 +242,7 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
             : p
         );
       } else {
-        console.log(`✅ Producto "${producto.strNombre}" agregado al carrito`);
+       // console.log(`✅ Producto "${producto.strNombre}" agregado al carrito`);
         return [...prev, itemCarrito];
       }
     });
@@ -208,7 +264,7 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
         if (p.id === id && p.color === color && p.talla === talla) {
           // Validar que no exceda el stock
           if (p.cantidad >= (p.stock || 0)) {
-            console.warn(`⚠️ Stock máximo alcanzado para "${p.nombre}"`);
+          //  console.warn(`⚠️ Stock máximo alcanzado para "${p.nombre}"`);
             return p; // No aumentar
           }
           if(p.cantidad < 3){
@@ -231,7 +287,7 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
         if (p.id === id && p.color === color && p.talla === talla) {
           // Si la cantidad es 1, eliminamos el producto
           if (p.cantidad === 1) {
-            console.log(`🗑️ Producto eliminado (cantidad llegó a 0)`);
+           // console.log(`🗑️ Producto eliminado (cantidad llegó a 0)`);
             return null;
           }
           return { ...p, cantidad: p.cantidad - 1 };
@@ -258,6 +314,16 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
     }));
   };
 
+  // 🧹 Limpiar carrito
+  const limpiarCarrito = () => {
+    setCarrito([]);
+    if (typeof window !== "undefined" && currentUserId) {
+      const carritoKey = `carrito_${currentUserId}`;
+      localStorage.removeItem(carritoKey);
+      console.log(`🧹 Carrito limpiado para usuario ${currentUserId}`);
+    }
+  };
+
   const validarCodigoDescuento = (codigo: string) => {
     // Lógica para validar el código de descuento
     
@@ -280,6 +346,7 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
         handleVariantChange,
         getCantidadPorProducto,
         getResumenCarrito,
+        limpiarCarrito,
       }}
     >
       {children}
