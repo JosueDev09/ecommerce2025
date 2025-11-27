@@ -108,11 +108,15 @@ export const useCheckoutSubmit = () => {
           variables: {
             data: {
               intCliente,
-              strCalle: `${formData.calle} ${formData.numeroExterior}${formData.numeroInterior ? ' Int. ' + formData.numeroInterior : ''}, ${formData.colonia}`,
+              strCalle: formData.calle,
+              strNumeroExterior: formData.numeroExterior,
+              strNumeroInterior: formData.numeroInterior || "",
+              strColonia: formData.colonia,
               strCiudad: formData.ciudad,
               strEstado: formData.estado,
               strCP: formData.codigoPostal,
               strPais: "México",
+              strReferencias: formData.referencias || "",
             },
           },
         }),
@@ -200,15 +204,115 @@ export const useCheckoutSubmit = () => {
   };
 
   /**
-   * PASO 4: Procesar pago (MercadoPago u otro)
+   * PASO 4: Iniciar pago con MercadoPago
    */
-  const procesarPago = async (
+  const iniciarPagoMercadoPago = async (
     intPedido: number,
+    intCliente: number,
+    intDireccion: number | null,
     formData: CheckoutData,
+    subtotal: number,
+    costoEnvio: number,
     total: number
   ) => {
     try {
-      // Aquí integrarías con MercadoPago o tu gateway de pago
+      console.log("🔵 Preparando datos para MercadoPago...");
+
+      // Construir items para MercadoPago desde el carrito
+      const items = carrito.map((item) => ({
+        id: item.id.toString(),
+        title: item.nombre,
+        description: item.nombre,
+        picture_url: item.imagen || "",
+        category_id: "others",
+        quantity: item.cantidad,
+        unit_price: item.tieneDescuento && item.precioDescuento 
+          ? item.precioDescuento 
+          : item.precio,
+      }));
+
+      // Construir datos de envío si aplica
+      const shipments = formData.metodoEnvio !== "recoger" ? {
+        cost: costoEnvio,
+        mode: formData.metodoEnvio === "express" ? "express" : "standard",
+        receiver_address: {
+          zip_code: formData.codigoPostal,
+          street_name: formData.calle,
+          street_number: formData.numeroExterior,
+          floor: formData.numeroInterior || "",
+          apartment: "",
+          city_name: formData.ciudad,
+          state_name: formData.estado,
+          country_name: "México",
+        },
+      } : null;
+
+      // Datos del comprador
+      const payer = {
+        name: formData.nombre,
+        surname: formData.apellido || "",
+        email: formData.email,
+        phone: {
+          number: formData.telefono,
+        },
+        address: formData.metodoEnvio !== "recoger" ? {
+          zip_code: formData.codigoPostal,
+          street_name: formData.calle,
+          street_number: formData.numeroExterior,
+        } : undefined,
+      };
+
+      // Payload completo para enviar al backend (con formato str* que espera el backend)
+      const payloadParaBackend = {
+        intPedido,
+        intCliente,
+        intDireccion,
+        formData: {
+          strNombre: formData.nombre,
+          strApellido: formData.apellido || "",
+          strEmail: formData.email,
+          strTelefono: formData.telefono,
+          strCalle: formData.calle,
+          strNumeroExterior: formData.numeroExterior,
+          strNumeroInterior: formData.numeroInterior || "",
+          strColonia: formData.colonia,
+          strCiudad: formData.ciudad,
+          strEstado: formData.estado,
+          strCodigoPostal: formData.codigoPostal,
+          strReferencias: formData.referencias || "",
+          strMetodoEnvio: formData.metodoEnvio,
+          strMetodoPago: formData.metodoPago,
+          strNumeroTarjetaUltimos4: formData.numeroTarjeta?.replace(/\s/g, '').slice(-4),
+          strNombreTarjeta: formData.nombreTarjeta || "",
+          strTipoTarjeta: formData.tipoTarjeta || "",
+          strFechaExpiracion: formData.fechaExpiracion || "",
+          intMesesSinIntereses: formData.mesesSinIntereses || "1",
+        },
+        montos: {
+          subtotal,
+          costoEnvio,
+          total,
+        },
+        items,
+        payer,
+        shipments,
+        metadata: {
+          pedido_id: intPedido,
+          cliente_id: intCliente,
+          metodo_envio: formData.metodoEnvio,
+          metodo_pago: formData.metodoPago,
+          meses_sin_intereses: formData.mesesSinIntereses || 1,
+        },
+      };
+
+      console.log("📦 Payload para backend:", {
+        pedidoId: intPedido,
+        itemsCount: items.length,
+        total,
+        metodoPago: formData.metodoPago,
+      });
+
+      // Enviar al backend GraphQL para crear preferencia de MercadoPago
       const response = await fetch("http://localhost:3000/api/graphql", {
         method: "POST",
         headers: {
@@ -217,28 +321,17 @@ export const useCheckoutSubmit = () => {
         },
         body: JSON.stringify({
           query: `
-            mutation CrearPago($data: PagoInput!) {
-              crearPago(data: $data) {
+            mutation CrearPreferenciaMercadoPago($data: PreferenciaMercadoPagoInput!) {
+              crearPreferenciaMercadoPago(data: $data) {
                 intPago
+                strPreferenciaId
+                strInitPoint
                 strEstado
-                strMercadoPagoId
               }
             }
           `,
           variables: {
-            data: {
-              intPedido,
-              strMetodoPago: formData.metodoPago,
-              dblMonto: total,
-              intCuotas: formData.mesesSinIntereses 
-                ? parseInt(formData.mesesSinIntereses) 
-                : null,
-              jsonDetallesPago: JSON.stringify({
-                numeroTarjeta: formData.numeroTarjeta?.slice(-4), // Solo últimos 4 dígitos
-                nombreTarjeta: formData.nombreTarjeta,
-                tipoTarjeta: formData.tipoTarjeta,
-              }),
-            },
+            data: payloadParaBackend,
           },
         }),
       });
@@ -249,9 +342,19 @@ export const useCheckoutSubmit = () => {
         throw new Error(result.errors[0].message);
       }
 
-      return result.data.crearPago;
+      const pagoData = result.data.crearPreferenciaMercadoPago;
+      
+      console.log("✅ Preferencia de MercadoPago creada:", pagoData.strPreferenciaId);
+      
+      // Redirigir a MercadoPago Checkout
+      if (pagoData.strInitPoint) {
+        console.log("🔵 Redirigiendo a MercadoPago...");
+        window.location.href = pagoData.strInitPoint;
+      }
+
+      return pagoData;
     } catch (error: any) {
-      console.error("Error al procesar pago:", error);
+      console.error("❌ Error al iniciar pago con MercadoPago:", error);
       throw error;
     }
   };
@@ -297,10 +400,18 @@ export const useCheckoutSubmit = () => {
       const intPedido = await crearPedido(intCliente, intDireccion, formData, subtotal, costoEnvio, total);
       console.log("✅ Pedido creado:", intPedido);
 
-      // PASO 4: Procesar pago
-      console.log("💳 Procesando pago...");
-      const pago = await procesarPago(intPedido, formData, total);
-      console.log("✅ Pago procesado:", pago);
+      // PASO 4: Iniciar pago con MercadoPago
+      console.log("💳 Iniciando pago con MercadoPago...");
+      const pago = await iniciarPagoMercadoPago(
+        intPedido, 
+        intCliente, 
+        intDireccion, 
+        formData, 
+        subtotal, 
+        costoEnvio, 
+        total
+      );
+      console.log("✅ Pago iniciado:", pago);
 
       // TODO: Limpiar carrito después de compra exitosa
       // clearCarrito();
