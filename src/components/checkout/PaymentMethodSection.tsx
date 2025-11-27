@@ -40,14 +40,20 @@ export default function PaymentMethodSection({
       const selectedCard = cards.find(card => card.intTarjeta === selectedCardId);
       
       if (selectedCard) {
-        console.log("💳 Auto-completando tarjeta seleccionada:", selectedCard);
+        console.log("💳 Auto-completando tarjeta guardada:");
+        console.log("   - ID:", selectedCard.intTarjeta);
+        console.log("   - Número guardado:", selectedCard.strNumeroTarjeta);
+        console.log("   - Longitud:", selectedCard.strNumeroTarjeta?.length);
+        console.log("   - Últimos 4:", selectedCard.strNumeroTarjeta?.slice(-4));
+        
         setFormData((prev: any) => ({
           ...prev,
-          numeroTarjeta: `**** **** **** ${selectedCard.strNumeroTarjeta}`,
+          numeroTarjeta: selectedCard.strNumeroTarjeta, // Número completo del backend
           nombreTarjeta: selectedCard.strNombreTarjeta,
           tipoTarjeta: selectedCard.strTipoTarjeta,
           fechaExpiracion: selectedCard.strFechaExpiracion,
           usandoTarjetaGuardada: true,
+          idTarjetaGuardada: selectedCard.intTarjeta,
         }));
       }
     }
@@ -55,33 +61,81 @@ export default function PaymentMethodSection({
 
   const isFormValid = formData.metodoPago && 
     (formData.metodoPago !== "tarjeta" || 
-      (formData.usandoTarjetaGuardada || // Si usa tarjeta guardada, no requiere CVV
-        (formData.numeroTarjeta && formData.nombreTarjeta && formData.fechaExpiracion && formData.cvv && formData.tipoTarjeta)));
+      (formData.usandoTarjetaGuardada && formData.cvv && formData.cvv.length >= 3) || // Si usa tarjeta guardada, requiere CVV
+        (formData.numeroTarjeta && formData.nombreTarjeta && formData.fechaExpiracion && formData.cvv && formData.tipoTarjeta));
 
   const handleSaveNewCard = async () => {
-    if (!formData.numeroTarjeta || !formData.nombreTarjeta || !formData.fechaExpiracion || !formData.tipoTarjeta) {
+    if (!formData.numeroTarjeta || !formData.nombreTarjeta || !formData.fechaExpiracion || !formData.tipoTarjeta || !formData.cvv) {
       alert("Por favor completa todos los campos de la tarjeta");
       return;
     }
 
-    // Extraer solo los últimos 4 dígitos
-    const ultimosCuatroDigitos = formData.numeroTarjeta.replace(/\s/g, '').slice(-4);
+    try {
+      // 1. Tokenizar la tarjeta con MercadoPago antes de guardar
+      const { loadMercadoPago } = await import("@mercadopago/sdk-js");
+      await loadMercadoPago();
+      
+      const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY;
+      if (!publicKey) {
+        alert("Error de configuración: Clave pública de MercadoPago no encontrada");
+        return;
+      }
 
-    const cardData = {
-      strNumeroTarjeta: ultimosCuatroDigitos,
-      strNombreTarjeta: formData.nombreTarjeta,
-      strTipoTarjeta: formData.tipoTarjeta,
-      strFechaExpiracion: formData.fechaExpiracion,
-    };
+      const mp = new (window as any).MercadoPago(publicKey);
+      
+      // Parsear fecha de expiración
+      const [mes, anio] = formData.fechaExpiracion.split("/");
+      
+      // 🔥 IMPORTANTE: Limpiar el número de tarjeta (solo dígitos) para MercadoPago
+      const numeroLimpio = formData.numeroTarjeta.replace(/\D/g, '');
 
-    const savedCard = await saveCard(cardData, true);
-    
-    if (savedCard) {
-      console.log("✅ Tarjeta guardada exitosamente");
-      setIsAddingNewCard(false);
-      handleSectionComplete(4);
-    } else {
-      console.error("❌ Error al guardar la tarjeta");
+      console.log("🔐 Tokenizando tarjeta para guardar...");
+      console.log("📋 Número limpio (solo dígitos):", numeroLimpio);
+      
+      // Crear token con número limpio (solo dígitos)
+      const cardToken = await mp.createCardToken({
+        cardNumber: numeroLimpio, // ✅ Solo dígitos sin espacios
+        cardholderName: formData.nombreTarjeta,
+        cardExpirationMonth: mes,
+        cardExpirationYear: anio,
+        securityCode: formData.cvv,
+        identificationType: "RFC",
+        identificationNumber: "XAXX010101000"
+      });
+
+      console.log("✅ Token generado para guardar:", cardToken.id);
+
+      // 2. Guardar tarjeta con el número completo (para poder regenerar token)
+      const cardData = {
+        strNumeroTarjeta: numeroLimpio, // 💾 Número completo sin espacios
+        strNombreTarjeta: formData.nombreTarjeta,
+        strTipoTarjeta: formData.tipoTarjeta,
+        strFechaExpiracion: formData.fechaExpiracion,
+        strTokenMercadoPago: cardToken.id, // 🔐 Guardar el token
+      };
+
+      console.log("💾 Guardando tarjeta con estos datos:", {
+        strNumeroTarjeta: cardData.strNumeroTarjeta,
+        longitudNumero: cardData.strNumeroTarjeta.length,
+        ultimos4: cardData.strNumeroTarjeta.slice(-4),
+        strNombreTarjeta: cardData.strNombreTarjeta,
+        strTipoTarjeta: cardData.strTipoTarjeta,
+        strFechaExpiracion: cardData.strFechaExpiracion,
+        strTokenMercadoPago: cardData.strTokenMercadoPago ? "Token presente: " + cardData.strTokenMercadoPago : "NO PRESENTE"
+      });
+
+      const savedCard = await saveCard(cardData, true);
+      
+      if (savedCard) {
+        console.log("✅ Tarjeta y token guardados exitosamente");
+        setIsAddingNewCard(false);
+        handleSectionComplete(4);
+      } else {
+        console.error("❌ Error al guardar la tarjeta");
+      }
+    } catch (error: any) {
+      console.error("❌ Error al tokenizar/guardar tarjeta:", error);
+      alert("Error al procesar la tarjeta. Verifica los datos ingresados.");
     }
   };
 
@@ -90,6 +144,7 @@ export default function PaymentMethodSection({
     setIsAddingNewCard(false);
     setFormData((prev: any) => ({
       ...prev,
+      cvv: "", // Limpiar CVV al cambiar de tarjeta
       usandoTarjetaGuardada: true,
     }));
   };
@@ -112,7 +167,7 @@ export default function PaymentMethodSection({
   const handleDeleteCard = async (intTarjeta: number) => {
     const success = await deleteCard(intTarjeta);
     if (success) {
-      console.log("✅ Tarjeta eliminada");
+    //  console.log("✅ Tarjeta eliminada");
       setShowDeleteConfirm(null);
     }
   };
@@ -250,7 +305,11 @@ export default function PaymentMethodSection({
                       </div>
                       
                       <div className="space-y-2">
-                        {cards.map((card) => (
+                        {cards.map((card) => {
+                          // Mostrar solo últimos 4 dígitos en UI (por seguridad)
+                          const ultimos4Digitos = card.strNumeroTarjeta.replace(/\D/g, '').slice(-4);
+                          
+                          return (
                           <div key={card.intTarjeta} className="relative">
                             <label
                               className={`block p-4 rounded-lg border-2 cursor-pointer transition-all ${
@@ -270,7 +329,7 @@ export default function PaymentMethodSection({
                                 <div className="flex-1">
                                   <div className="flex items-center justify-between">
                                     <p className="font-medium text-gray-900">
-                                      {getCardIcon(card.strTipoTarjeta)} •••• {card.strNumeroTarjeta}
+                                      {getCardIcon(card.strTipoTarjeta)} •••• {ultimos4Digitos}
                                     </p>
                                     <button
                                       onClick={(e) => {
@@ -316,7 +375,8 @@ export default function PaymentMethodSection({
                               </div>
                             )}
                           </div>
-                        ))}
+                        );
+                        })}
                       </div>
 
                       {/* Mensaje de error si hay */}
@@ -326,10 +386,42 @@ export default function PaymentMethodSection({
                         </div>
                       )}
 
+                      {/* Campo CVV para tarjeta seleccionada */}
+                      {selectedCardId && (
+                        <div className="space-y-3">
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <p className="text-sm text-gray-700 mb-3">
+                              🔒 Por seguridad, ingresa el CVV de tu tarjeta para continuar
+                            </p>
+                            <p className="text-xs text-gray-600 mb-3">
+                              � Usaremos el token guardado de esta tarjeta para procesar el pago de forma segura
+                            </p>
+                            <div className="max-w-xs">
+                              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                                CVV <span className="text-red-500">*</span>
+                              </label>
+                              <input
+                                type="text"
+                                name="cvv"
+                                value={formData.cvv || ""}
+                                onChange={handleInputChange}
+                                placeholder="123"
+                                maxLength={4}
+                                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm"
+                                required
+                              />
+                              <p className="text-xs text-gray-500 mt-1">
+                                Los 3 o 4 dígitos en el reverso de tu tarjeta
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                       {/* Botón continuar con tarjeta seleccionada */}
                       <button
                         onClick={() => handleSectionComplete(4)}
-                        disabled={!selectedCardId}
+                        disabled={!selectedCardId || !formData.cvv || formData.cvv.length < 3}
                         className="w-full py-3 rounded-lg bg-[#3A6EA5] text-white font-semibold hover:bg-[#2E5A8C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Continuar con esta tarjeta

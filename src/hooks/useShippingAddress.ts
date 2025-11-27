@@ -62,7 +62,7 @@ export function useShippingAddress() {
       const result = await response.json();
       
       if (result.errors) {
-        console.log("📍 No se encontraron direcciones");
+      
         setAddresses([]);
       } else if (result.data?.obtenerDireccionesCliente) {
         const loadedAddresses = result.data.obtenerDireccionesCliente;
@@ -72,7 +72,7 @@ export function useShippingAddress() {
           ? loadedAddresses 
           : [loadedAddresses].filter(Boolean); // Convertir objeto único a array
         
-        console.log("✅ Direcciones cargadas:", addressArray);
+   
         setAddresses(addressArray);
         
         // Seleccionar la primera dirección por defecto
@@ -81,7 +81,7 @@ export function useShippingAddress() {
         }
       }
     } catch (err) {
-      console.log("📍 Sin direcciones previas");
+    
       setAddresses([]);
     } finally {
       setLoading(false);
@@ -171,7 +171,6 @@ export function useShippingAddress() {
       const savedAddress = result.data?.crearDireccion || result.data?.actualizarDireccion;
       
       if (savedAddress) {
-        console.log("✅ Dirección guardada:", savedAddress);
         
         // Recargar todas las direcciones
         if (user?.intCliente) {

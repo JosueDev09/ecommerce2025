@@ -9,6 +9,7 @@ interface PaymentCard {
   strNombreTarjeta: string;
   strTipoTarjeta: string; // visa, mastercard, amex
   strFechaExpiracion: string; // MM/YY
+  strTokenMercadoPago?: string; // Token de MercadoPago
   datCreacion?: string;
 }
 
@@ -44,6 +45,7 @@ export function usePaymentCards() {
                 strTipoTarjeta
                 strFechaExpiracion
                 datCreacion
+                strTokenMercadoPago
               }
             }
           `,
@@ -54,7 +56,7 @@ export function usePaymentCards() {
       const result = await response.json();
       
       if (result.errors) {
-        console.log("💳 No se encontraron tarjetas");
+       
         setCards([]);
       } else if (result.data?.obtenerTarjetasCliente) {
         const loadedCards = result.data.obtenerTarjetasCliente;
@@ -63,8 +65,7 @@ export function usePaymentCards() {
         const cardsArray = Array.isArray(loadedCards) 
           ? loadedCards 
           : [loadedCards].filter(Boolean);
-        
-        console.log("✅ Tarjetas cargadas:", cardsArray);
+     
         setCards(cardsArray);
         
         // Seleccionar la primera tarjeta por defecto
@@ -105,6 +106,7 @@ export function usePaymentCards() {
             strTipoTarjeta
             strFechaExpiracion
             datCreacion
+            strTokenMercadoPago
           }
         }
       `;
@@ -116,8 +118,11 @@ export function usePaymentCards() {
           strNombreTarjeta: cardData.strNombreTarjeta,
           strTipoTarjeta: cardData.strTipoTarjeta,
           strFechaExpiracion: cardData.strFechaExpiracion,
+          strTokenMercadoPago: cardData.strTokenMercadoPago,
         },
       };
+
+     
 
       const response = await fetch("http://localhost:3000/api/graphql", {
         method: "POST",
@@ -139,7 +144,7 @@ export function usePaymentCards() {
       const savedCard = result.data?.crearTarjeta;
       
       if (savedCard) {
-        console.log("✅ Tarjeta guardada:", savedCard);
+      
         
         // Recargar todas las tarjetas
         if (user?.intCliente) {

@@ -15,6 +15,7 @@ import ShippingAddressSection from "@/components/checkout/ShippingAddressSection
 import ShippingMethodSection from "@/components/checkout/ShippingMethodSection";
 import PaymentMethodSection from "@/components/checkout/PaymentMethodSection";
 import OrderSummary from "@/components/checkout/OrderSummary";
+import PaymentLoadingSteps from "@/components/checkout/PaymentLoadingSteps";
 
 export default function ProcessBuyPage() {
   const router = useRouter();
@@ -36,7 +37,8 @@ export default function ProcessBuyPage() {
   } = useCheckoutCalculations(carrito as any, formData, discount);
   
   // Hook para procesar la compra
-  const { finalizarCompra, isProcessing, error: checkoutError } = useCheckoutSubmit();
+  const { finalizarCompra, isProcessing, loaderStates, error: checkoutError } = useCheckoutSubmit();
+  const [showLoadingSteps, setShowLoadingSteps] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -53,15 +55,30 @@ export default function ProcessBuyPage() {
     console.log("🚚 Costo de envío:", envio);
     console.log("💵 Total:", total);
     
+    // Mostrar modal de loading
+    setShowLoadingSteps(true);
+    
     const resultado = await finalizarCompra(formData as any, subtotal, envio, total);
     
     if (resultado.success) {
       console.log("✅ Compra exitosa!", resultado);
-      // El hook ya redirige a la página de confirmación
+      // El modal se cierra automáticamente al redirigir
     } else {
       console.error("❌ Error en la compra:", resultado.error);
-      alert(`Error: ${resultado.error}`);
+      // NO cerrar el modal - el PaymentLoadingSteps mostrará el error
+      // El usuario podrá cerrar manualmente haciendo clic en "Intentar nuevamente"
     }
+  };
+  
+  const handleLoadingComplete = () => {
+    console.log("✅ Loading completado, redirigiendo...");
+    setShowLoadingSteps(false);
+  };
+
+  const handleRetry = () => {
+    console.log("🔄 Intentando nuevamente...");
+    setShowLoadingSteps(false);
+    // El usuario puede corregir los datos de la tarjeta y volver a intentar
   };
 
   if (!mounted) {
@@ -241,6 +258,15 @@ export default function ProcessBuyPage() {
           </div>
         </div>
       </div>
+
+      {/* Modal de Loading con Steps */}
+      <PaymentLoadingSteps
+        isOpen={showLoadingSteps}
+        onComplete={handleLoadingComplete}
+        loaderStates={loaderStates}
+        error={checkoutError}
+        onRetry={handleRetry}
+      />
     </div>
   );
 }

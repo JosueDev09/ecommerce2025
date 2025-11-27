@@ -32,7 +32,7 @@ export default function ShippingAddressSection({
       const selectedAddress = addresses.find(addr => addr.intDireccion === selectedAddressId);
       
       if (selectedAddress) {
-        console.log("📍 Auto-completando dirección seleccionada:", selectedAddress);
+       // console.log("📍 Auto-completando dirección seleccionada:", selectedAddress);
         setFormData((prev: any) => ({
           ...prev,
           calle: selectedAddress.strCalle || "",
@@ -54,7 +54,14 @@ export default function ShippingAddressSection({
   const handleContinue = async () => {
     if (!isFormValid) return;
 
-    // 💾 Guardar dirección en la base de datos
+    // Si hay una dirección seleccionada y NO está creando una nueva, solo continuar
+    if (selectedAddressId && !isCreatingNew) {
+    //  console.log("✅ Usando dirección existente:", selectedAddressId);
+      handleSectionComplete(2);
+      return;
+    }
+
+    // 💾 Solo guardar si está creando una nueva dirección
     const addressData = {
       strCalle: formData.calle,
       strNumeroExterior: formData.numeroExterior,
@@ -70,7 +77,7 @@ export default function ShippingAddressSection({
     const savedAddress = await saveAddress(addressData, isCreatingNew);
     
     if (savedAddress) {
-      console.log("✅ Dirección guardada exitosamente");
+  //    console.log("✅ Dirección guardada exitosamente");
       setIsCreatingNew(false);
       handleSectionComplete(2);
     } else {

@@ -41,7 +41,7 @@ export default function CreditCardForm({
               value={formData.numeroTarjeta}
               onChange={handleInputChange}
               placeholder="1234 5678 9012 3456"
-              maxLength={19}
+              maxLength={23}
               className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all text-base font-mono"
               required
             />

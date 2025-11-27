@@ -42,17 +42,10 @@ export const useCheckoutForm = () => {
 
   // Auto-completar datos del usuario cuando esté disponible
   useEffect(() => {
-    //console.log("🔍 Debug useCheckoutForm:", { isAuthenticated, isGuest, user });
-
-    //console.log("🔍 Datos del usuario para auto-completar:", user);
+    
     
     if (isAuthenticated && !isGuest && user) {
-      console.log("✅ Auto-completando datos del usuario:", {
-        nombre: user.strNombre,
-        email: user.strCorreo || user.strUsuario,
-        telefono: user.strTelefono
-      });
-      
+              
       setFormData(prev => ({
         ...prev,
         nombre: user.strNombre || "",
@@ -81,7 +74,16 @@ export const useCheckoutForm = () => {
     // Formateo especial para número de tarjeta (agregar espacios cada 4 dígitos)
     if (name === "numeroTarjeta") {
       const numeros = value.replace(/\s/g, "").replace(/\D/g, "");
-      const formateado = numeros.match(/.{1,4}/g)?.join(" ") || numeros;
+      
+      // Limitar a 16 dígitos (o 19 para Amex)
+      const maxDigitos = 19;
+      const numeroLimitado = numeros.slice(0, maxDigitos);
+      
+      // Formatear con espacios cada 4 dígitos
+      const formateado = numeroLimitado.match(/.{1,4}/g)?.join(" ") || numeroLimitado;
+      
+     
+      
       setFormData(prev => ({ ...prev, [name]: formateado }));
       // Detectar tipo de tarjeta
       const tipoTarjeta = detectCardType(formateado);
@@ -89,14 +91,14 @@ export const useCheckoutForm = () => {
       
       // Verificar si la tarjeta es elegible para MSI (Visa y Mastercard participantes)
       // Simulamos que tarjetas que empiezan con ciertos números son participantes
-      const primerDigito = numeros.charAt(0);
-      const segundoDigito = numeros.charAt(1);
+      const primerDigito = numeroLimitado.charAt(0);
+      const segundoDigito = numeroLimitado.charAt(1);
       
       // Visa (empiezan con 4) y Mastercard (empiezan con 5) son elegibles
       // Simulamos que si el número es mayor a 8 dígitos, es participante
       // PERO solo si es tarjeta de CRÉDITO
       if ((tipoTarjeta === "visa" || tipoTarjeta === "mastercard") && 
-          numeros.length >= 8 && 
+          numeroLimitado.length >= 8 && 
           formData.tipoTarjeta === "credito") {
         setEsTarjetaElegibleMSI(true);
       } else {
