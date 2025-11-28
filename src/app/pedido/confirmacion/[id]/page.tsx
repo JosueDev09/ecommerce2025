@@ -91,7 +91,7 @@ export default function OrderConfirmationPage() {
                             jsonImagenes
                         }
                     }
-                    tbDireccion {
+                    tbDirecciones {
                         intDireccion
                         strCalle
                         strNumeroExterior
