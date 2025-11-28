@@ -115,7 +115,7 @@ export default function PaymentLoadingSteps({
         if (onComplete) {
           onComplete();
         }
-      }, 1000);
+      }, 5000);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStep, loaderStates.isProcessing, loaderStates.isSavingOrder, loaderStates.sendingMails, isOpen]);

@@ -320,13 +320,7 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== "undefined" && currentUserId) {
       const carritoKey = `carrito_${currentUserId}`;
       localStorage.removeItem(carritoKey);
-      //console.log(`🧹 Carrito limpiado para usuario ${currentUserId}`);
     }
-  };
-
-  const validarCodigoDescuento = (codigo: string) => {
-    // Lógica para validar el código de descuento
-    
   };
 
 

@@ -279,8 +279,8 @@ export const useCheckoutSubmit = () => {
               cardExpirationMonth: mes,
               cardExpirationYear: anio,
               securityCode: formData.cvv || "",
-              identificationType: "RFC",
-              identificationNumber: "XAXX010101000"
+              // identificationType: "RFC",
+              // identificationNumber: "XAXX010101000"
             };
             
           
@@ -590,12 +590,12 @@ export const useCheckoutSubmit = () => {
       await new Promise(resolve => setTimeout(resolve, 1500));
       setLoaderStates(prev => ({ ...prev, sendingMails: false }));
 
-      // TODO: Limpiar carrito después de compra exitosa
-       limpiarCarrito();
+      // ⚠️ NO LIMPIAR CARRITO AQUÍ - Se limpiará después en la página de confirmación
+      // limpiarCarrito();
 
       // Redirigir a página de confirmación
-    //  router.push(`/pedido/confirmacion/${intPedido}`);
-
+      router.push(`/pedido/confirmacion/${intPedido}`);
+     // 
       return {
         success: true,
         intPedido,
