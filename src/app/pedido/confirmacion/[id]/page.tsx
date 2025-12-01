@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { CheckCircle, Package, Mail, CreditCard, Truck, Copy, Check } from "lucide-react";
+import { CheckCircle, Package, Mail, CreditCard, Truck, Copy, Check, MapPin, Calendar, Home, Phone, User, ArrowRight, Download, Share2, Star } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useTienda } from "@/context/TiendaContext";
 import OrderStatusTimeline from "@/components/order/OrderStatusTimeline";
@@ -264,213 +264,374 @@ export default function OrderConfirmationPage() {
         </div>
       </header>
 
-      <main className="px-4 sm:px-10 lg:px-20 py-10 sm:py-16">
-        <div className="max-w-6xl mx-auto">
-          {/* Header de confirmación */}
+      <main className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 bg-[#EDEDEE]">
+        <div className="max-w-7xl mx-auto">
+          {/* Breadcrumb estilo ML */}
+          <div className="mb-4">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <button onClick={() => router.push("/")} className="hover:text-[#3A6EA5]">
+                Inicio
+              </button>
+              <span>/</span>
+              <button onClick={() => router.push("/dashboard/pedidos")} className="hover:text-[#3A6EA5]">
+                Mis compras
+              </button>
+              <span>/</span>
+              <span className="text-gray-900">Detalle de compra</span>
+            </div>
+          </div>
+
+          {/* Header de confirmación estilo ML */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center justify-center gap-6 text-center mb-12"
+            className="bg-white rounded-md shadow-sm p-6 mb-4"
           >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 200, damping: 15 }}
-              className="flex items-center justify-center w-20 h-20 rounded-full bg-green-100"
-            >
-              <CheckCircle className="w-12 h-12 text-green-600" />
-            </motion.div>
-            
-            <div className="space-y-3">
-              <h1 className="text-4xl font-black text-gray-900">
-                ¡Gracias por tu compra!
-              </h1>
-              <p className="text-lg text-gray-600 max-w-2xl">
-                Tu pedido ha sido confirmado. Hemos enviado un recibo detallado a tu correo electrónico.
-              </p>
-            </div>
-
-            {/* Número de orden */}
-            <div className="flex items-center gap-3 bg-white rounded-lg p-4 px-6 border-2 border-gray-200 shadow-sm">
-              <p className="text-gray-700">
-                Número de pedido: <span className="font-bold text-gray-900">#{orderData.intPedido.toString().padStart(8, '0')}</span>
-              </p>
-              <button
-                onClick={copyOrderNumber}
-                className="text-gray-500 hover:text-[#3A6EA5] transition-colors"
-                title="Copiar número de pedido"
+            <div className="flex items-start gap-4">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                className="flex-shrink-0"
               >
-                {copied ? (
-                  <Check className="w-5 h-5 text-green-600" />
-                ) : (
-                  <Copy className="w-5 h-5" />
-                )}
-              </button>
+                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+                  <CheckCircle className="w-8 h-8 text-green-600" />
+                </div>
+              </motion.div>
+              
+              <div className="flex-1">
+                <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+                  ¡Listo! Ya recibimos tu pago
+                </h1>
+                <p className="text-gray-600 mb-4">
+                  Te enviamos un email a <span className="font-medium">{user?.strCorreo || user?.strUsuario}</span> con los detalles de tu compra.
+                </p>
+                
+                <div className="flex items-center gap-4 flex-wrap">
+                  <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-md">
+                    <Package className="w-4 h-4 text-gray-600" />
+                    <span className="text-sm text-gray-700">
+                      Pedido <span className="font-semibold">#{orderData.intPedido.toString().padStart(8, '0')}</span>
+                    </span>
+                    <button
+                      onClick={copyOrderNumber}
+                      className="text-gray-500 hover:text-[#3A6EA5] transition-colors ml-1"
+                    >
+                      {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-md">
+                    <Calendar className="w-4 h-4 text-gray-600" />
+                    <span className="text-sm text-gray-700">
+                      {new Date(orderData.strFechaCreacion).toLocaleDateString('es-MX', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                      })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-right">
+                <p className="text-sm text-gray-600 mb-1">Total pagado</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  ${orderData.dblTotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                </p>
+              </div>
             </div>
           </motion.div>
 
-          {/* Grid principal */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Columna izquierda - Resumen del pedido */}
+          {/* Grid principal estilo ML */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* Columna izquierda - Productos y detalles */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="lg:col-span-2"
+              className="lg:col-span-2 space-y-4"
             >
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-gray-200">
-                  <h2 className="text-xl font-bold text-gray-900">Resumen del Pedido</h2>
+              {/* Productos */}
+              <div className="bg-white rounded-md shadow-sm">
+                <div className="p-5 border-b border-gray-200">
+                  <h2 className="text-lg font-semibold text-gray-900">Productos</h2>
                 </div>
 
-              
-              
                 <div className="divide-y divide-gray-200">
                   {orderData.items.map((item, index) => (
-                    
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 + index * 0.1 }}
-                      className="flex items-center gap-4 p-6"
-                    >
-                       
-                      <div
-                        className="w-20 h-20 rounded-lg bg-cover bg-center flex-shrink-0"
-                        style={{
-                          backgroundImage: item.jsonImagenes 
-                            ? `url(${item.jsonImagenes})`
-                            : undefined
-                        }}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 truncate">
-                          {item.strNombre}
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          Cantidad: {item.intCantidad}
-                        </p>
+                    <div key={index} className="p-5 hover:bg-gray-50 transition-colors">
+                      <div className="flex gap-4">
+                        <div
+                          className="w-24 h-24 rounded-md bg-gray-100 bg-cover bg-center flex-shrink-0 border border-gray-200"
+                          style={{
+                            backgroundImage: item.jsonImagenes ? `url(${item.jsonImagenes})` : undefined
+                          }}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-gray-900 mb-1 line-clamp-2">
+                            {item.strNombre}
+                          </h3>
+                          <p className="text-sm text-gray-600 mb-2">
+                            Cantidad: <span className="font-medium">{item.intCantidad}</span>
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-xs text-gray-500">Precio unitario</p>
+                              <p className="text-sm font-medium text-gray-900">
+                                ${item.dblPrecio.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xs text-gray-500">Subtotal</p>
+                              <p className="text-lg font-semibold text-gray-900">
+                                ${item.dblSubtotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-gray-900">
-                          ${item.dblSubtotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
-                        </p>
-                      </div>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
 
-                {/* Totales */}
-                <div className="p-6 bg-gray-50 space-y-3">
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>Subtotal</span>
-                    <span>${orderData.dblSubtotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
-                  </div>
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>Envío</span>
-                    <span>${orderData.dblCostoEnvio.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
-                  </div>
-                  <div className="flex justify-between text-lg font-bold text-gray-900 pt-3 border-t border-gray-200">
-                    <span>Total</span>
-                    <span>${orderData.dblTotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
+                {/* Totales detallados */}
+                <div className="p-5 bg-gray-50 border-t border-gray-200">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">
+                        Productos ({orderData.items.reduce((acc, item) => acc + item.intCantidad, 0)})
+                      </span>
+                      <span className="font-medium text-gray-900">
+                        ${orderData.dblSubtotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Envío</span>
+                      <span className="font-medium text-green-600">
+                        {orderData.dblCostoEnvio === 0 
+                          ? 'Gratis' 
+                          : `$${orderData.dblCostoEnvio.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`
+                        }
+                      </span>
+                    </div>
+                    <div className="flex justify-between pt-3 border-t border-gray-200">
+                      <span className="text-lg font-semibold text-gray-900">Total</span>
+                      <span className="text-2xl font-bold text-gray-900">
+                        ${orderData.dblTotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </motion.div>
 
-            {/* Columna derecha - Información de envío y acciones */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-              className="space-y-6"
-            >
-              {/* Información de entrega */}
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Truck className="w-6 h-6 text-[#3A6EA5]" />
-                  <h3 className="text-lg font-bold text-gray-900">Información de Entrega</h3>
-                </div>
-                
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 mb-1">Entrega Estimada</p>
-                    <p className="text-base text-gray-900 font-semibold">
-                      {orderData.strMetodoEnvio === "express" 
-                        ? "2-3 días hábiles" 
-                        : orderData.strMetodoEnvio === "estandar"
-                        ? "5-7 días hábiles"
-                        : "Recoger en tienda"}
-                    </p>
-                  </div>
-                  
-                  {orderData.strDireccionEnvio && (
+              {/* Información de envío */}
+              {orderData.strMetodoEnvio !== "recoger" && orderData.strDireccionEnvio && (
+                <div className="bg-white rounded-md shadow-sm p-5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                      <Truck className="w-5 h-5 text-blue-600" />
+                    </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-600 mb-1">Dirección de Envío</p>
-                      <div className="text-base text-gray-900">
-                        <p>{user?.strNombre || "Cliente"}</p>
+                      <h3 className="font-semibold text-gray-900">Envío</h3>
+                      <p className="text-sm text-gray-600">
+                        {orderData.strMetodoEnvio === "express" 
+                          ? "Express (2-3 días hábiles)" 
+                          : "Estándar (5-7 días hábiles)"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pl-13 space-y-3">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Dirección de entrega</p>
+                      <div className="text-sm text-gray-900">
+                        <p className="font-medium">{user?.strNombre || "Cliente"}</p>
                         <p>{orderData.strDireccionEnvio.strCalle} {orderData.strDireccionEnvio.strNumeroExterior}</p>
                         <p>{orderData.strDireccionEnvio.strColonia}</p>
                         <p>{orderData.strDireccionEnvio.strCiudad}, {orderData.strDireccionEnvio.strEstado}</p>
                         <p>C.P. {orderData.strDireccionEnvio.strCP}</p>
                       </div>
                     </div>
-                  )}
 
-                  {orderData.strMetodoEnvio === "recoger" && (
-                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="p-3 bg-blue-50 rounded-md border border-blue-200">
                       <p className="text-sm text-blue-800">
-                        <strong>Importante:</strong> Recuerda presentar tu número de pedido al recoger en tienda.
+                        <strong>Importante:</strong> Recibirás un email cuando tu pedido esté en camino con el número de seguimiento.
                       </p>
                     </div>
-                  )}
+                  </div>
                 </div>
-              </div>
+              )}
 
+              {/* Recoger en tienda */}
+              {orderData.strMetodoEnvio === "recoger" && (
+                <div className="bg-white rounded-md shadow-sm p-5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                      <Home className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">Recoger en tienda</h3>
+                      <p className="text-sm text-gray-600">Disponible en 24 horas</p>
+                    </div>
+                  </div>
+
+                  <div className="pl-13 space-y-3">
+                    <div className="p-4 bg-purple-50 rounded-md border border-purple-200">
+                      <p className="text-sm text-purple-900 font-medium mb-2">
+                        Presenta tu número de pedido en tienda
+                      </p>
+                      <p className="text-xs text-purple-800">
+                        Horario de atención: Lunes a Viernes 9:00 AM - 6:00 PM
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+
+            {/* Columna derecha - Estado y acciones */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="space-y-4"
+            >
               {/* Estado del pedido */}
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <Package className="w-6 h-6 text-[#3A6EA5]" />
-                  <h3 className="text-lg font-bold text-gray-900">Estado del Pedido</h3>
+              <div className="bg-white rounded-md shadow-sm p-5">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                    <Package className="w-5 h-5 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Estado del pedido</h3>
+                    <p className="text-sm text-green-600 font-medium">Confirmado</p>
+                  </div>
                 </div>
                 
                 <OrderStatusTimeline currentStatus="confirmado" />
               </div>
 
-              {/* Botones de acción */}
-              <div className="space-y-3">
-                <button
-                  onClick={() => router.push("/products")}
-                  className="w-full py-3 bg-[#3A6EA5] text-white rounded-lg font-semibold hover:bg-[#2E5A8C] transition-colors"
-                >
-                  Continuar Comprando
-                </button>
-                
-                <button
-                  onClick={() => router.push("/dashboard/pedidos")}
-                  className="w-full py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
-                >
-                  <Mail className="w-5 h-5" />
-                  Ver Mis Pedidos
+              {/* Acciones rápidas */}
+              <div className="bg-white rounded-md shadow-sm p-5">
+                <h3 className="font-semibold text-gray-900 mb-4">Acciones</h3>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => router.push("/dashboard/pedidos")}
+                    className="w-full py-3 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-between group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Package className="w-5 h-5 text-gray-600" />
+                      <span className="text-sm font-medium text-gray-900">Ver mis compras</span>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
+                  </button>
+
+                  <button
+                    onClick={() => window.print()}
+                    className="w-full py-3 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-between group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Download className="w-5 h-5 text-gray-600" />
+                      <span className="text-sm font-medium text-gray-900">Descargar recibo</span>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
+                  </button>
+
+                  <button
+                    onClick={() => router.push("/products")}
+                    className="w-full py-3 bg-[#3A6EA5] text-white rounded-md font-medium hover:bg-[#2E5A8C] transition-colors"
+                  >
+                    Seguir comprando
+                  </button>
+                </div>
+              </div>
+
+              {/* Información de contacto */}
+              <div className="bg-white rounded-md shadow-sm p-5">
+                <h3 className="font-semibold text-gray-900 mb-4">¿Necesitas ayuda?</h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-start gap-3">
+                    <Phone className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-gray-600">Llámanos al</p>
+                      <p className="font-medium text-gray-900">01 800 123 4567</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Mail className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-gray-600">Escríbenos a</p>
+                      <p className="font-medium text-gray-900">ayuda@ecommerce.com</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => router.push("/quejas")}
+                    className="w-full mt-3 py-2 text-[#3A6EA5] hover:bg-blue-50 rounded-md transition-colors font-medium"
+                  >
+                    Centro de ayuda
+                  </button>
+                </div>
+              </div>
+
+              {/* Banner promocional */}
+              <div className="bg-gradient-to-br from-[#3A6EA5] to-[#2E5A8C] rounded-md shadow-sm p-5 text-white">
+                <div className="flex items-start gap-3 mb-3">
+                  <Star className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="font-semibold mb-1">¡Gracias por tu compra!</h3>
+                    <p className="text-sm text-blue-100">
+                      Obtén 10% de descuento en tu próxima compra
+                    </p>
+                  </div>
+                </div>
+                <button className="w-full mt-3 py-2 bg-white text-[#3A6EA5] rounded-md font-medium hover:bg-blue-50 transition-colors text-sm">
+                  Ver promociones
                 </button>
               </div>
             </motion.div>
           </div>
 
-          {/* Footer de ayuda */}
+          {/* Sección de ayuda inferior */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="mt-12 text-center"
+            className="mt-6 bg-white rounded-md shadow-sm p-6"
           >
-            <p className="text-gray-600">
-              ¿Necesitas ayuda? {" "}
-              <a href="/contacto" className="font-semibold text-[#3A6EA5] hover:underline">
-                Contáctanos
-              </a>
-            </p>
+            <div className="max-w-4xl mx-auto text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                ¿Qué puedes hacer ahora?
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <button
+                  onClick={() => router.push("/dashboard/pedidos")}
+                  className="p-4 border border-gray-200 rounded-md hover:border-[#3A6EA5] hover:bg-blue-50 transition-all group"
+                >
+                  <Package className="w-8 h-8 text-gray-600 group-hover:text-[#3A6EA5] mx-auto mb-2" />
+                  <p className="text-sm font-medium text-gray-900">Seguir mi pedido</p>
+                  <p className="text-xs text-gray-500 mt-1">Ve el estado en tiempo real</p>
+                </button>
+
+                <button
+                  onClick={() => router.push("/products")}
+                  className="p-4 border border-gray-200 rounded-md hover:border-[#3A6EA5] hover:bg-blue-50 transition-all group"
+                >
+                  <Package className="w-8 h-8 text-gray-600 group-hover:text-[#3A6EA5] mx-auto mb-2" />
+                  <p className="text-sm font-medium text-gray-900">Ver más productos</p>
+                  <p className="text-xs text-gray-500 mt-1">Descubre nuestra colección</p>
+                </button>
+
+                <button
+                  onClick={() => router.push("/quejas")}
+                  className="p-4 border border-gray-200 rounded-md hover:border-[#3A6EA5] hover:bg-blue-50 transition-all group"
+                >
+                  <Mail className="w-8 h-8 text-gray-600 group-hover:text-[#3A6EA5] mx-auto mb-2" />
+                  <p className="text-sm font-medium text-gray-900">Contactar soporte</p>
+                  <p className="text-xs text-gray-500 mt-1">Estamos para ayudarte</p>
+                </button>
+              </div>
+            </div>
           </motion.div>
         </div>
       </main>
