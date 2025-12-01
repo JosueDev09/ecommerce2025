@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { formatFecha } from "@/utils/formatFecha";
 import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -15,12 +16,32 @@ import {
   Filter,
 } from "lucide-react";
 
+interface Pedido {
+  intPedido: number;
+  datPedido: string;
+  dblTotal: number;
+  strEstado: string;
+  strNumeroRastreo?: string;
+  tbItems: Array<{
+    intCantidad: number;
+    dblSubtotal: number;
+    tbProducto: {
+      intProducto: number;
+      strNombre: string;
+      dblPrecio: number;
+      strImagen?: string;
+    };
+  }>;
+}
+
 export default function PedidosPage() {
   const router = useRouter();
-  const { isAuthenticated, isGuest } = useAuth();
+  const { isAuthenticated, isGuest, user, token } = useAuth();
   const [filtro, setFiltro] = useState("todos");
   const [busqueda, setBusqueda] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -32,7 +53,77 @@ export default function PedidosPage() {
     }
   }, [mounted, isAuthenticated, isGuest, router]);
 
-  if (!mounted || !isAuthenticated || isGuest) {
+  // Cargar pedidos reales del usuario
+  useEffect(() => {
+    if (mounted && isAuthenticated && !isGuest && user?.intCliente) {
+      fetchPedidos();
+    }
+  }, [mounted, isAuthenticated, isGuest, user]);
+
+  const fetchPedidos = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("http://localhost:3000/api/graphql", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          query: `
+            query ObtenerPedidos {
+              obtenerPedidos {
+                intPedido
+                datPedido
+                dblTotal
+                strEstado
+                tbItems {
+                  intCantidad
+                  dblSubtotal
+                  tbProducto {
+                    intProducto
+                    strNombre
+                    dblPrecio
+                    strImagen
+                  }
+                }
+                tbClientes {
+                  intCliente
+                }
+              }
+            }
+          `,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.errors) {
+        console.error("Error al cargar pedidos:", result.errors);
+        return;
+      }
+
+      // Filtrar pedidos del usuario actual
+      const todosPedidos = result.data?.obtenerPedidos || [];
+      const pedidosUsuario = todosPedidos.filter(
+        (p: any) => p.tbClientes?.intCliente === user?.intCliente
+      );
+
+      // Ordenar por fecha más reciente
+      const pedidosOrdenados = [...pedidosUsuario].sort(
+        (a: Pedido, b: Pedido) =>
+          new Date(b.datPedido).getTime() - new Date(a.datPedido).getTime()
+      );
+
+      setPedidos(pedidosOrdenados);
+    } catch (error) {
+      console.error("Error al obtener pedidos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!mounted || !isAuthenticated || isGuest || loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -43,54 +134,6 @@ export default function PedidosPage() {
     );
   }
 
-  // Datos de ejemplo - estos vendrían de tu API
-  const pedidos = [
-    {
-      id: "ORD-001",
-      fecha: "2025-11-20",
-      total: 5999.0,
-      estado: "entregado",
-      productos: [
-        { nombre: "iPhone 15 Pro Max", cantidad: 1, precio: 5999.0 },
-      ],
-      seguimiento: "1234567890",
-    },
-    {
-      id: "ORD-002",
-      fecha: "2025-11-22",
-      total: 1299.0,
-      estado: "en_camino",
-      productos: [{ nombre: "AirPods Pro 2", cantidad: 1, precio: 1299.0 }],
-      seguimiento: "0987654321",
-    },
-    {
-      id: "ORD-003",
-      fecha: "2025-11-24",
-      total: 3499.0,
-      estado: "procesando",
-      productos: [
-        { nombre: "iPad Air", cantidad: 1, precio: 3499.0 },
-      ],
-      seguimiento: null,
-    },
-    {
-      id: "ORD-004",
-      fecha: "2025-10-15",
-      total: 899.0,
-      estado: "entregado",
-      productos: [{ nombre: "Magic Mouse", cantidad: 1, precio: 899.0 }],
-      seguimiento: "5555666677",
-    },
-    {
-      id: "ORD-005",
-      fecha: "2025-09-20",
-      total: 2499.0,
-      estado: "cancelado",
-      productos: [{ nombre: "Apple Watch SE", cantidad: 1, precio: 2499.0 }],
-      seguimiento: null,
-    },
-  ];
-
   const filtros = [
     { id: "todos", nombre: "Todos", icono: Package },
     { id: "procesando", nombre: "Procesando", icono: Clock },
@@ -100,18 +143,24 @@ export default function PedidosPage() {
   ];
 
   const pedidosFiltrados = pedidos.filter((pedido) => {
+    const estadoNormalizado = pedido.strEstado.toLowerCase();
     const cumpleFiltro =
-      filtro === "todos" || pedido.estado === filtro;
+      filtro === "todos" || 
+      estadoNormalizado === filtro ||
+      (filtro === "en_camino" && (estadoNormalizado === "enviado" || estadoNormalizado === "en_camino")) ||
+      (filtro === "entregado" && (estadoNormalizado === "entregado" || estadoNormalizado === "completado"));
+    
     const cumpleBusqueda =
       busqueda === "" ||
-      pedido.id.toLowerCase().includes(busqueda.toLowerCase()) ||
-      pedido.productos.some((p) =>
-        p.nombre.toLowerCase().includes(busqueda.toLowerCase())
+      pedido.intPedido.toString().includes(busqueda) ||
+      pedido.tbItems.some((item) =>
+        item.tbProducto.strNombre.toLowerCase().includes(busqueda.toLowerCase())
       );
     return cumpleFiltro && cumpleBusqueda;
   });
 
   const getEstadoConfig = (estado: string) => {
+    const estadoLower = estado.toLowerCase();
     const estados = {
       entregado: {
         texto: "Entregado",
@@ -119,7 +168,19 @@ export default function PedidosPage() {
         icono: CheckCircle,
         iconoColor: "text-green-600",
       },
+      completado: {
+        texto: "Completado",
+        color: "bg-green-100 text-green-700 border-green-200",
+        icono: CheckCircle,
+        iconoColor: "text-green-600",
+      },
       en_camino: {
+        texto: "En camino",
+        color: "bg-blue-100 text-blue-700 border-blue-200",
+        icono: Truck,
+        iconoColor: "text-blue-600",
+      },
+      enviado: {
         texto: "En camino",
         color: "bg-blue-100 text-blue-700 border-blue-200",
         icono: Truck,
@@ -131,6 +192,18 @@ export default function PedidosPage() {
         icono: Clock,
         iconoColor: "text-yellow-600",
       },
+      confirmado: {
+        texto: "Confirmado",
+        color: "bg-purple-100 text-purple-700 border-purple-200",
+        icono: Clock,
+        iconoColor: "text-purple-600",
+      },
+      pendiente: {
+        texto: "Pendiente",
+        color: "bg-orange-100 text-orange-700 border-orange-200",
+        icono: Clock,
+        iconoColor: "text-orange-600",
+      },
       cancelado: {
         texto: "Cancelado",
         color: "bg-red-100 text-red-700 border-red-200",
@@ -139,8 +212,8 @@ export default function PedidosPage() {
       },
     };
     return (
-      estados[estado as keyof typeof estados] || {
-        texto: "Desconocido",
+      estados[estadoLower as keyof typeof estados] || {
+        texto: estado,
         color: "bg-gray-100 text-gray-700 border-gray-200",
         icono: Package,
         iconoColor: "text-gray-600",
@@ -232,11 +305,11 @@ export default function PedidosPage() {
           ) : (
             <div className="space-y-4">
               {pedidosFiltrados.map((pedido, index) => {
-                const estadoConfig = getEstadoConfig(pedido.estado);
+                const estadoConfig = getEstadoConfig(pedido.strEstado);
 
                 return (
                   <div
-                    key={pedido.id}
+                    key={pedido.intPedido}
                     className="bg-white rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                   >
                     <div className="p-5">
@@ -250,25 +323,18 @@ export default function PedidosPage() {
                               {estadoConfig.texto}
                             </span>
                             <span className="text-sm text-gray-500">
-                              {new Date(pedido.fecha).toLocaleDateString(
-                                "es-MX",
-                                {
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                }
-                              )}
+                             {formatFecha(pedido.datPedido)}
                             </span>
                           </div>
                           <p className="text-xs text-gray-500">
-                            Pedido #{pedido.id}
+                            Pedido #{pedido.intPedido.toString().padStart(8, '0')}
                           </p>
                         </div>
                         <div className="text-right">
                           <p className="text-sm text-gray-500 mb-1">Total</p>
                           <p className="text-xl font-semibold text-gray-900">
                             $
-                            {pedido.total.toLocaleString("es-MX", {
+                            {pedido.dblTotal.toLocaleString("es-MX", {
                               minimumFractionDigits: 2,
                             })}
                           </p>
@@ -277,21 +343,38 @@ export default function PedidosPage() {
 
                       {/* Productos */}
                       <div className="mb-4">
-                        {pedido.productos.map((producto, idx) => (
+                        {pedido.tbItems.map((item, idx) => (
                           <div
                             key={idx}
                             className="flex items-center justify-between py-2"
                           >
                             <div className="flex items-center gap-3">
-                              <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
-                                <ShoppingBag className="w-6 h-6 text-gray-400" />
+                              <div 
+                                className="w-16 h-16 rounded bg-cover bg-center"
+                                style={{
+                                  backgroundImage: item.tbProducto.strImagen
+                                    ? `url(${item.tbProducto.strImagen})`
+                                    : 'none',
+                                  backgroundColor: !item.tbProducto.strImagen ? '#f3f4f6' : 'transparent'
+                                }}
+                              >
+                                {!item.tbProducto.strImagen && (
+                                  <div className="w-full h-full flex items-center justify-center">
+                                    <ShoppingBag className="w-6 h-6 text-gray-400" />
+                                  </div>
+                                )}
                               </div>
                               <div>
                                 <p className="text-sm text-gray-900 font-normal">
-                                  {producto.nombre}
+                                  {item.tbProducto.strNombre}
                                 </p>
                                 <p className="text-xs text-gray-500">
-                                  Cantidad: {producto.cantidad}
+                                  Cantidad: {item.intCantidad}
+                                </p>
+                                <p className="text-xs text-gray-600 font-medium">
+                                  ${item.dblSubtotal.toLocaleString("es-MX", {
+                                    minimumFractionDigits: 2,
+                                  })}
                                 </p>
                               </div>
                             </div>
@@ -301,19 +384,19 @@ export default function PedidosPage() {
 
                       {/* Acciones */}
                       <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                        {pedido.seguimiento && (
+                        {/* {pedido.strNumeroRastreo && (
                           <div className="text-sm text-gray-600">
                             <span className="text-xs text-gray-500">
                               Seguimiento: 
                             </span>
                             <span className="font-medium ml-1">
-                              {pedido.seguimiento}
+                              {pedido.strNumeroRastreo}
                             </span>
                           </div>
-                        )}
+                        )} */}
                         <button
                           onClick={() =>
-                            router.push(`/dashboard/pedidos/${pedido.id}`)
+                            router.push(`/pedido/confirmacion/${pedido.intPedido}`)
                           }
                           className="ml-auto text-sm text-blue-600 hover:text-blue-700 font-normal"
                         >

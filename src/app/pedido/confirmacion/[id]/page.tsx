@@ -448,7 +448,7 @@ export default function OrderConfirmationPage() {
                 </button>
                 
                 <button
-                  onClick={() => router.push("/cuenta/pedidos")}
+                  onClick={() => router.push("/dashboard/pedidos")}
                   className="w-full py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
                 >
                   <Mail className="w-5 h-5" />

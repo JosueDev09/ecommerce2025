@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import {formatFecha} from '@/utils/formatFecha';
 import { motion } from "framer-motion";
 import {
   User,
@@ -17,12 +18,32 @@ import {
   CheckCircle,
 } from "lucide-react";
 
+interface Pedido {
+  intPedido: number;
+  datPedido: string;
+  dblTotal: number;
+  strEstado: string;
+  tbItems: Array<{
+    intCantidad: number;
+  }>;
+}
+
+interface DashboardData {
+  pedidosRecientes: Pedido[];
+  totalPedidos: number;
+  pedidosEnCamino: number;
+  pedidosCompletados: number;
+  totalGastado: number;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
-  const { isAuthenticated, isGuest, logout,user } = useAuth();
+  const { isAuthenticated, isGuest, logout, user, token } = useAuth();
   const [mounted, setMounted] = useState(false);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [totalPedidos, setTotalPedidos] = useState(0);
 
- // console.log("🔍 DashboardPage - Usuario:", user)
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -33,7 +54,91 @@ export default function DashboardPage() {
     }
   }, [mounted, isAuthenticated, isGuest, router]);
 
-  if (!mounted || !isAuthenticated || isGuest) {
+  // Cargar datos reales del usuario
+  useEffect(() => {
+    if (mounted && isAuthenticated && !isGuest && user?.intCliente) {
+      fetchDashboardData();
+    }
+  }, [mounted, isAuthenticated, isGuest, user]);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("http://localhost:3000/api/graphql", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          query: `
+            query ObtenerPedidos {
+              obtenerPedidos {
+                intPedido
+                datPedido
+                dblTotal
+                strEstado
+                tbItems {
+                  intCantidad
+                }
+                tbClientes {
+                  intCliente
+                }
+              }
+            }
+          `,
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (result.errors) {
+        console.error("Error al cargar pedidos:", result.errors);
+        return;
+      }
+
+      // Filtrar pedidos del usuario actual
+      const todosPedidos = result.data?.obtenerPedidos || [];
+      const pedidos = todosPedidos.filter((p: any) => 
+        p.tbClientes?.intCliente === user?.intCliente
+      );
+      //console.log("Pedidos del usuario:", pedidos);
+      // Calcular estadísticas
+      const totalPedidos = pedidos.length;
+      const pedidosEnCamino = pedidos.filter((p: Pedido) => 
+        p.strEstado.toLowerCase() === "enviado" || 
+        p.strEstado.toLowerCase() === "en_camino"
+      ).length;
+      const pedidosCompletados = pedidos.filter((p: Pedido) => 
+        p.strEstado.toLowerCase() === "entregado" || 
+        p.strEstado.toLowerCase() === "completado"
+      ).length;
+      const totalGastado = pedidos.reduce((sum: number, p: Pedido) => sum + p.dblTotal, 0);
+
+      // Ordenar por fecha más reciente y tomar los últimos 3
+      const pedidosRecientes = [...pedidos]
+        .sort((a: Pedido, b: Pedido) => 
+          new Date(b.datPedido).getTime() - new Date(a.datPedido).getTime()
+        )
+        .slice(0, 3);
+
+        setTotalPedidos( totalPedidos);
+
+      setDashboardData({
+        pedidosRecientes,
+        totalPedidos,
+        pedidosEnCamino,
+        pedidosCompletados,
+        totalGastado,
+      });
+    } catch (error) {
+      console.error("Error al obtener datos del dashboard:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!mounted || !isAuthenticated || isGuest || loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -44,59 +149,35 @@ export default function DashboardPage() {
     );
   }
 
-  // Datos de ejemplo - estos vendrían de tu API
-  const pedidosRecientes = [
-    {
-      id: "ORD-001",
-      fecha: "2025-11-20",
-      total: 5999.0,
-      estado: "entregado",
-      productos: 3,
-    },
-    {
-      id: "ORD-002",
-      fecha: "2025-11-22",
-      total: 1299.0,
-      estado: "en_camino",
-      productos: 1,
-    },
-    {
-      id: "ORD-003",
-      fecha: "2025-11-24",
-      total: 3499.0,
-      estado: "procesando",
-      productos: 2,
-    },
-  ];
-
+  // Estadísticas calculadas desde los datos reales
   const estadisticas = [
     {
       titulo: "Total de pedidos",
-      valor: "12",
+      valor: dashboardData?.totalPedidos.toString() || "0",
       icono: ShoppingBag,
       color: "bg-blue-500",
-      tendencia: "+2 este mes",
+      tendencia: dashboardData?.totalPedidos ? `${dashboardData.totalPedidos} pedidos realizados` : "Sin pedidos",
     },
     {
       titulo: "En camino",
-      valor: "1",
+      valor: dashboardData?.pedidosEnCamino.toString() || "0",
       icono: Package,
       color: "bg-orange-500",
-      tendencia: "Llegada estimada: 3 días",
+      tendencia: dashboardData?.pedidosEnCamino ? "Llegada estimada: 3-7 días" : "Sin envíos activos",
     },
     {
       titulo: "Completados",
-      valor: "10",
+      valor: dashboardData?.pedidosCompletados.toString() || "0",
       icono: CheckCircle,
       color: "bg-green-500",
-      tendencia: "Últimos 90 días",
+      tendencia: "Pedidos entregados",
     },
     {
       titulo: "Total gastado",
-      valor: "$45,299",
+      valor: `$${(dashboardData?.totalGastado || 0).toLocaleString('es-MX', { minimumFractionDigits: 2 })}`,
       icono: TrendingUp,
       color: "bg-purple-500",
-      tendencia: "+15% vs mes anterior",
+      tendencia: "Historial completo",
     },
   ];
 
@@ -106,7 +187,7 @@ export default function DashboardPage() {
       descripcion: "Ver historial completo",
       icono: Package,
       ruta: "/dashboard/pedidos",
-      badge: "3 activos",
+      badge: {totalPedidos}
     },
     {
       titulo: "Mi Información",
@@ -139,10 +220,19 @@ export default function DashboardPage() {
   ];
 
   const getEstadoBadge = (estado: string) => {
+    const estadoLower = estado.toLowerCase();
     const estados = {
       entregado: {
         texto: "Entregado",
         color: "bg-green-100 text-green-700",
+      },
+      completado: {
+        texto: "Completado",
+        color: "bg-green-100 text-green-700",
+      },
+      enviado: {
+        texto: "En camino",
+        color: "bg-blue-100 text-blue-700",
       },
       en_camino: {
         texto: "En camino",
@@ -152,10 +242,18 @@ export default function DashboardPage() {
         texto: "Procesando",
         color: "bg-yellow-100 text-yellow-700",
       },
+      confirmado: {
+        texto: "Confirmado",
+        color: "bg-purple-100 text-purple-700",
+      },
+      pendiente: {
+        texto: "Pendiente",
+        color: "bg-orange-100 text-orange-700",
+      },
     };
     return (
-      estados[estado as keyof typeof estados] || {
-        texto: "Desconocido",
+      estados[estadoLower as keyof typeof estados] || {
+        texto: estado,
         color: "bg-gray-100 text-gray-700",
       }
     );
@@ -239,7 +337,7 @@ export default function DashboardPage() {
                     <span className="text-sm text-gray-900">{item.titulo}</span>
                   </div>
                   {item.badge && (
-                    <span className="text-xs text-gray-500">{item.badge}</span>
+                    <span className="text-xs text-gray-500">{totalPedidos}</span>
                   )}
                 </button>
               ))}
@@ -284,52 +382,64 @@ export default function DashboardPage() {
               </div>
 
               <div className="divide-y divide-gray-100">
-                {pedidosRecientes.map((pedido) => {
-                  const badge = getEstadoBadge(pedido.estado);
-                  return (
-                    <div
-                      key={pedido.id}
-                      className="px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer"
-                      onClick={() =>
-                        router.push(`/dashboard/pedidos/${pedido.id}`)
-                      }
-                    >
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span
-                              className={`px-2 py-0.5 rounded text-xs font-medium ${badge.color}`}
-                            >
-                              {badge.texto}
-                            </span>
-                            <span className="text-xs text-gray-500">
-                              {new Date(pedido.fecha).toLocaleDateString(
-                                "es-MX",
-                                {
-                                  day: "numeric",
-                                  month: "short",
-                                }
-                              )}
-                            </span>
+                {dashboardData?.pedidosRecientes && dashboardData.pedidosRecientes.length > 0 ? (
+                  dashboardData.pedidosRecientes.map((pedido: Pedido) => {
+                    const badge = getEstadoBadge(pedido.strEstado);
+                    const totalProductos = pedido.tbItems.reduce((sum, item) => sum + item.intCantidad, 0);
+                    
+                    return (
+                      <div
+                        key={pedido.intPedido}
+                        className="px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                        onClick={() =>
+                          router.push(`/pedido/confirmacion/${pedido.intPedido}`)
+                        }
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span
+                                className={`px-2 py-0.5 rounded text-xs font-medium ${badge.color}`}
+                              >
+                                {badge.texto}
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                {formatFecha(pedido.datPedido)}
+                              </span>
+                                  
+                            </div>
+                            <p className="text-sm text-gray-600">
+                              {totalProductos}{" "}
+                              {totalProductos === 1 ? "producto" : "productos"}
+                            </p>
                           </div>
-                          <p className="text-sm text-gray-600">
-                            {pedido.productos}{" "}
-                            {pedido.productos === 1 ? "producto" : "productos"}
-                          </p>
+                          <div className="text-right">
+                            <p className="text-base font-semibold text-gray-900">
+                              $
+                              {pedido.dblTotal.toLocaleString("es-MX", {
+                                minimumFractionDigits: 2,
+                              })}
+                            </p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-base font-semibold text-gray-900">
-                            $
-                            {pedido.total.toLocaleString("es-MX", {
-                              minimumFractionDigits: 2,
-                            })}
-                          </p>
-                        </div>
+                        <p className="text-xs text-gray-500">
+                          Pedido #{pedido.intPedido.toString().padStart(8, '0')}
+                        </p>
                       </div>
-                      <p className="text-xs text-gray-500">Pedido #{pedido.id}</p>
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                ) : (
+                  <div className="px-6 py-12 text-center">
+                    <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500 text-sm">No tienes pedidos aún</p>
+                    <button
+                      onClick={() => router.push("/products")}
+                      className="mt-4 text-blue-600 hover:text-blue-700 text-sm font-medium"
+                    >
+                      Explorar productos
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -392,7 +502,10 @@ export default function DashboardPage() {
                 <div className="border border-gray-200 rounded-lg p-4">
                   <p className="text-xs text-gray-500 mb-1">Miembro desde</p>
                   <p className="text-sm font-medium text-gray-900">
-                    Enero 2024
+                    {new Date().toLocaleDateString("es-MX", {
+                      month: "long",
+                      year: "numeric",
+                    })}
                   </p>
                 </div>
               </div>
