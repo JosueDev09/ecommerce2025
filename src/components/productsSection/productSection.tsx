@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -12,7 +12,7 @@ import { formatFecha } from "@/utils/formatearFechas";
 
 export default function Products() {
   const [showSuccess, setShowSuccess] = useState(false);
- const {
+  const {
     productos,
     agregarCarrito,
     handleVariantChange,
@@ -20,281 +20,93 @@ export default function Products() {
     loading,
   } = useTienda();
 
-    // Función para validar si el descuento está activo
-    const esDescuentoActivo = (product: any) => {
-      if (
-        !product.bolTieneDescuento ||
-        !product.datInicioDescuento ||
-        !product.datFinDescuento
-      ) {
-        return false;
-      }
+  // Función para validar si el descuento está activo
+  const esDescuentoActivo = (product: any) => {
+    if (
+      !product.bolTieneDescuento ||
+      !product.datInicioDescuento ||
+      !product.datFinDescuento
+    ) {
+      return false;
+    }
 
-      const ahora = Date.now(); // número
-      const inicio = Number(product.datInicioDescuento); // número
-      const fin = Number(product.datFinDescuento);       // número
+    const ahora = Date.now(); // número
+    const inicio = Number(product.datInicioDescuento); // número
+    const fin = Number(product.datFinDescuento);       // número
 
-      // Solo para ver las fechas formateadas en consola (opcional)
-      // console.log("Fecha inicio:", formatFecha(inicio));
-      // console.log("Fecha fin:", formatFecha(fin));
+    // Solo para ver las fechas formateadas en consola (opcional)
+    // console.log("Fecha inicio:", formatFecha(inicio));
+    // console.log("Fecha fin:", formatFecha(fin));
 
-      return formatFecha(ahora) >= formatFecha(inicio) && formatFecha(ahora) <= formatFecha(fin);
+    return formatFecha(ahora) >= formatFecha(inicio) && formatFecha(ahora) <= formatFecha(fin);
+  };
+
+    const handleAgregarCarrito = (product: any) => {
+      agregarCarrito(product);
+      setShowSuccess(true);
+
+      // Ocultar el mensaje después de 3 segundos
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
     };
 
-  const handleAgregarCarrito = (product: any) => {
-    agregarCarrito(product);
-    setShowSuccess(true);
-    
-    // Ocultar el mensaje después de 3 segundos
-    setTimeout(() => {
-      setShowSuccess(false);
-    }, 3000);
-  };
+    if (loading) return <p>Cargando productos...</p>;
 
-  if (loading) return <p>Cargando productos...</p>;
 
   
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 40, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.6,
-        ease: [0.25, 0.8, 0.25, 1] as any,
-      },
-    },
-  };
 
   return (
-    <section className="relative w-full py-20 md:py-28 bg-gradient-to-b from-[#F5F5F5] to-[#FFFFFF] overflow-hidden">
-      {/* 🔹 Decoraciones de fondo */}
-      <div className="absolute top-32 right-20 w-96 h-96 bg-[#3A6EA5]/15 rounded-full blur-[140px]" />
-      <div className="absolute bottom-40 left-20 w-80 h-80 bg-[#E6C89C]/25 rounded-full blur-[120px]" />
+    <section className="w-full">
+      <div className="w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        { productos.map((product) => (
+        <div key={product.intProducto} className="w-full flex flex-col items-center text-center bg-[#f5f5f7] p-10">
 
-      {/* Success Message - Toast Notification */}
-      {showSuccess && (
-        <motion.div
-          initial={{ opacity: 0, x: 100, scale: 0.8 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
-          exit={{ opacity: 0, x: 100, scale: 0.8 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          className="fixed top-6 right-6 z-[9999] bg-white border-l-4 border-emerald-500 rounded-xl shadow-2xl p-4 flex items-center gap-3 max-w-md"
-        >
-          <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0 animate-pulse">
-            <Check className="w-6 h-6 text-white" />
-          </div>
-          <div className="flex-1">
-            <p className="font-bold text-emerald-900 text-base">¡Producto agregado!</p>
-            <p className="text-sm text-emerald-700">Se ha añadido al carrito exitosamente</p>
-          </div>
-          <button 
-            onClick={() => setShowSuccess(false)}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </motion.div>
-      )}
+          {/* Título */}
+          <h2 className="text-5xl font-semibold mt-6">{product.strNombre}</h2>
 
-      <div className="relative max-w-7xl mx-auto px-6">
-        {/* 🔹 Encabezado */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-4">
-            Productos{" "}
-            <span className="bg-gradient-to-r from-[#3A6EA5] via-[#8BAAAD] to-[#E6C89C] bg-clip-text text-transparent">
-              Destacados
-            </span>
-          </h2>
-          <p className="text-[#1A1A1A]/70 text-lg max-w-2xl mx-auto">
-            Los favoritos de nuestros clientes con ofertas exclusivas
+          {/* Subtítulo */}
+          <p className="text-gray-600 text-xl mt-3 leading-snug">
+            {product.strDescripcion}
           </p>
-        </motion.div>
 
-        {/* 🔹 Filtros */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex flex-wrap justify-center gap-3 mb-12"
-        >
-          {/* {filters.map((filter) => (
-            <button
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
-              className={`px-6 py-2.5 rounded-full font-medium text-sm transition-all duration-300 ${
-                activeFilter === filter
-                  ? "bg-[#3A6EA5] text-white shadow-[0_4px_15px_rgba(58,110,165,0.3)]"
-                  : "bg-white text-[#1A1A1A]/70 hover:bg-[#F5F5F5] hover:text-[#3A6EA5] border border-[#F5F5F5]"
-              }`}
+          {/* Botones */}
+          <div className="flex gap-4 mt-6">
+            <Link
+              href="#"
+              className="px-6 py-2 bg-[#0071e3] text-white rounded-full text-sm font-medium hover:opacity-90 transition"
             >
-              {filter}
-            </button>
-          ))} */}
-        </motion.div>
+              Ver Más
+            </Link>
 
-        {/* 🔹 Grid de productos */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
-        >
-          {productos.map((product) => (
-            <motion.div
-              key={product.intProducto}
-              variants={itemVariants}
-              whileHover={{ y: -8 }}
-              className="group relative bg-white rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_12px_40px_rgba(58,110,165,0.15)] transition-all duration-500"
+            <Link
+              href="#"
+              className="px-6 py-2 border border-[#0071e3] text-[#0071e3] rounded-full text-sm font-medium hover:bg-[#0071e3] hover:text-white transition"
             >
-              {/* Badge */}
-              {product.strEtiquetas  && (
-                <div className={`absolute top-3 left-3 z-10 px-3 py-1 rounded-full text-xs font-semibold shadow-lg ${
-                  product.strEtiquetas === "nuevo" 
-                    ? "bg-[#3A6EA5] text-white" 
-                    : product.strEtiquetas === "oferta"
-                    ? "bg-[#E6C89C] text-[#1A1A1A]"
-                    : "bg-[#8BAAAD] text-white"
-                }`}>
-                  {product.strEtiquetas}
-                </div>
-              )}
+              Comprar
+            </Link>
+          </div>
 
-              {/* Botón de favorito */}
-              <button className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-all duration-300 shadow-md hover:scale-110">
-                <svg className="w-5 h-5 text-[#1A1A1A]/60 hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-              </button>
+          {/* Imagen */}
+          <div className="relative w-full max-w-3xl mx-auto mt-10">
+            <img
+              src={product.strImagen}
+              alt={product.strNombre}
+              width={1500}
+              height={900}
+              className="object-contain mx-auto select-none pointer-events-none"
+            />
+          </div>
 
-              {/* Imagen */}
-              <div className="relative h-64 overflow-hidden bg-[#F5F5F5]">
-                <img
-                  src={product.jsonImagenes}
-                  alt={product.strNombre}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                {/* Overlay con botón de vista rápida */}
-                <div className="absolute inset-0 bg-[#1A1A1A]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <Link href={`/producto/${createProductSlug(product.strNombre)}`}>
-                    <button className="px-6 py-2.5 rounded-full bg-white text-[#3A6EA5] font-medium hover:bg-[#3A6EA5] hover:text-white transition-all duration-300 transform scale-90 group-hover:scale-100">
-                      Ver detalles
-                    </button>
-                  </Link>
-                </div>
-              </div>
+        </div>
+        ))}
 
-              {/* Contenido */}
-              <div className="p-5">
-                <p className="text-xs text-[#3A6EA5] font-medium mb-2">{product.tbCategoria.strNombre}</p>
-                <Link href={`/producto/${createProductSlug(product.strNombre)}`}>
-                  <h3 className="text-lg font-bold text-[#1A1A1A] mb-2 line-clamp-2 group-hover:text-[#3A6EA5] transition-colors duration-300 cursor-pointer">
-                    {product.strNombre}
-                  </h3>
-                </Link>
+       
 
-                {/* Rating */}
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                        <svg
-                          key={i}
-                          className={`w-4 h-4 ${i < 4 ? "text-[#E6C89C]" : "text-[#1A1A1A]/20"}`}
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                      ))}
-                  </div>
-                <span className="text-xs text-[#1A1A1A]/60">(0)</span>
-                </div>
-
-                {/* Variantes */}
-                {product.jsonVariantes && (
-                  <VariantesSelector 
-                    product={product} 
-                    onVariantChange={(color: string | null, talla: string | null) => handleVariantChange(product.intProducto, color, talla)}
-                  />
-                )}
-                
-                {/* Precio */}
-              <div className="flex items-baseline gap-2 mb-4">
-                {esDescuentoActivo(product) ? (
-                  <>
-                    <span className="text-2xl font-bold text-[#1A1A1A]">
-                      ${product.dblPrecioDescuento?.toLocaleString()}
-                    </span>
-                    <span className="text-sm text-[#1A1A1A]/40 line-through">
-                      ${product.dblPrecio.toLocaleString()}
-                    </span>
-                    {product.intPorcentajeDescuento && (
-                      <span className="text-xs px-2 py-1 rounded-full bg-emerald-500 text-white font-semibold">
-                        -{product.intPorcentajeDescuento}%
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <span className="text-2xl font-bold text-[#1A1A1A]">
-                    ${product.dblPrecio.toLocaleString()}
-                  </span>
-                )}
-              </div>
-
-                {/* Botón agregar al carrito */}
-                <button className="w-full py-2.5 rounded-xl bg-[#3A6EA5] text-white font-medium hover:bg-[#2E5A8C] transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
-                   onClick={() => handleAgregarCarrito(product)}>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 8h14m-10 0a1 1 0 11-2 0 1 1 0 012 0zm8 0a1 1 0 11-2 0 1 1 0 012 0z" />
-                  </svg>
-                  Agregar al carrito
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* 🔹 CTA Ver más */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="text-center mt-16"
-        >
-          <a
-            href="/products"
-            className="inline-flex items-center px-8 py-3 rounded-full bg-[#3A6EA5] text-white font-medium hover:bg-[#2E5A8C] transition-all duration-300 shadow-md hover:shadow-lg"
-          >
-            Ver todos los productos
-            <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-          </a>
-        </motion.div>
       </div>
+
+
     </section>
   );
 }

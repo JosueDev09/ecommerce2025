@@ -26,6 +26,7 @@ export default function ProductoDetalle() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [showImageZoom, setShowImageZoom] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Callback para manejar cambios de variantes
   const handleVariantChange = (color: string | null, talla: string | null) => {
@@ -149,6 +150,7 @@ export default function ProductoDetalle() {
     if (!producto?.jsonImagenes) return [];
     
     try {
+     // console.log("🔍 Parseando imágenes adicionales:", producto.jsonImagenes);
       return JSON.parse(producto.jsonImagenes);
     } catch {
       return [];
@@ -190,7 +192,9 @@ export default function ProductoDetalle() {
   }
 
   const imagenesAdicionales = getImagenes();
-  const todasLasImagenes = [producto.strImagen, ...imagenesAdicionales];
+  const todasLasImagenes = [producto.jsonImagenes, ...imagenesAdicionales];
+
+  console.log("🔍 Todas las imágenes del producto:", todasLasImagenes);
 
   return (
     <div className="min-h-screen  py-6 px-4 md:px-6 mt-[100px]">
@@ -234,16 +238,15 @@ export default function ProductoDetalle() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
           {/* Columna izquierda: Galería + Detalles */}
           <div className="space-y-4">
-            {/* Galería de imágenes - Estilo Apple Store */}
+            {/* Galería de imágenes - Estilo Apple Store con Slider */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
               className="bg-white rounded-2xl shadow-sm overflow-hidden"
             >
-              {/* Imagen principal */}
-              <div className="relative aspect-square overflow-hidden bg-[#FAFAFA]"
-                   onClick={() => setShowImageZoom(true)}>
+              {/* Slider de imágenes principales */}
+              <div className="relative aspect-square overflow-hidden bg-[#FAFAFA] group">
                 {producto.strEtiquetas && (
                   <div className={`absolute top-4 left-4 z-10 px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md ${
                     producto.strEtiquetas === "Nuevo"
@@ -278,15 +281,75 @@ export default function ProductoDetalle() {
                   </button>
                 </div>
 
-                <motion.img
-                  key={imagenActual}
-                  src={imagenActual}
-                  alt={producto.strNombre}
-                  className="w-full h-full object-cover cursor-zoom-in"
-                  initial={{ opacity: 0, scale: 1.05 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                />
+                {/* Slider Container */}
+                <div className="relative w-full h-full overflow-hidden">
+                  <motion.div
+                    className="flex h-full"
+                    animate={{ x: `-${currentImageIndex * 100}%` }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  >
+                    {todasLasImagenes.map((img, idx) => (
+                      <div key={idx} className="min-w-full h-full flex items-center justify-center">
+                        <motion.img
+                          src={img}
+                          alt={`${producto.strNombre} ${idx + 1}`}
+                          className="w-full h-full object-cover cursor-zoom-in"
+                          onClick={() => setShowImageZoom(true)}
+                          initial={{ opacity: 0, scale: 1.05 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.4, ease: "easeOut" }}
+                        />
+                      </div>
+                    ))}
+                  </motion.div>
+                </div>
+
+                {/* Botones de navegación - Estilo Apple */}
+                {todasLasImagenes.length > 0 && (
+                  <>
+                    {/* Botón Anterior */}
+                    <button
+                      onClick={() => setCurrentImageIndex(Math.max(0, currentImageIndex - 1))}
+                      disabled={currentImageIndex === 0}
+                      className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/95 backdrop-blur-md shadow-lg flex items-center justify-center transition-all ${
+                        currentImageIndex === 0
+                          ? "opacity-0 pointer-events-none"
+                          : "opacity-0 group-hover:opacity-100 hover:scale-110"
+                      }`}
+                    >
+                      <ChevronRight className="w-5 h-5 text-[#1A1A1A] rotate-180" />
+                    </button>
+
+                    {/* Botón Siguiente */}
+                    <button
+                      onClick={() => setCurrentImageIndex(Math.min(todasLasImagenes.length - 1, currentImageIndex + 1))}
+                      disabled={currentImageIndex === todasLasImagenes.length - 1}
+                      className={`absolute right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/95 backdrop-blur-md shadow-lg flex items-center justify-center transition-all ${
+                        currentImageIndex === todasLasImagenes.length - 1
+                          ? "opacity-0 pointer-events-none"
+                          : "opacity-0 group-hover:opacity-100 hover:scale-110"
+                      }`}
+                    >
+                      <ChevronRight className="w-5 h-5 text-[#1A1A1A]" />
+                    </button>
+
+                    {/* Indicadores de puntos */}
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+                      {todasLasImagenes.map((_, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setCurrentImageIndex(idx)}
+                          className={`transition-all ${
+                            idx === currentImageIndex
+                              ? "w-8 h-2 bg-white rounded-full"
+                              : "w-2 h-2 bg-white/50 rounded-full hover:bg-white/80"
+                          }`}
+                          aria-label={`Ir a imagen ${idx + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Miniaturas - Estilo Apple */}
@@ -296,9 +359,12 @@ export default function ProductoDetalle() {
                     {todasLasImagenes.map((img, idx) => (
                       <button
                         key={idx}
-                        onClick={() => setImagenActual(img)}
+                        onClick={() => {
+                          setImagenActual(img);
+                          setCurrentImageIndex(idx);
+                        }}
                         className={`relative flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden transition-all ${
-                          imagenActual === img
+                          currentImageIndex === idx
                             ? "ring-2 ring-[#0071e3] ring-offset-2 scale-105"
                             : "ring-1 ring-gray-200 hover:ring-gray-300 hover:scale-105"
                         }`}
@@ -308,7 +374,7 @@ export default function ProductoDetalle() {
                           alt={`${producto.strNombre} ${idx + 1}`} 
                           className="w-full h-full object-cover bg-[#FAFAFA]" 
                         />
-                        {imagenActual === img && (
+                        {currentImageIndex === idx && (
                           <motion.div
                             layoutId="thumbnail-indicator"
                             className="absolute inset-0 border-2 border-[#0071e3] rounded-xl"
