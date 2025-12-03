@@ -1,5 +1,5 @@
 "use client";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, color } from "framer-motion";
 import { useState } from "react";
 import Link from "next/link";
 import { useProductFilters } from "../../hooks/productHooks";
@@ -11,11 +11,10 @@ import { formatFecha } from "@/utils/formatearFechas";
 
 export default function ProductsPage() {
    const [showSuccess, setShowSuccess] = useState(false);
-   const { productos,agregarCarrito } = useTienda();
+   const { productos,agregarCarrito,handleVariantChange } = useTienda();
 
   const{
-    categories,sortOptions,toggleFavorite, containerVariants, itemVariants, filteredProducts, loading,
-    handleVariantChange, selectedVariants, setSelectedCategory, setSortBy, setPriceRange, 
+    categories,sortOptions,toggleFavorite, containerVariants, itemVariants, filteredProducts, loading, selectedVariants, setSelectedCategory, setSortBy, setPriceRange, 
     setSearchQuery, setViewMode, setShowFilters,viewMode, showFilters, favorites,sortBy,
     priceRange,selectedCategory,searchQuery
   } = useProductFilters();
@@ -41,6 +40,7 @@ export default function ProductsPage() {
     };
 
   const handleAgregarCarrito = (product: any) => {
+    console.log("Agregar al carrito:", product);
     agregarCarrito(product);
     setShowSuccess(true);
     
@@ -277,7 +277,7 @@ export default function ProductsPage() {
                       : "space-y-6"
                   }
                 >
-                  {filteredProducts.map((product) => (
+                  {filteredProducts.filter(product => product.bolActivo).map((product) => (
                     <motion.div
                       key={product.intProducto}
                       variants={itemVariants}
@@ -363,7 +363,9 @@ export default function ProductsPage() {
                             product={product} 
                             onVariantChange={(color, talla) => handleVariantChange(product.intProducto, color, talla)}
                           />
-                        )}
+                      
+                        ) }
+                          
 
                         <div className="flex items-baseline gap-2 mb-4">
                           {esDescuentoActivo(product) ? (

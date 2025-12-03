@@ -68,6 +68,8 @@ export function VariantesSelector({ product, onVariantChange }: VariantesCompone
         onVariantChange(selectedColor, talla);
       }
     };
+    // console.log("Colores disponibles:", selectedColor);
+    // console.log("Tallas disponibles:", selectedTalla);
 
     return (
       <div className="mb-3 space-y-2">
@@ -79,6 +81,8 @@ export function VariantesSelector({ product, onVariantChange }: VariantesCompone
             </p>
             <div className="flex gap-2 flex-wrap">
               {colores.slice(0, 4).map((color, idx) => (
+
+                
                 <div
                   key={idx}
                   onClick={() => handleColorClick(color)}

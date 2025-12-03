@@ -180,6 +180,7 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
     const colorSeleccionado = variants.color || null;
     const tallaSeleccionada = variants.talla || null;
 
+    console.log("Agregar al carrito:", producto.strNombre, "Color:", colorSeleccionado, "Talla:", tallaSeleccionada);
     // Validar si el descuento está activo
     const esDescuentoActivo = () => {
       if (

@@ -50,6 +50,8 @@ export default function CartPage() {
     }
   };
 
+
+
   const subtotal = carrito.reduce((sum, item) => sum + obtenerPrecioFinal(item) * item.cantidad, 0);
   const discountAmount = subtotal * discount;
   const shipping = subtotal > 5000 ? 0 : 299;
@@ -152,6 +154,10 @@ export default function CartPage() {
                               {item.nombre}
                             </h3>
                             <p className="text-sm text-[#1A1A1A]/60">Color: {item.color}</p>
+
+                            {item.talla !== null && (
+                              <p className="text-sm text-[#1A1A1A]/60">Talla: {item.talla}</p>
+                            )}
                             {item.tieneDescuento && item.precioDescuento && (
                               <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-emerald-500 text-white text-xs font-semibold">
                                 Con descuento

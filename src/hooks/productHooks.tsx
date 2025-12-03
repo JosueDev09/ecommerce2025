@@ -82,7 +82,9 @@ export function useProductFilters() {
       ...prev,
       [productId]: { color, talla },
     }));
+   // console.log("Manejando cambio de variante para producto", productId, "Color:", color, "Talla:", talla)
   };
+  //console.log("Selected Variants:", selectedVariants);
     const categories = ["Todos", "Electrónica", "Deportes", "Hogar", "Moda"];
 
 
