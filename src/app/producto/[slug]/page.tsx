@@ -15,12 +15,13 @@ export default function ProductoDetalle() {
   const params = useParams();
   const router = useRouter();
   const slug = params.slug as string;
-  const { agregarCarrito } = useTienda();
+  const { agregarCarrito, handleVariantChange: updateContextVariant } = useTienda();
 
   const [producto, setProducto] = useState<Productos | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedTalla, setSelectedTalla] = useState<string | null>(null);
+  const [varianteSeleccionada, setVarianteSeleccionada] = useState<any>(null);
   const [cantidad, setCantidad] = useState(1);
   const [imagenActual, setImagenActual] = useState<string>("");
   const [showSuccess, setShowSuccess] = useState(false);
@@ -29,9 +30,31 @@ export default function ProductoDetalle() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Callback para manejar cambios de variantes
-  const handleVariantChange = (color: string | null, talla: string | null) => {
+  const handleVariantChange = (
+    color: string | null, 
+    talla: string | null, 
+    varianteCompleta?: any
+  ) => {
     setSelectedColor(color);
     setSelectedTalla(talla);
+    setVarianteSeleccionada(varianteCompleta || null);
+    
+    // Actualizar el contexto global
+    if (producto) {
+      updateContextVariant(producto.intProducto, color, talla, varianteCompleta);
+    }
+    
+    // Si la variante tiene imagen propia, cambiar la imagen actual
+    if (varianteCompleta?.strImagen) {
+      setImagenActual(varianteCompleta.strImagen);
+    }
+
+    // console.log('✅ Variante cambiada:', {
+    //   color,
+    //   talla,
+    //   stock: varianteCompleta?.intStock,
+    //   precioAdicional: varianteCompleta?.dblPrecioAdicional
+    // });
   };
 
   // Función para validar si el descuento está activo
@@ -84,6 +107,19 @@ export default function ProductoDetalle() {
                   tbCategoria {
                     intCategoria
                     strNombre
+                  }
+                  tbProductoVariantes {
+                    intVariante
+                    intProducto
+                    strTalla
+                    strColor
+                    intStock
+                    strSKU
+                    dblPrecioAdicional
+                    strImagen
+                    bolActivo
+                    datCreacion
+                    datActualizacion
                   }
                 }
               }
@@ -194,7 +230,7 @@ export default function ProductoDetalle() {
   const imagenesAdicionales = getImagenes();
   const todasLasImagenes = [producto.jsonImagenes, ...imagenesAdicionales];
 
-  console.log("🔍 Todas las imágenes del producto:", todasLasImagenes);
+  //console.log("🔍 Todas las imágenes del producto:", todasLasImagenes);
 
   return (
     <div className="min-h-screen  py-6 px-4 md:px-6 mt-[100px]">
@@ -510,7 +546,10 @@ export default function ProductoDetalle() {
                   <>
                     <div className="flex items-center gap-2">
                       <span className="text-3xl font-light text-[#1A1A1A]">
-                        ${producto.dblPrecioDescuento?.toLocaleString()}
+                        ${(
+                          (producto.dblPrecioDescuento || 0) + 
+                          (varianteSeleccionada?.dblPrecioAdicional || 0)
+                        ).toLocaleString()}
                       </span>
                       {producto.intPorcentajeDescuento && (
                         <span className="px-2 py-0.5 rounded bg-green-100 text-green-700 text-xs font-semibold">
@@ -519,13 +558,24 @@ export default function ProductoDetalle() {
                       )}
                     </div>
                     <span className="text-sm text-[#1A1A1A]/50 line-through">
-                      ${producto.dblPrecio.toLocaleString()}
+                      ${(
+                        producto.dblPrecio + 
+                        (varianteSeleccionada?.dblPrecioAdicional || 0)
+                      ).toLocaleString()}
                     </span>
                   </>
                 ) : (
                   <span className="text-3xl font-light text-[#1A1A1A]">
-                    ${producto.dblPrecio.toLocaleString()}
+                    ${(
+                      producto.dblPrecio + 
+                      (varianteSeleccionada?.dblPrecioAdicional || 0)
+                    ).toLocaleString()}
                   </span>
+                )}
+                {varianteSeleccionada?.dblPrecioAdicional && varianteSeleccionada.dblPrecioAdicional > 0 && (
+                  <p className="text-xs text-blue-600 font-medium">
+                    +${varianteSeleccionada.dblPrecioAdicional.toLocaleString()} por esta variante
+                  </p>
                 )}
                 <p className="text-xs text-green-600 font-medium">Envío gratis a todo el país</p>
               </div>

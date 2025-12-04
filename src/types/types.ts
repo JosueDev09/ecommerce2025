@@ -1,3 +1,17 @@
+export interface ProductoVariante {
+  intVariante: number;
+  intProducto: number;
+  strTalla: string;
+  strColor: string;
+  intStock: number;
+  strSKU?: string;
+  dblPrecioAdicional?: number;
+  strImagen?: string;
+  bolActivo: boolean;
+  datCreacion: string;
+  datActualizacion: string;
+}
+
 export interface Productos{
   intProducto: number;
   strNombre: string;
@@ -17,7 +31,8 @@ export interface Productos{
   strEtiquetas?: string;
   jsonVariantes?: string;
   jsonImagenes?: string;
-  intStock?: number; // 👈 AGREGADO: Stock disponible
+  intStock?: number; // 👈 Stock disponible
+  variantes?: ProductoVariante[]; // 👈 NUEVO: Array de variantes desde la tabla
   datCreacion: string;
   datActualizacion?: string;
   tbCategoria: {

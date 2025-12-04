@@ -8,12 +8,21 @@ interface TiendaContextType {
   productos: Productos[];
   carrito: ItemCarrito[];
   loading: boolean;
-  selectedVariants: Record<number, { color: string | null; talla: string | null }>;
+  selectedVariants: Record<number, { 
+    color: string | null; 
+    talla: string | null;
+    varianteCompleta?: any; // Información completa de la variante seleccionada
+  }>;
   agregarCarrito: (producto: Productos) => void;
   eliminarDelCarrito: (id: number, color: string | null, talla: string | null) => void;
   aumentarCantidad: (id: number, color: string | null, talla: string | null) => void;
   disminuirCantidad: (id: number, color: string | null, talla: string | null) => void;
-  handleVariantChange: (productId: number, color: string | null, talla: string | null) => void;
+  handleVariantChange: (
+    productId: number, 
+    color: string | null, 
+    talla: string | null,
+    varianteCompleta?: any
+  ) => void;
   getCantidadPorProducto: (id: number) => number;
   getResumenCarrito: () => Array<{ nombre: string; cantidad: number; color: string | null; talla: string | null }>;
   limpiarCarrito: () => void;
@@ -23,7 +32,11 @@ const TiendaContext = createContext<TiendaContextType | undefined>(undefined);
 
 export function TiendaProvider({ children }: { children: React.ReactNode }) {
   const [productos, setProductos] = useState<Productos[]>([]);
-  const [selectedVariants, setSelectedVariants] = useState<Record<number, { color: string | null; talla: string | null }>>({});
+  const [selectedVariants, setSelectedVariants] = useState<Record<number, { 
+    color: string | null; 
+    talla: string | null;
+    varianteCompleta?: any;
+  }>>({});
   const [carrito, setCarrito] = useState<ItemCarrito[]>([]);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
@@ -134,6 +147,19 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
                     intCategoria
                     strNombre
                   }
+                  tbProductoVariantes {
+                    intVariante
+                    intProducto
+                    strTalla
+                    strColor
+                    intStock
+                    strSKU
+                    dblPrecioAdicional
+                    strImagen
+                    bolActivo
+                    datCreacion
+                    datActualizacion
+                  }
                 }
               }
             `,
@@ -167,11 +193,29 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
   }, [carrito, mounted, currentUserId]);
 
   // 🎨 Manejo de variantes (color/talla)
-  const handleVariantChange = (productId: number, color: string | null, talla: string | null) => {
+  const handleVariantChange = (
+    productId: number, 
+    color: string | null, 
+    talla: string | null,
+    varianteCompleta?: any
+  ) => {
     setSelectedVariants((prev) => ({
       ...prev,
-      [productId]: { color, talla },
+      [productId]: { 
+        color, 
+        talla,
+        varianteCompleta // Guardamos toda la información de la variante
+      },
     }));
+    
+    // console.log('🎨 Variante seleccionada:', {
+    //   productId,
+    //   color,
+    //   talla,
+    //   stock: varianteCompleta?.intStock,
+    //   sku: varianteCompleta?.strSKU,
+    //   precioAdicional: varianteCompleta?.dblPrecioAdicional
+    // });
   };
 
   // 🛍️ Agregar producto al carrito
@@ -179,45 +223,76 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
     const variants = selectedVariants[producto.intProducto] || {};
     const colorSeleccionado = variants.color || null;
     const tallaSeleccionada = variants.talla || null;
+    const varianteCompleta = variants.varianteCompleta;
 
-    console.log("Agregar al carrito:", producto.strNombre, "Color:", colorSeleccionado, "Talla:", tallaSeleccionada);
+    // console.log("🛒 Agregando al carrito:", {
+    //   producto: producto.strNombre,
+    //   color: colorSeleccionado,
+    //   talla: tallaSeleccionada,
+    //   varianteInfo: varianteCompleta
+    // });
+
+    // Si hay variantes de tabla, usar el stock de la variante específica
+    let stockDisponible = producto.intStock || 0;
+    let precioFinal = producto.dblPrecio;
+    let skuFinal = producto.strSKU;
+
+    if (varianteCompleta) {
+      stockDisponible = varianteCompleta.intStock || 0;
+      skuFinal = varianteCompleta.strSKU || producto.strSKU;
+      
+      // Si hay precio adicional, sumarlo
+      if (varianteCompleta.dblPrecioAdicional) {
+        precioFinal += varianteCompleta.dblPrecioAdicional;
+      }
+
+      // console.log("📊 Usando datos de variante:", {
+      //   stock: stockDisponible,
+      //   sku: skuFinal,
+      //   precioBase: producto.dblPrecio,
+      //   precioAdicional: varianteCompleta.dblPrecioAdicional,
+      //   precioFinal
+      // });
+    }
+
+    // Validar stock antes de agregar
+    if (stockDisponible <= 0) {
+      console.warn(`⚠️ Sin stock disponible para "${producto.strNombre}" (${colorSeleccionado}/${tallaSeleccionada})`);
+      alert(`Lo sentimos, no hay stock disponible para esta variante.`);
+      return;
+    }
+
     // Validar si el descuento está activo
     const esDescuentoActivo = () => {
       if (
-              !producto.bolTieneDescuento ||
-              !producto.datInicioDescuento ||
-              !producto.datFinDescuento
-            ) {
-              return false;
-            }
-      
-            const ahora = Date.now(); // número
-            const inicio = Number(producto.datInicioDescuento); // número
-            const fin = Number(producto.datFinDescuento);       // número
-      
-            // Solo para ver las fechas formateadas en consola (opcional)
-            // console.log("Fecha inicio:", formatFecha(inicio));
-            // console.log("Fecha fin:", formatFecha(fin));
-      
-            return formatFecha(ahora) >= formatFecha(inicio) && formatFecha(ahora) <= formatFecha(fin);
+        !producto.bolTieneDescuento ||
+        !producto.datInicioDescuento ||
+        !producto.datFinDescuento
+      ) {
+        return false;
+      }
+
+      const ahora = Date.now();
+      const inicio = Number(producto.datInicioDescuento);
+      const fin = Number(producto.datFinDescuento);
+
+      return formatFecha(ahora) >= formatFecha(inicio) && formatFecha(ahora) <= formatFecha(fin);
     };
 
     const descuentoActivo = esDescuentoActivo();
 
-    //console.log("Agregar al carrito",itemCarrito)
-
     const itemCarrito: ItemCarrito = {
       id: producto.intProducto,
       nombre: producto.strNombre,
-      precio: producto.dblPrecio,
+      precio: precioFinal, // Usar precio con adicional si aplica
       precioDescuento: descuentoActivo ? (producto.dblPrecioDescuento || null) : null,
       tieneDescuento: descuentoActivo,
       color: colorSeleccionado,
       talla: tallaSeleccionada,
-      imagen: producto.jsonImagenes || "",
+      imagen: producto.jsonImagenes || producto.strImagen || "",
       categoria: producto.tbCategoria?.strNombre || "",
       cantidad: 1,
-      stock: producto.intStock || 0, // 👈 AGREGADO: Incluir stock al agregar
+      stock: stockDisponible, // Stock de la variante específica
     };
 
     setCarrito((prev) => {
@@ -230,9 +305,10 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
 
       if (existe) {
         // Validar que no exceda el stock
-        if (existe.cantidad >= (existe.stock || 0)) {
+        if (existe.cantidad >= stockDisponible) {
           console.warn(`⚠️ Stock máximo alcanzado para "${producto.strNombre}"`);
-          return prev; // No aumentar si ya llegó al límite
+          alert(`Stock máximo alcanzado (${stockDisponible} unidades disponibles)`);
+          return prev;
         }
         console.log(`✅ Producto "${producto.strNombre}" cantidad aumentada`);
         return prev.map((p) =>
@@ -243,7 +319,7 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
             : p
         );
       } else {
-       // console.log(`✅ Producto "${producto.strNombre}" agregado al carrito`);
+        console.log(`✅ Producto "${producto.strNombre}" agregado al carrito`);
         return [...prev, itemCarrito];
       }
     });
