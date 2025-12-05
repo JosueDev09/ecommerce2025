@@ -72,73 +72,59 @@ export default function CartPage() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#F5F5F5] to-[#FFFFFF] py-12 px-4 md:px-6">
-      {/* Decoraciones de fondo */}
-      <div className="absolute top-20 right-0 w-96 h-96 bg-[#3A6EA5]/10 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-40 left-0 w-80 h-80 bg-[#E6C89C]/15 rounded-full blur-[130px] pointer-events-none" />
-
-       
-      <div className="relative max-w-7xl mx-auto">
+    <div className="min-h-screen bg-[#F8F8F8] py-16 px-4 md:px-8">
+      <div className="max-w-[1400px] mx-auto">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-8"
+          transition={{ duration: 0.5 }}
+          className="mb-12"
         >
-          <h1 className="text-3xl md:text-4xl font-bold text-[#1A1A1A] mb-2">
-            Carrito de{" "}
-            <span className="bg-gradient-to-r from-[#3A6EA5] via-[#8BAAAD] to-[#E6C89C] bg-clip-text text-transparent">
-              Compras
-            </span>
+          <h1 className="font-[family-name:var(--font-playfair)] text-5xl text-black tracking-tight">
+            Shopping Bag
           </h1>
-          <p className="text-[#1A1A1A]/70">
-            {carrito.length} {carrito.length === 1 ? "producto" : "productos"} en tu carrito
-          </p>
         </motion.div>
 
         {carrito.length === 0 ? (
           /* Carrito vacío */
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-3xl p-12 text-center shadow-lg"
+            className="bg-white rounded-sm p-20 text-center"
           >
-            <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#3A6EA5]/10 flex items-center justify-center">
-              <svg className="w-12 h-12 text-[#3A6EA5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 8h14m-10 0a1 1 0 11-2 0 1 1 0 012 0zm8 0a1 1 0 11-2 0 1 1 0 012 0z" />
+            <div className="w-20 h-20 mx-auto mb-8 flex items-center justify-center">
+              <svg className="w-full h-full text-gray-300" fill="none" stroke="currentColor" strokeWidth="1" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-[#1A1A1A] mb-3">Tu carrito está vacío</h2>
-            <p className="text-[#1A1A1A]/60 mb-8">Agrega productos para comenzar tu compra</p>
+            <h2 className="font-[family-name:var(--font-inter)] text-xl font-light text-black mb-4">Your bag is empty</h2>
+            <p className="font-[family-name:var(--font-inter)] text-sm text-gray-500 mb-10">Add items to get started</p>
             <a
               href="/products"
-              className="inline-flex items-center px-8 py-3 rounded-full bg-[#3A6EA5] text-white font-medium hover:bg-[#2E5A8C] transition-all duration-300 shadow-md hover:shadow-lg"
+              className="inline-block px-10 py-3 bg-black text-white font-[family-name:var(--font-inter)] text-sm font-medium tracking-widest uppercase hover:bg-gray-900 transition-colors duration-300"
             >
-              Explorar productos
-              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
+              Continue Shopping
             </a>
           </motion.div>
         ) : (
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Lista de productos */}
-            <div className="lg:col-span-2 space-y-4">
+          <div className="grid lg:grid-cols-[1fr_400px] gap-8">
+            {/* Lista de productos - Izquierda */}
+            <div className="space-y-0">
               <AnimatePresence mode="popLayout">
-                {carrito.map((item) => (
+                {carrito.map((item, index) => (
                   <motion.div
-                    key={item.id}
+                    key={`${item.id}-${item.color}-${item.talla}-${index}`}
                     variants={itemVariants}
                     initial="hidden"
                     animate="visible"
                     exit="exit"
                     layout
-                    className="bg-white rounded-2xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgba(58,110,165,0.12)] transition-shadow duration-300"
+                    className="bg-white p-8 border-b border-gray-100 last:border-b-0"
                   >
-                    <div className="flex gap-6">
+                    <div className="flex gap-8">
                       {/* Imagen del producto */}
-                      <div className="relative flex-shrink-0 w-28 h-28 rounded-xl overflow-hidden bg-[#F5F5F5]">
+                      <div className="relative flex-shrink-0 w-32 h-32 bg-gray-50">
                         <img
                           src={item.imagen}
                           alt={item.nombre}
@@ -147,161 +133,135 @@ export default function CartPage() {
                       </div>
 
                       {/* Información del producto */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <h3 className="text-lg font-bold text-[#1A1A1A] mb-1">
-                              {item.nombre}
-                            </h3>
-                            <p className="text-sm text-[#1A1A1A]/60">Color: {item.color}</p>
-
-                            {item.talla !== null && (
-                              <p className="text-sm text-[#1A1A1A]/60">Talla: {item.talla}</p>
+                      <div className="flex-1 flex flex-col justify-between min-w-0">
+                        <div>
+                          <h3 className="font-[family-name:var(--font-inter)] text-base font-medium text-black mb-3">
+                            {item.nombre}
+                          </h3>
+                          
+                          <div className="space-y-1">
+                            <p className="font-[family-name:var(--font-inter)] text-sm text-gray-600">
+                              ${obtenerPrecioFinal(item).toLocaleString()}
+                            </p>
+                            {item.color && (
+                              <p className="font-[family-name:var(--font-inter)] text-sm text-gray-600">
+                                Color: {item.color}
+                              </p>
                             )}
-                            {item.tieneDescuento && item.precioDescuento && (
-                              <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-emerald-500 text-white text-xs font-semibold">
-                                Con descuento
-                              </span>
-                            )}
-                          </div>
-                          <button
-                             onClick={() => eliminarDelCarrito(item.id, item.color || null, item.talla || null)}
-                            className="p-2 rounded-full hover:bg-red-50 text-[#1A1A1A]/40 hover:text-red-500 transition-all duration-300"
-                          >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          </button>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4">
-                          {/* Control de cantidad */}
-                          <div className="flex items-center gap-3">
-                            <span className="text-sm text-[#1A1A1A]/60">Cantidad:</span>
-                            <div className="flex items-center gap-2 bg-[#F5F5F5] rounded-lg p-1">
-                              <button
-                                onClick={() => disminuirCantidad(item.id, item.color || null, item.talla || null)}
-                                className="w-8 h-8 rounded-md hover:bg-white transition-colors flex items-center justify-center text-[#3A6EA5] font-bold"
-                              >
-                                −
-                              </button>
-                              <span className="w-12 text-center font-semibold text-[#1A1A1A]">
-                                {item.cantidad}
-                              </span>
-                              <button
-                                onClick={() => aumentarCantidad(item.id, item.color || null, item.talla || null)}
-                                disabled={item.cantidad >= (item.stock || 0)}
-                                className="w-8 h-8 rounded-md hover:bg-white transition-colors flex items-center justify-center text-[#3A6EA5] font-bold disabled:opacity-40 disabled:cursor-not-allowed"
-                              >
-                                +
-                              </button>
-                            </div>
-                            {/* Mostrar stock disponible */}
-                            {item.stock! >= 100 && (
-                              <span className="text-xs text-[#1A1A1A]/50 ml-2">
-                                Stock: <span className="text-green-600">Disponible</span>
-                              </span>
-                            )}
-                              {item.stock! < 3 && (
-                              <span className="text-xs text-[#1A1A1A]/50 ml-2">
-                                Stock: <span className="text-red-600">Quedan pocas unidades.</span>
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Precio */}
-                          <div className="text-right">
-                            {item.tieneDescuento && item.precioDescuento ? (
-                              <>
-                                <div className="text-2xl font-bold text-[#3A6EA5]">
-                                  ${(item.precioDescuento * item.cantidad).toLocaleString()}
-                                </div>
-                                <div className="text-sm text-[#1A1A1A]/40 line-through">
-                                  ${(item.precio * item.cantidad).toLocaleString()}
-                                </div>
-                                <div className="text-xs text-[#1A1A1A]/60">
-                                  ${item.precioDescuento.toLocaleString()} c/u
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <div className="text-2xl font-bold text-[#3A6EA5]">
-                                  ${(item.precio * item.cantidad).toLocaleString()}
-                                </div>
-                                <div className="text-sm text-[#1A1A1A]/60">
-                                  ${item.precio.toLocaleString()} c/u
-                                </div>
-                              </>
+                            {item.talla && (
+                              <p className="font-[family-name:var(--font-inter)] text-sm text-gray-600">
+                                Size: {item.talla}
+                              </p>
                             )}
                           </div>
                         </div>
 
-                        {/* Stock warning */}
-                        {item.cantidad >= 3 && (
-                          <div className="mt-3 text-xs text-amber-600 bg-amber-50 px-3 py-1 rounded-lg inline-block">
-                            Cantidad de unidades por cliente alcanzada.
+                        <div className="flex items-center justify-between mt-6">
+                          {/* Control de cantidad minimalista */}
+                          <div className="flex items-center gap-4">
+                            <button
+                              onClick={() => disminuirCantidad(item.id, item.color || null, item.talla || null)}
+                              className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-black transition-colors duration-200 border border-gray-200 hover:border-black"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
+                              </svg>
+                            </button>
+                            
+                            <span className="font-[family-name:var(--font-inter)] text-sm text-black w-8 text-center">
+                              {item.cantidad}
+                            </span>
+                            
+                            <button
+                              onClick={() => aumentarCantidad(item.id, item.color || null, item.talla || null)}
+                              disabled={item.cantidad >= (item.stock || 0)}
+                              className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-black transition-colors duration-200 border border-gray-200 hover:border-black disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m7-7H5" />
+                              </svg>
+                            </button>
                           </div>
-                        )}
+
+                          {/* Acciones */}
+                          <div className="flex items-center gap-6">
+                            <button className="font-[family-name:var(--font-inter)] text-sm text-gray-500 hover:text-black underline transition-colors duration-200">
+                              Move to Wishlist
+                            </button>
+                            <button
+                              onClick={() => eliminarDelCarrito(item.id, item.color || null, item.talla || null)}
+                              className="font-[family-name:var(--font-inter)] text-sm text-gray-500 hover:text-black underline transition-colors duration-200"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </motion.div>
                 ))}
               </AnimatePresence>
-
-              {/* Continuar comprando */}
-              <motion.a
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                href="/products"
-                className="flex items-center gap-2 text-[#3A6EA5] hover:text-[#2E5A8C] font-medium mt-6 group"
-              >
-                <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                Continuar comprando
-              </motion.a>
             </div>
 
-            {/* Resumen del pedido */}
+            {/* Order Summary - Derecha */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="lg:col-span-1"
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="lg:sticky lg:top-8 h-fit"
             >
-              <div className="bg-white rounded-2xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.08)] sticky top-6">
-                <h2 className="text-xl font-bold text-[#1A1A1A] mb-6">Resumen del Pedido</h2>
-
+              <div className="bg-white p-8">
+                <h2 className="font-[family-name:var(--font-playfair)] text-2xl text-black mb-8 tracking-tight">
+                  Order Summary
+                </h2>
 
                 {/* Desglose de precios */}
-                <div className="space-y-3 mb-6 pb-6 border-b border-[#F5F5F5]">
-                  <div className="flex justify-between text-[#1A1A1A]/70">
-                    <span>Subtotal</span>
-                    <span>${subtotal.toLocaleString()}</span>
+                <div className="space-y-4 mb-6 pb-6 border-b border-gray-100">
+                  <div className="flex justify-between items-center">
+                    <span className="font-[family-name:var(--font-inter)] text-sm text-gray-600">
+                      Subtotal
+                    </span>
+                    <span className="font-[family-name:var(--font-inter)] text-sm text-black">
+                      ${subtotal.toLocaleString()}
+                    </span>
                   </div>
-                 
+                  
+                  <div className="flex justify-between items-center">
+                    <span className="font-[family-name:var(--font-inter)] text-sm text-gray-600">
+                      Shipping
+                    </span>
+                    <span className="font-[family-name:var(--font-inter)] text-sm text-black">
+                      {shipping === 0 ? "Complimentary" : `$${shipping}`}
+                    </span>
+                  </div>
+
                   {discount > 0 && (
-                    <div className="flex justify-between text-green-600">
-                      <span>Descuento ({discount * 100}%)</span>
-                      <span>-${discountAmount.toLocaleString()}</span>
+                    <div className="flex justify-between items-center text-green-600">
+                      <span className="font-[family-name:var(--font-inter)] text-sm">
+                        Discount ({discount * 100}%)
+                      </span>
+                      <span className="font-[family-name:var(--font-inter)] text-sm">
+                        -${discountAmount.toLocaleString()}
+                      </span>
                     </div>
                   )}
-                  <div className="flex justify-between text-[#1A1A1A]/70">
-                    <span>Envío</span>
-                    <span>{shipping === 0 ? "Gratis" : `$${shipping}`}</span>
+
+                  <div className="flex justify-between items-center">
+                    <span className="font-[family-name:var(--font-inter)] text-sm text-gray-600">
+                      Taxes
+                    </span>
+                    <span className="font-[family-name:var(--font-inter)] text-sm text-black">
+                      Calculated at checkout
+                    </span>
                   </div>
-                  {subtotal < 5000 && (
-                    <div className="text-xs text-[#3A6EA5] bg-[#3A6EA5]/10 px-3 py-2 rounded-lg">
-                      Envío gratis en compras mayores a $5,000
-                    </div>
-                  )}
                 </div>
 
                 {/* Total */}
-                <div className="flex justify-between items-center mb-6">
-                  <span className="text-lg font-bold text-[#1A1A1A]">Total</span>
-                  <span className="text-3xl font-bold text-[#3A6EA5]">
+                <div className="flex justify-between items-center mb-8 pb-8 border-b border-gray-100">
+                  <span className="font-[family-name:var(--font-inter)] text-lg font-medium text-black">
+                    Total
+                  </span>
+                  <span className="font-[family-name:var(--font-inter)] text-2xl font-medium text-black">
                     ${total.toLocaleString()}
                   </span>
                 </div>
@@ -309,48 +269,21 @@ export default function CartPage() {
                 {/* Botón de checkout */}
                 <button 
                   onClick={handleCheckout}
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] text-white font-semibold hover:shadow-lg transition-all duration-300 mb-3 flex items-center justify-center gap-2"
+                  className="w-full py-4 bg-[#4C6EF5] text-white text-center font-[family-name:var(--font-inter)] text-sm font-medium tracking-wider uppercase hover:bg-[#3D5FE6] transition-colors duration-300 mb-6"
                 >
-                  Proceder al pago
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
+                  Proceed to Checkout
                 </button>
 
                 {/* Métodos de pago */}
                 <div className="text-center">
-                  <p className="text-xs text-[#1A1A1A]/50 mb-3">Métodos de pago seguros</p>
-                  <div className="flex justify-center gap-2">
-                    {["Visa", "Mastercard", "PayPal"].map((method) => (
-                      <div
-                        key={method}
-                        className="px-3 py-1.5 rounded-md bg-[#F5F5F5] text-[#1A1A1A]/60 text-xs font-medium"
-                      >
-                        {method}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Garantías */}
-                <div className="mt-6 pt-6 border-t border-[#F5F5F5] space-y-3">
-                  <div className="flex items-center gap-3 text-sm text-[#1A1A1A]/70">
-                    <svg className="w-5 h-5 text-[#3A6EA5] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                    Compra 100% segura
-                  </div>
-                  <div className="flex items-center gap-3 text-sm text-[#1A1A1A]/70">
-                    <svg className="w-5 h-5 text-[#3A6EA5] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    30 días para devoluciones
-                  </div>
-                  <div className="flex items-center gap-3 text-sm text-[#1A1A1A]/70">
-                    <svg className="w-5 h-5 text-[#3A6EA5] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    Envío express disponible
+                  <p className="font-[family-name:var(--font-inter)] text-xs text-gray-400 mb-4 tracking-wide">
+                    We accept
+                  </p>
+                  <div className="flex justify-center gap-3 opacity-40">
+                    <div className="w-10 h-7 bg-gray-200 rounded"></div>
+                    <div className="w-10 h-7 bg-gray-200 rounded"></div>
+                    <div className="w-10 h-7 bg-gray-200 rounded"></div>
+                    <div className="w-10 h-7 bg-gray-200 rounded"></div>
                   </div>
                 </div>
               </div>
