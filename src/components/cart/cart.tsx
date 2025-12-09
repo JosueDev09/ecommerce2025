@@ -72,7 +72,7 @@ export default function CartPage() {
 
 
   return (
-    <div className="min-h-screen bg-[#F8F8F8] py-16 px-4 md:px-8">
+    <div className="min-h-screen  py-16 px-4 md:px-8">
       <div className="max-w-[1400px] mx-auto">
         {/* Header */}
         <motion.div
@@ -82,7 +82,7 @@ export default function CartPage() {
           className="mb-12"
         >
           <h1 className="font-[family-name:var(--font-playfair)] text-5xl text-black tracking-tight">
-            Shopping Bag
+            Bolsa de Compras
           </h1>
         </motion.div>
 
@@ -98,13 +98,13 @@ export default function CartPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
               </svg>
             </div>
-            <h2 className="font-[family-name:var(--font-inter)] text-xl font-light text-black mb-4">Your bag is empty</h2>
-            <p className="font-[family-name:var(--font-inter)] text-sm text-gray-500 mb-10">Add items to get started</p>
+            <h2 className="font-[family-name:var(--font-inter)] text-xl font-light text-black mb-4">Tu carrito está vacío</h2>
+            <p className="font-[family-name:var(--font-inter)] text-sm text-gray-500 mb-10">Agrega artículos para comenzar</p>
             <a
               href="/products"
               className="inline-block px-10 py-3 bg-black text-white font-[family-name:var(--font-inter)] text-sm font-medium tracking-widest uppercase hover:bg-gray-900 transition-colors duration-300"
             >
-              Continue Shopping
+              Continuar comprando...
             </a>
           </motion.div>
         ) : (
@@ -150,7 +150,7 @@ export default function CartPage() {
                             )}
                             {item.talla && (
                               <p className="font-[family-name:var(--font-inter)] text-sm text-gray-600">
-                                Size: {item.talla}
+                                Talla: {item.talla}
                               </p>
                             )}
                           </div>
@@ -185,14 +185,12 @@ export default function CartPage() {
 
                           {/* Acciones */}
                           <div className="flex items-center gap-6">
-                            <button className="font-[family-name:var(--font-inter)] text-sm text-gray-500 hover:text-black underline transition-colors duration-200">
-                              Move to Wishlist
-                            </button>
+                           
                             <button
                               onClick={() => eliminarDelCarrito(item.id, item.color || null, item.talla || null)}
                               className="font-[family-name:var(--font-inter)] text-sm text-gray-500 hover:text-black underline transition-colors duration-200"
                             >
-                              Remove
+                              Eliminar
                             </button>
                           </div>
                         </div>
@@ -212,7 +210,7 @@ export default function CartPage() {
             >
               <div className="bg-white p-8">
                 <h2 className="font-[family-name:var(--font-playfair)] text-2xl text-black mb-8 tracking-tight">
-                  Order Summary
+                  Resumen del Pedido
                 </h2>
 
                 {/* Desglose de precios */}
@@ -228,17 +226,17 @@ export default function CartPage() {
                   
                   <div className="flex justify-between items-center">
                     <span className="font-[family-name:var(--font-inter)] text-sm text-gray-600">
-                      Shipping
+                      Envío
                     </span>
                     <span className="font-[family-name:var(--font-inter)] text-sm text-black">
-                      {shipping === 0 ? "Complimentary" : `$${shipping}`}
+                      {shipping === 0 ? "Calculado al finalizar la compra" : `$${shipping}`}
                     </span>
                   </div>
 
                   {discount > 0 && (
                     <div className="flex justify-between items-center text-green-600">
                       <span className="font-[family-name:var(--font-inter)] text-sm">
-                        Discount ({discount * 100}%)
+                        Descuento ({discount * 100}%)
                       </span>
                       <span className="font-[family-name:var(--font-inter)] text-sm">
                         -${discountAmount.toLocaleString()}
@@ -248,10 +246,10 @@ export default function CartPage() {
 
                   <div className="flex justify-between items-center">
                     <span className="font-[family-name:var(--font-inter)] text-sm text-gray-600">
-                      Taxes
+                      Impuestos
                     </span>
                     <span className="font-[family-name:var(--font-inter)] text-sm text-black">
-                      Calculated at checkout
+                      Calculado al finalizar la compra
                     </span>
                   </div>
                 </div>
@@ -271,13 +269,13 @@ export default function CartPage() {
                   onClick={handleCheckout}
                   className="w-full py-4 bg-[#4C6EF5] text-white text-center font-[family-name:var(--font-inter)] text-sm font-medium tracking-wider uppercase hover:bg-[#3D5FE6] transition-colors duration-300 mb-6"
                 >
-                  Proceed to Checkout
+                  Proceder al Pago
                 </button>
 
                 {/* Métodos de pago */}
                 <div className="text-center">
                   <p className="font-[family-name:var(--font-inter)] text-xs text-gray-400 mb-4 tracking-wide">
-                    We accept
+                    Aceptamos:
                   </p>
                   <div className="flex justify-center gap-3 opacity-40">
                     <div className="w-10 h-7 bg-gray-200 rounded"></div>

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Productos } from "@/types/types"; // si tienes tipos definidos
 import { useTienda } from "@/context/TiendaContext";
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from "@/context/AuthContext";
 
 const nav = [
@@ -93,6 +93,7 @@ export default function Menu() {
   const [cartOpen, setCartOpen] = useState(false);
   
   const router = useRouter();
+  const pathname = usePathname();
 
   // Cargar auth y tienda solo si está montado
   const authContext = useAuth();
@@ -151,21 +152,23 @@ export default function Menu() {
       <header
         className={`hidden md:flex fixed left-0 right-0 top-0 h-[60px] items-center justify-between z-50 px-8 md:px-16 lg:px-20
         transition-all duration-300 ease-out
-        ${scroll
-          ? "bg-[rgba(44,62,80,0.95)] backdrop-blur-[20px] shadow-lg"
-          : "bg-transparent"
+        ${pathname === '/cart' 
+          ? "bg-white shadow-sm" 
+          : scroll
+            ? "bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-lg"
+            : "bg-transparent"
         }`}
       >
         {/* Logo izquierda */}
         <div className="flex items-center gap-3">
           <div className="w-8 h-8">
             <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-              <path d="M36.7273 44C33.9891 44 31.6043 39.8386 30.3636 33.69C29.123 39.8386 26.7382 44 24 44C21.2618 44 18.877 39.8386 17.6364 33.69C16.3957 39.8386 14.0109 44 11.2727 44C7.25611 44 4 35.0457 4 24C4 12.9543 7.25611 4 11.2727 4C14.0109 4 16.3957 8.16144 17.6364 14.31C18.877 8.16144 21.2618 4 24 4C26.7382 4 29.123 8.16144 30.3636 14.31C31.6043 8.16144 33.9891 4 36.7273 4C40.7439 4 44 12.9543 44 24C44 35.0457 40.7439 44 36.7273 44Z" fill="white" />
+              <path d="M36.7273 44C33.9891 44 31.6043 39.8386 30.3636 33.69C29.123 39.8386 26.7382 44 24 44C21.2618 44 18.877 39.8386 17.6364 33.69C16.3957 39.8386 14.0109 44 11.2727 44C7.25611 44 4 35.0457 4 24C4 12.9543 7.25611 4 11.2727 4C14.0109 4 16.3957 8.16144 17.6364 14.31C18.877 8.16144 21.2618 4 24 4C26.7382 4 29.123 8.16144 30.3636 14.31C31.6043 8.16144 33.9891 4 36.7273 4C40.7439 4 44 12.9543 44 24C44 35.0457 40.7439 44 36.7273 44Z" fill={pathname === '/cart' ? 'black' : 'white'} />
             </svg>
           </div>
           <button
             onClick={() => router.push('/')}
-            className="text-white text-xl font-bold leading-tight tracking-[-0.015em] hover:opacity-80 transition-opacity cursor-pointer"
+            className={`text-xl font-bold leading-tight tracking-[-0.015em] hover:opacity-80 transition-opacity cursor-pointer ${pathname === '/cart'? 'text-black' : 'text-white'}`}
           >
             ESYMBEL
           </button>
@@ -178,7 +181,7 @@ export default function Menu() {
               key={item.name}
               href={item.href}
               onClick={(e) => handleSmoothScroll(e, item.href)}
-              className="text-white text-sm font-medium leading-normal hover:opacity-70 transition-opacity duration-200 cursor-pointer"
+              className={`text-sm font-medium leading-normal hover:opacity-70 transition-opacity duration-200 cursor-pointer ${pathname === '/cart' ? 'text-black' : 'text-white'}`}
             >
               {item.name}
             </a>
@@ -188,7 +191,7 @@ export default function Menu() {
         {/* Icons derecha */}
         <div className="flex items-center gap-2">
           {/* Búsqueda */}
-          <button className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 w-10 bg-transparent hover:bg-white/10 text-white transition-all duration-200">
+          <button className={`flex max-w-[480px] cursor-pointer items-center justify-center rounded-full h-10 w-10 bg-transparent transition-all duration-200 ${pathname === '/cart' ? 'text-black hover:bg-black/10' : 'text-white hover:bg-white/10'}`}>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -197,13 +200,13 @@ export default function Menu() {
           {/* Carrito */}
           <button
             onClick={() => setCartOpen(true)}
-            className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 w-10 bg-transparent hover:bg-white/10 text-white transition-all duration-200 relative"
+            className={`flex max-w-[480px] cursor-pointer items-center justify-center rounded-full h-10 w-10 bg-transparent transition-all duration-200 relative ${pathname === '/cart'  ? 'text-black hover:bg-black/10' : 'text-white hover:bg-white/10'}`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
             </svg>
             {cantidadCarrito > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-white text-[#2C3E50] text-[9px] font-semibold px-1.5 min-w-[16px] h-[16px] rounded-full flex items-center justify-center">
+              <span className={`absolute -top-1 -right-1 text-[10px] font-semibold px-1.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center ${pathname === '/cart' ? 'bg-black text-white' : 'bg-white text-[#2C3E50]'}`}>
                 {cantidadCarrito}
               </span>
             )}
@@ -215,8 +218,8 @@ export default function Menu() {
             className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 hover:opacity-80 transition-opacity cursor-pointer"
             style={{
               backgroundImage: isAuthenticated && !isGuest && user?.strNombre
-                ? `url("https://ui-avatars.com/api/?name=${encodeURIComponent(user.strNombre)}&background=ffffff&color=2C3E50&size=128")`
-                : 'url("https://ui-avatars.com/api/?name=User&background=ffffff&color=2C3E50&size=128")'
+                ? `url("https://ui-avatars.com/api/?name=${encodeURIComponent(user.strNombre)}&background=${pathname === '/cart' || pathname === '/products' ? '000000' : 'ffffff'}&color=${pathname === '/cart' || pathname === '/products' ? 'ffffff' : '2C3E50'}&size=128")`
+                : `url("https://ui-avatars.com/api/?name=User&background=${pathname === '/cart' || pathname === '/products' ? '000000' : 'ffffff'}&color=${pathname === '/cart' || pathname === '/products' ? 'ffffff' : '2C3E50'}&size=128")`
             }}
             title={isAuthenticated && !isGuest ? `Hola, ${user?.strNombre || ""}` : "Iniciar sesión"}
           />
@@ -258,10 +261,10 @@ export default function Menu() {
                 </button>
                 
                 <h2 className="font-[family-name:var(--font-playfair)] text-3xl text-black tracking-tight">
-                  Shopping Bag
+                  Tu Carrito
                 </h2>
                 <p className="font-[family-name:var(--font-inter)] text-sm text-gray-500 mt-2 tracking-wide">
-                  {cantidadCarrito} {cantidadCarrito === 1 ? 'item' : 'items'}
+                  {cantidadCarrito} {cantidadCarrito === 1 ? 'producto' : 'productos'}
                 </p>
               </div>
 
@@ -301,11 +304,11 @@ export default function Menu() {
                               )}
                               {p.talla && (
                                 <p className="font-[family-name:var(--font-inter)] text-xs text-gray-500 tracking-wide">
-                                  Size: {p.talla}
+                                  Talla: {p.talla}
                                 </p>
                               )}
                               <p className="font-[family-name:var(--font-inter)] text-xs text-gray-500 tracking-wide">
-                                Quantity: {p.cantidad}
+                                Cantidad: {p.cantidad}
                               </p>
                             </div>
                           </div>
@@ -372,7 +375,7 @@ export default function Menu() {
                       </svg>
                     </div>
                     <p className="font-[family-name:var(--font-inter)] text-gray-400 font-light text-sm tracking-wide">
-                      Your bag is empty
+                      Tu carrito está vacío
                     </p>
                   </div>
                 )}
@@ -397,10 +400,10 @@ export default function Menu() {
                     
                     <div className="flex justify-between items-center">
                       <span className="font-[family-name:var(--font-inter)] text-sm text-gray-600 tracking-wide">
-                        Shipping
+                        Envío
                       </span>
                       <span className="font-[family-name:var(--font-inter)] text-sm text-black tracking-wide">
-                        Complimentary
+                        Complementario
                       </span>
                     </div>
                     
@@ -423,12 +426,12 @@ export default function Menu() {
                     className="block w-full py-4 bg-black text-white text-center font-[family-name:var(--font-inter)] text-sm font-medium tracking-widest uppercase
                     hover:bg-gray-900 transition-colors duration-300 cursor-pointer"
                   >
-                    Proceed to Checkout
+                    Proceder al Pago
                   </a>
                   
                   {/* Mensaje de seguridad discreto */}
                   <p className="font-[family-name:var(--font-inter)] text-xs text-center text-gray-400 mt-6 tracking-wide">
-                    Secure payment processing
+                    Procesamiento de pago seguro
                   </p>
                 </div>
               )}

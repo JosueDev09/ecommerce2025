@@ -25,8 +25,11 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
-    <html lang="es">
-      <body>
+    <html lang="es" className={`${playfair.variable} ${inter.variable}`}>
+      <head>
+        <link rel="icon" href="/favicon.svg" sizes="any" />
+      </head>
+      <body className="font-[family-name:var(--font-inter)]">
         <AuthProvider>
           <TiendaProvider>
         
