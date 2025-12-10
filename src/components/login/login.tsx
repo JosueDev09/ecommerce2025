@@ -194,7 +194,7 @@ export default function AuthPage() {
 
   return (
     
-    <div className="min-h-screen bg-gradient-to-br from-[#FAFAFA] via-white to-[#F5F5F5] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-black flex items-center justify-center p-4 pt-[80px]">
         
       <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
 
@@ -202,17 +202,17 @@ export default function AuthPage() {
         
         {/* Sección izquierda - Branding */}
         {/* Sección izquierda - Branding */}
-        <div className="flex-1 text-center lg:text-left space-y-6">
+        <div className="flex-1 text-center lg:text-left space-y-8">
 
         {/* 🔹 Fila con botón y logo */}
-        <div className="flex items-center justify-between lg:justify-start lg:gap-8 mb-4">
+        <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-6 lg:gap-8 mb-4">
             {/* Botón regresar */}
-            <a
+            <button
             onClick={() => router.push('/')}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 border-[#3A6EA5]/30 text-[#3A6EA5] font-semibold text-sm hover:bg-[#3A6EA5]/10 hover:border-[#3A6EA5]/50 transition-all duration-300"
+            className="inline-flex items-center gap-2 px-5 py-2.5 border border-white/20 text-white/80 font-[family-name:var(--font-inter)] text-xs tracking-[0.1em] uppercase hover:bg-white/5 hover:border-white/40 transition-all duration-300"
             >
             <svg
-                className="w-5 h-5"
+                className="w-4 h-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -220,98 +220,92 @@ export default function AuthPage() {
                 <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
+                strokeWidth={1.5}
                 d="M15 19l-7-7 7-7"
                 />
             </svg>
             Regresar a la tienda
-            </a>
+            </button>
 
             {/* Logo / Nombre tienda */}
-            <div className="inline-block text-left">
-            <h1 className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] bg-clip-text text-transparent mb-2">
-                Ecommerce
+            <div className="inline-block text-center lg:text-left">
+            <h1 className="font-[family-name:var(--font-playfair)] text-5xl lg:text-6xl text-white tracking-tight mb-2">
+                ESYMBEL
             </h1>
-            <div className="h-1 bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] rounded-full"></div>
+            <div className="h-[1px] bg-white/40"></div>
             </div>
         </div>
 
         {/* Descripción */}
-        <p className="text-xl text-gray-600 max-w-md">
-            Descubre productos únicos y vive una experiencia de compra excepcional
+        <p className="font-[family-name:var(--font-inter)] text-white/60 text-sm tracking-[0.1em] uppercase max-w-md mx-auto lg:mx-0">
+            Donde el lujo se encuentra con la artesanía
         </p>
           
-          <div className="hidden lg:flex flex-col gap-4 pt-8">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-[#3A6EA5]/10 flex items-center justify-center">
-                <svg className="w-6 h-6 text-[#3A6EA5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <span className="text-gray-700">Envío gratis en pedidos +$500</span>
+          <div className="hidden lg:flex flex-col gap-6 pt-12">
+            <div className="flex items-center gap-4">
+              <div className="w-1 h-12 bg-white/20"></div>
+              <span className="font-[family-name:var(--font-inter)] text-white/70 text-sm tracking-wide">Envío gratuito en pedidos superiores a $500</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-[#8BAAAD]/10 flex items-center justify-center">
-                <svg className="w-6 h-6 text-[#8BAAAD]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              </div>
-              <span className="text-gray-700">Pagos 100% seguros</span>
+            <div className="flex items-center gap-4">
+              <div className="w-1 h-12 bg-white/20"></div>
+              <span className="font-[family-name:var(--font-inter)] text-white/70 text-sm tracking-wide">Procesamiento de pagos seguro</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-[#E6C89C]/20 flex items-center justify-center">
-                <svg className="w-6 h-6 text-[#3A6EA5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <span className="text-gray-700">Garantía de satisfacción</span>
+            <div className="flex items-center gap-4">
+              <div className="w-1 h-12 bg-white/20"></div>
+              <span className="font-[family-name:var(--font-inter)] text-white/70 text-sm tracking-wide">Satisfacción garantizada</span>
             </div>
           </div>
         </div>
 
         {/* Sección derecha - Formulario */}
         <div className="w-full lg:w-auto lg:min-w-[480px]">
-          <div className="bg-white rounded-3xl shadow-2xl p-8 lg:p-10">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 lg:p-10">
             
             {/* Tabs */}
-            <div className="flex gap-2 mb-8 bg-gray-100 p-1.5 rounded-xl">
+            <div className="flex gap-0 mb-8 border-b border-white/10">
               <button
                 onClick={() => setMode('login')}
-                className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all duration-300 ${
+                className={`flex-1 py-4 px-4 font-[family-name:var(--font-inter)] text-xs tracking-[0.15em] uppercase transition-all duration-300 relative ${
                   mode === 'login'
-                    ? 'bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] text-white shadow-md'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'text-white'
+                    : 'text-white/50 hover:text-white/80'
                 }`}
               >
                 Iniciar Sesión
+                {mode === 'login' && (
+                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white"></div>
+                )}
               </button>
               <button
                 onClick={() => setMode('register')}
-                className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all duration-300 ${
+                className={`flex-1 py-4 px-4 font-[family-name:var(--font-inter)] text-xs tracking-[0.15em] uppercase transition-all duration-300 relative ${
                   mode === 'register'
-                    ? 'bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] text-white shadow-md'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'text-white'
+                    : 'text-white/50 hover:text-white/80'
                 }`}
               >
                 Registrarse
+                {mode === 'register' && (
+                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white"></div>
+                )}
               </button>
             </div>
 
             {/* Mensaje de error */}
             {error && (
-              <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 flex items-center gap-2 text-red-600 text-sm">
-                <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <div className="mb-6 p-4 border border-red-500/20 bg-red-500/10 flex items-start gap-3 text-red-400 text-sm">
+                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                {error}
+                <span className="font-[family-name:var(--font-inter)]">{error}</span>
               </div>
             )}
 
             {/* Formulario de Login */}
             {mode === 'login' && (
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block font-[family-name:var(--font-inter)] text-white/50 text-xs tracking-[0.15em] uppercase mb-3">
                     Nombre de usuario
                   </label>
                   <input
@@ -319,14 +313,14 @@ export default function AuthPage() {
                     name="strUsuario"
                     value={formData.strUsuario}
                     onChange={handleInputChange}
-                    placeholder="Usuario123"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all"
+                    placeholder="Username"
+                    className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white font-[family-name:var(--font-inter)] text-sm tracking-wide focus:outline-none focus:border-white/60 transition-colors placeholder:text-white/30"
                     required
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block font-[family-name:var(--font-inter)] text-white/50 text-xs tracking-[0.15em] uppercase mb-3">
                     Contraseña
                   </label>
                   <input
@@ -335,17 +329,17 @@ export default function AuthPage() {
                     value={formData.strContra}
                     onChange={handleInputChange}
                     placeholder="••••••••"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all"
+                    className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white font-[family-name:var(--font-inter)] text-sm tracking-wide focus:outline-none focus:border-white/60 transition-colors placeholder:text-white/30"
                     required
                   />
                 </div>
 
-                <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center justify-between text-sm pt-2">
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-[#3A6EA5] focus:ring-[#3A6EA5]" />
-                    <span className="text-gray-600">Recordarme</span>
+                    <input type="checkbox" className="w-4 h-4 border-white/20 bg-transparent text-white focus:ring-white/20" />
+                    <span className="font-[family-name:var(--font-inter)] text-white/60 text-xs tracking-wide">Recuérdame</span>
                   </label>
-                  <a href="#" className="text-[#3A6EA5] hover:text-[#8BAAAD] font-medium">
+                  <a href="#" className="font-[family-name:var(--font-inter)] text-white/60 hover:text-white text-xs tracking-wide transition-colors">
                     ¿Olvidaste tu contraseña?
                   </a>
                 </div>
@@ -353,7 +347,7 @@ export default function AuthPage() {
                 <button
                   type="submit"
                   disabled={loading}                
-                  className="w-full py-4 bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] text-white rounded-xl font-semibold hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  className="w-full py-4 mt-8 bg-white text-black font-[family-name:var(--font-inter)] text-xs tracking-[0.15em] uppercase font-medium hover:bg-white/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
@@ -372,39 +366,39 @@ export default function AuthPage() {
 
             {/* Formulario de Registro */}
             {mode === 'register' && (
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nombre completo
+                  <label className="block font-[family-name:var(--font-inter)] text-white/50 text-xs tracking-[0.15em] uppercase mb-3">
+                    Nombre Completo
                   </label>
                   <input
                     type="text"
                     name="strNombre"
                     value={formData.strNombre}
                     onChange={handleInputChange}
-                    placeholder="Juan Pérez"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all"
+                    placeholder="Your name"
+                    className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white font-[family-name:var(--font-inter)] text-sm tracking-wide focus:outline-none focus:border-white/60 transition-colors placeholder:text-white/30"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Correo electrónico
+                  <label className="block font-[family-name:var(--font-inter)] text-white/50 text-xs tracking-[0.15em] uppercase mb-3">
+                    Dirección de correo electrónico
                   </label>
                   <input
                     type="email"
                     name="strUsuario"
                     value={formData.strUsuario}
                     onChange={handleInputChange}
-                    placeholder="Usuario123"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all"
+                    placeholder="your@email.com"
+                    className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white font-[family-name:var(--font-inter)] text-sm tracking-wide focus:outline-none focus:border-white/60 transition-colors placeholder:text-white/30"
                     required
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block font-[family-name:var(--font-inter)] text-white/50 text-xs tracking-[0.15em] uppercase mb-3">
                     Contraseña
                   </label>
                   <input
@@ -413,14 +407,14 @@ export default function AuthPage() {
                     value={formData.strContra}
                     onChange={handleInputChange}
                     placeholder="••••••••"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all"
+                    className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white font-[family-name:var(--font-inter)] text-sm tracking-wide focus:outline-none focus:border-white/60 transition-colors placeholder:text-white/30"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Confirmar contraseña
+                  <label className="block font-[family-name:var(--font-inter)] text-white/50 text-xs tracking-[0.15em] uppercase mb-3">
+                    Confirmar Contraseña
                   </label>
                   <input
                     type="password"
@@ -428,22 +422,22 @@ export default function AuthPage() {
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     placeholder="••••••••"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all"
+                    className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white font-[family-name:var(--font-inter)] text-sm tracking-wide focus:outline-none focus:border-white/60 transition-colors placeholder:text-white/30"
                     required
                   />
                 </div>
 
-                <label className="flex items-start gap-2 cursor-pointer text-sm">
-                  <input type="checkbox" className="w-4 h-4 mt-0.5 rounded border-gray-300 text-[#3A6EA5] focus:ring-[#3A6EA5]" required />
-                  <span className="text-gray-600">
-                    Acepto los <a href="#" className="text-[#3A6EA5] hover:underline">términos y condiciones</a> y la <a href="#" className="text-[#3A6EA5] hover:underline">política de privacidad</a>
+                <label className="flex items-start gap-3 cursor-pointer text-sm pt-2">
+                  <input type="checkbox" className="w-4 h-4 mt-0.5 border-white/20 bg-transparent text-white focus:ring-white/20" required />
+                  <span className="font-[family-name:var(--font-inter)] text-white/60 text-xs tracking-wide">
+                    Acepto los <a href="#" className="text-white hover:underline">términos y condiciones</a> y la <a href="#" className="text-white hover:underline">política de privacidad</a>
                   </span>
                 </label>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-4 bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] text-white rounded-xl font-semibold hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  className="w-full py-4 mt-8 bg-white text-black font-[family-name:var(--font-inter)] text-xs tracking-[0.15em] uppercase font-medium hover:bg-white/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
@@ -461,32 +455,29 @@ export default function AuthPage() {
             )}
 
             {/* Divider */}
-            <div className="relative my-6">
+            <div className="relative my-8">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200"></div>
+                <div className="w-full border-t border-white/10"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-gray-500">o</span>
+                <span className="px-4 bg-transparent font-[family-name:var(--font-inter)] text-white/50 text-xs tracking-[0.15em] uppercase">or</span>
               </div>
             </div>
 
             {/* Botón Continuar como Invitado */}
             <button
               onClick={handleGuestContinue}
-              className="w-full py-4 border-2 border-gray-200 text-gray-700 rounded-xl font-semibold hover:border-[#3A6EA5] hover:text-[#3A6EA5] hover:bg-[#3A6EA5]/5 transition-all duration-300 flex items-center justify-center gap-2 group"
+              className="w-full py-4 border border-white/20 text-white font-[family-name:var(--font-inter)] text-xs tracking-[0.15em] uppercase hover:border-white/40 hover:bg-white/5 transition-all duration-300 flex items-center justify-center gap-2 group"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
               Continuar como Invitado
-              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             </button>
 
             {/* Social Login (opcional) */}
-            <div className="mt-6 space-y-3">
-              <button className="w-full py-3 border border-gray-200 rounded-xl font-medium hover:bg-gray-50 transition-all flex items-center justify-center gap-3">
+            <div className="mt-6">
+              <button className="w-full py-3 border border-white/20 font-[family-name:var(--font-inter)] text-xs tracking-[0.1em] uppercase text-white/70 hover:bg-white/5 hover:border-white/30 transition-all flex items-center justify-center gap-3">
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                   <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -497,7 +488,7 @@ export default function AuthPage() {
               </button>
             </div>
 
-            <p className="text-center text-xs text-gray-500 mt-6">
+            <p className="text-center font-[family-name:var(--font-inter)] text-white/40 text-xs tracking-wide mt-8">
               Al continuar, aceptas nuestros términos de servicio y política de privacidad
             </p>
           </div>

@@ -13,7 +13,7 @@ export default function MenuLayout({ children }: { children: React.ReactNode }) 
   const hideLayout = hideLayoutPaths.includes(pathname as string) || pathname.startsWith('/pedido/confirmacion/');
   
   // Rutas donde ocultar el footer
-  const hideLayoutFooter = ['/login', '/registro', '/processBuy'].includes(pathname as string);
+  const hideLayoutFooter = ['/login', '/registro', '/processBuy','/quejas'].includes(pathname as string);
   
   return (
     <>

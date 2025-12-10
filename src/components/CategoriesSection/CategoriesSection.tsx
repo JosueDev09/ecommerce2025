@@ -86,7 +86,7 @@ export default function Categories() {
 
 
   return (
-    <section className="w-full bg-white py-12">
+    <section className="w-full bg-black py-12">
 
       <div className="w-full">
         {/* SCROLLER */}
@@ -138,12 +138,12 @@ export default function Categories() {
         </div>
 
         {/* DOTS - Debajo del carrusel */}
-        <div className="flex justify-center items-center mt-6 gap-2">
+        <div className="flex justify-center items-center mt-6 gap-2 ">
           {categorias.map((_, i) => (
             <span 
               key={i}
               onClick={() => goTo(i)}
-              className={`rounded-full cursor-pointer transition-all duration-300
+              className={`rounded-full cursor-pointer transition-all duration-300 bg-white/10
                 ${i === index ? "bg-black w-6 h-2" : "bg-black/30 w-2 h-2 hover:bg-black/50"}`}
             />
           ))}

@@ -58,51 +58,57 @@ export default function Products() {
 
 
   return (
-    <section className="w-full">
-      <div className="w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+    <section className="w-full bg-white">
+      <div className="w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-[1px] bg-white/10">
 
 
-        {productos.filter(product => product.bolActivo).map((product) => (
+        {productos.filter(product => product.bolActivo).map((product, index) => (
             
-              <div key={product.intProducto} className="w-full flex flex-col items-center text-center bg-[#f5f5f7] p-10">
+              <motion.div 
+                key={product.intProducto} 
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className="w-full flex flex-col items-center text-center bg-white/80 p-10 md:p-16 hover:bg-black/10 transition-colors duration-500"
+              >
 
                 {/* Título */}
-                <h2 className="text-5xl font-semibold mt-6">{product.strNombre}</h2>
+                <h2 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl text-black mt-6 tracking-tight">
+                  {product.strNombre}
+                </h2>
 
                 {/* Subtítulo */}
-                <p className="text-gray-600 text-xl mt-3 leading-snug">
+                <p className="font-[family-name:var(--font-inter)] text-black/60 text-base md:text-lg mt-4 leading-relaxed max-w-2xl">
                   {product.strDescripcion}
                 </p>
 
                 {/* Botones */}
-                <div className="flex gap-4 mt-6">
+                <div className="flex gap-4 mt-8">
                   <Link
-                    href="#"
-                    className="px-6 py-2 bg-[#0071e3] text-white rounded-full text-sm font-medium hover:opacity-90 transition"
+                    href={`/producto/${createProductSlug(product.strNombre)}`}
+                    className="px-8 py-3  border border-black  text-black font-[family-name:var(--font-inter)] text-xs tracking-[0.15em] uppercase font-medium hover:bg-white/90 transition-all duration-300"
                   >
                     Ver Más
                   </Link>
 
                   <Link
-                    href="#"
-                    className="px-6 py-2 border border-[#0071e3] text-[#0071e3] rounded-full text-sm font-medium hover:bg-[#0071e3] hover:text-white transition"
+                    href={`/producto/${createProductSlug(product.strNombre)}`}
+                    className="px-8 py-3 bg-black border border-black text-white font-[family-name:var(--font-inter)] text-xs tracking-[0.15em] uppercase font-medium transition-all duration-300"
                   >
                     Comprar
                   </Link>
                 </div>
 
                 {/* Imagen */}
-                <div className="relative w-full max-w-3xl mx-auto mt-10">
+                <div className="relative w-full flex-1 mx-auto mt-12 min-h-[400px]">
                   <img
                     src={product.strImagen}
                     alt={product.strNombre}
-                    width={1500}
-                    height={900}
-                    className="object-contain mx-auto select-none pointer-events-none"
+                    className="w-full h-full object-cover mx-auto select-none pointer-events-none"
                   />
                 </div>
 
-              </div>
+              </motion.div>
         ))}
 
 

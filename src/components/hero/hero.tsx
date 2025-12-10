@@ -83,7 +83,7 @@ export default function Hero() {
             className="text-5xl md:text-7xl lg:text-8xl font-light text-white mb-6 tracking-tight leading-[1.1]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Timeless by Design
+            Disenos Exclusivos
           </motion.h1>
 
           {/* Subtítulo refinado */}
@@ -94,7 +94,7 @@ export default function Hero() {
             className="text-lg md:text-xl text-white/80 mb-12 max-w-2xl mx-auto font-light leading-relaxed tracking-wide"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            Explore the new Fall/Winter 2024 Collection, where classic elegance meets modern craftsmanship.
+            Explora la nueva colección Otoño/Invierno 2025, donde la elegancia clásica se encuentra con la artesanía moderna.
           </motion.p>
 
           {/* CTA discreto */}
@@ -106,7 +106,7 @@ export default function Hero() {
             <Link href="/products">
               <button className="group relative px-10 py-4 border border-white/30 text-white text-sm font-light tracking-[0.2em] uppercase overflow-hidden transition-all duration-500 hover:border-white/60">
                 <span className="relative z-10 group-hover:text-black transition-colors duration-500">
-                  Discover the Collection
+                 Descubre nuestra colección
                 </span>
                 <div className="absolute inset-0 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
               </button>

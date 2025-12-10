@@ -207,10 +207,10 @@ export default function ProductoDetalle() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#3A6EA5] mx-auto mb-4"></div>
-          <p className="text-[#1A1A1A]/70">Cargando producto...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="font-[family-name:var(--font-inter)] text-white/70 text-sm tracking-wide">Loading product...</p>
         </div>
       </div>
     );
@@ -218,10 +218,10 @@ export default function ProductoDetalle() {
 
   if (!producto) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-[#1A1A1A] mb-2">Producto no encontrado</h2>
-          <p className="text-[#1A1A1A]/70">El producto que buscas no existe</p>
+          <h2 className="font-[family-name:var(--font-playfair)] text-2xl text-white mb-2">Product not found</h2>
+          <p className="font-[family-name:var(--font-inter)] text-white/70 text-sm">The product you are looking for does not exist</p>
         </div>
       </div>
     );
@@ -233,23 +233,23 @@ export default function ProductoDetalle() {
   //console.log("🔍 Todas las imágenes del producto:", todasLasImagenes);
 
   return (
-    <div className="min-h-screen  py-6 px-4 md:px-6 mt-[100px]">
+    <div className="min-h-screen bg-black py-6 px-4 md:px-6 pt-[100px]">
       {/* Toast de éxito */}
       {showSuccess && (
         <motion.div
           initial={{ opacity: 0, x: 100, scale: 0.8 }}
           animate={{ opacity: 1, x: 0, scale: 1 }}
           exit={{ opacity: 0, x: 100, scale: 0.8 }}
-          className="fixed top-6 right-6 z-[9999] bg-white border-l-4 border-emerald-500 rounded-md shadow-lg p-4 flex items-center gap-3"
+          className="fixed top-6 right-6 z-[9999] bg-white border-l-4 border-emerald-500 shadow-lg p-4 flex items-center gap-3"
         >
           <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center">
             <Check className="w-6 h-6 text-white" />
           </div>
           <div>
-            <p className="font-semibold text-[#1A1A1A]">¡Agregado al carrito!</p>
-            <p className="text-sm text-[#1A1A1A]/60">Producto agregado exitosamente</p>
+            <p className="font-[family-name:var(--font-inter)] font-semibold text-black text-sm">Agregado al carrito!</p>
+            <p className="font-[family-name:var(--font-inter)] text-xs text-black/60">Producto agregado exitosamente</p>
           </div>
-          <button onClick={() => setShowSuccess(false)} className="ml-4 text-[#1A1A1A]/40 hover:text-[#1A1A1A]">
+          <button onClick={() => setShowSuccess(false)} className="ml-4 text-black/40 hover:text-black">
             ✕
           </button>
         </motion.div>
@@ -257,18 +257,18 @@ export default function ProductoDetalle() {
 
       <div className="max-w-7xl mx-auto">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm mb-4 text-[#1A1A1A]/60">
-          <button onClick={() => router.push('/')} className="hover:text-[#3A6EA5] transition-colors">
+        <div className="flex items-center gap-2 text-sm mb-8 text-white/60">
+          <button onClick={() => router.push('/')} className="font-[family-name:var(--font-inter)] text-xs tracking-wide hover:text-white transition-colors uppercase">
             Inicio
           </button>
           <ChevronRight className="w-4 h-4" />
-          <button onClick={() => router.push('/products')} className="hover:text-[#3A6EA5] transition-colors">
+          <button onClick={() => router.push('/products')} className="font-[family-name:var(--font-inter)] text-xs tracking-wide hover:text-white transition-colors uppercase">
             Productos
           </button>
           <ChevronRight className="w-4 h-4" />
-          <span className="text-[#1A1A1A]/80">{producto?.tbCategoria.strNombre}</span>
+          <span className="font-[family-name:var(--font-inter)] text-xs tracking-wide text-white/80 uppercase">{producto?.tbCategoria.strNombre}</span>
           <ChevronRight className="w-4 h-4" />
-          <span className="text-[#1A1A1A] font-medium truncate max-w-[200px]">{producto?.strNombre}</span>
+          <span className="font-[family-name:var(--font-inter)] text-xs tracking-wide text-white uppercase truncate max-w-[200px]">{producto?.strNombre}</span>
         </div>
         {/* Layout principal */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
@@ -279,17 +279,17 @@ export default function ProductoDetalle() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="bg-white rounded-2xl shadow-sm overflow-hidden"
+              className="bg-white/5 backdrop-blur-xl border border-white/10 overflow-hidden"
             >
               {/* Slider de imágenes principales */}
-              <div className="relative aspect-square overflow-hidden bg-[#FAFAFA] group">
+              <div className="relative aspect-square overflow-hidden bg-black group">
                 {producto.strEtiquetas && (
-                  <div className={`absolute top-4 left-4 z-10 px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md ${
+                  <div className={`absolute top-4 left-4 z-10 px-3 py-1.5 text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase backdrop-blur-md ${
                     producto.strEtiquetas === "Nuevo"
-                      ? "bg-black/80 text-white"
+                      ? "bg-white/90 text-black"
                       : producto.strEtiquetas === "Oferta"
                       ? "bg-red-500/90 text-white"
-                      : "bg-orange-500/90 text-white"
+                      : "bg-white/90 text-black"
                   }`}>
                     {producto.strEtiquetas}
                   </div>
@@ -301,19 +301,19 @@ export default function ProductoDetalle() {
                       e.stopPropagation();
                       setIsFavorite(!isFavorite);
                     }}
-                    className="p-2.5 rounded-full bg-white/95 backdrop-blur-md hover:bg-white hover:scale-110 transition-all shadow-sm"
+                    className="p-2.5 bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all border border-white/20"
                   >
                     <Heart
                       className={`w-5 h-5 ${
-                        isFavorite ? "text-red-500 fill-red-500" : "text-[#1A1A1A]/70"
+                        isFavorite ? "text-red-500 fill-red-500" : "text-white"
                       }`}
                     />
                   </button>
                   <button
                     onClick={(e) => e.stopPropagation()}
-                    className="p-2.5 rounded-full bg-white/95 backdrop-blur-md hover:bg-white hover:scale-110 transition-all shadow-sm"
+                    className="p-2.5 bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all border border-white/20"
                   >
-                    <Share2 className="w-5 h-5 text-[#1A1A1A]/70" />
+                    <Share2 className="w-5 h-5 text-white" />
                   </button>
                 </div>
 
@@ -347,26 +347,26 @@ export default function ProductoDetalle() {
                     <button
                       onClick={() => setCurrentImageIndex(Math.max(0, currentImageIndex - 1))}
                       disabled={currentImageIndex === 0}
-                      className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/95 backdrop-blur-md shadow-lg flex items-center justify-center transition-all ${
+                      className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center transition-all ${
                         currentImageIndex === 0
                           ? "opacity-0 pointer-events-none"
-                          : "opacity-0 group-hover:opacity-100 hover:scale-110"
+                          : "opacity-0 group-hover:opacity-100"
                       }`}
                     >
-                      <ChevronRight className="w-5 h-5 text-[#1A1A1A] rotate-180" />
+                      <ChevronRight className="w-5 h-5 text-white rotate-180" />
                     </button>
 
                     {/* Botón Siguiente */}
                     <button
                       onClick={() => setCurrentImageIndex(Math.min(todasLasImagenes.length - 1, currentImageIndex + 1))}
                       disabled={currentImageIndex === todasLasImagenes.length - 1}
-                      className={`absolute right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/95 backdrop-blur-md shadow-lg flex items-center justify-center transition-all ${
+                      className={`absolute right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center transition-all ${
                         currentImageIndex === todasLasImagenes.length - 1
                           ? "opacity-0 pointer-events-none"
-                          : "opacity-0 group-hover:opacity-100 hover:scale-110"
+                          : "opacity-0 group-hover:opacity-100"
                       }`}
                     >
-                      <ChevronRight className="w-5 h-5 text-[#1A1A1A]" />
+                      <ChevronRight className="w-5 h-5 text-white" />
                     </button>
 
                     {/* Indicadores de puntos */}
@@ -377,8 +377,8 @@ export default function ProductoDetalle() {
                           onClick={() => setCurrentImageIndex(idx)}
                           className={`transition-all ${
                             idx === currentImageIndex
-                              ? "w-8 h-2 bg-white rounded-full"
-                              : "w-2 h-2 bg-white/50 rounded-full hover:bg-white/80"
+                              ? "w-8 h-[2px] bg-white"
+                              : "w-8 h-[2px] bg-white/30 hover:bg-white/60"
                           }`}
                           aria-label={`Ir a imagen ${idx + 1}`}
                         />
@@ -390,7 +390,7 @@ export default function ProductoDetalle() {
 
               {/* Miniaturas - Estilo Apple */}
               {todasLasImagenes.length > 1 && (
-                <div className="p-4 bg-white border-t border-gray-100">
+                <div className="p-4 bg-white/5 border-t border-white/10">
                   <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
                     {todasLasImagenes.map((img, idx) => (
                       <button
@@ -399,21 +399,21 @@ export default function ProductoDetalle() {
                           setImagenActual(img);
                           setCurrentImageIndex(idx);
                         }}
-                        className={`relative flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden transition-all ${
+                        className={`relative flex-shrink-0 w-16 h-16 overflow-hidden transition-all ${
                           currentImageIndex === idx
-                            ? "ring-2 ring-[#0071e3] ring-offset-2 scale-105"
-                            : "ring-1 ring-gray-200 hover:ring-gray-300 hover:scale-105"
+                            ? "border-2 border-white scale-105"
+                            : "border border-white/20 hover:border-white/60 hover:scale-105"
                         }`}
                       >
                         <img 
                           src={img} 
                           alt={`${producto.strNombre} ${idx + 1}`} 
-                          className="w-full h-full object-cover bg-[#FAFAFA]" 
+                          className="w-full h-full object-cover bg-black" 
                         />
                         {currentImageIndex === idx && (
                           <motion.div
                             layoutId="thumbnail-indicator"
-                            className="absolute inset-0 border-2 border-[#0071e3] rounded-xl"
+                            className="absolute inset-0 border-2 border-white"
                             transition={{ type: "spring", stiffness: 500, damping: 30 }}
                           />
                         )}
@@ -429,45 +429,45 @@ export default function ProductoDetalle() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1 }}
-              className="bg-white rounded-md shadow-sm p-6"
+              className="bg-white/5 backdrop-blur-xl border border-white/10 p-6"
             >
-              <h2 className="text-xl font-semibold text-[#1A1A1A] mb-4">Descripción</h2>
-              <p className="text-[#1A1A1A]/80 leading-relaxed mb-4">{producto.strDescripcion}</p>
+              <h2 className="text-xl font-[family-name:var(--font-playfair)] text-white mb-4">Descripción</h2>
+              <p className="text-white/80 font-[family-name:var(--font-inter)] leading-relaxed mb-4">{producto.strDescripcion}</p>
               
               {/* Características */}
-              <div className="border-t border-gray-200 pt-4 mt-4">
-                <h3 className="text-lg font-semibold text-[#1A1A1A] mb-3">Características principales</h3>
+              <div className="border-t border-white/10 pt-4 mt-4">
+                <h3 className="text-lg font-[family-name:var(--font-playfair)] text-white mb-3">Características principales</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {producto.strMarca && (
                     <div className="flex items-start gap-2">
-                      <Tag className="w-4 h-4 text-[#3A6EA5] mt-0.5" />
+                      <Tag className="w-4 h-4 text-white mt-0.5" />
                       <div>
-                        <p className="text-xs text-[#1A1A1A]/60">Marca</p>
-                        <p className="text-sm font-medium text-[#1A1A1A]">{producto.strMarca}</p>
+                        <p className="text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white/60">Marca</p>
+                        <p className="text-sm font-[family-name:var(--font-inter)] text-white">{producto.strMarca}</p>
                       </div>
                     </div>
                   )}
                   {producto.strSKU && (
                     <div className="flex items-start gap-2">
-                      <AlertCircle className="w-4 h-4 text-[#3A6EA5] mt-0.5" />
+                      <AlertCircle className="w-4 h-4 text-white mt-0.5" />
                       <div>
-                        <p className="text-xs text-[#1A1A1A]/60">SKU</p>
-                        <p className="text-sm font-medium text-[#1A1A1A]">{producto.strSKU}</p>
+                        <p className="text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white/60">SKU</p>
+                        <p className="text-sm font-[family-name:var(--font-inter)] text-white">{producto.strSKU}</p>
                       </div>
                     </div>
                   )}
                   <div className="flex items-start gap-2">
-                    <Award className="w-4 h-4 text-[#3A6EA5] mt-0.5" />
+                    <Award className="w-4 h-4 text-white mt-0.5" />
                     <div>
-                      <p className="text-xs text-[#1A1A1A]/60">Garantía</p>
-                      <p className="text-sm font-medium text-[#1A1A1A]">1 año</p>
+                      <p className="text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white/60">Garantía</p>
+                      <p className="text-sm font-[family-name:var(--font-inter)] text-white">1 año</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Store className="w-4 h-4 text-[#3A6EA5] mt-0.5" />
+                    <Store className="w-4 h-4 text-white mt-0.5" />
                     <div>
-                      <p className="text-xs text-[#1A1A1A]/60">Vendido por</p>
-                      <p className="text-sm font-medium text-[#3A6EA5]">ESYMBEL</p>
+                      <p className="text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white/60">Vendido por</p>
+                      <p className="text-sm font-[family-name:var(--font-inter)] text-white">ESYMBEL</p>
                     </div>
                   </div>
                 </div>
@@ -477,26 +477,27 @@ export default function ProductoDetalle() {
             
 
             {/* Preguntas frecuentes */}
+            {/* Preguntas y respuestas */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.4 }}
-              className="bg-white rounded-md shadow-sm p-6"
+              className="bg-white/5 backdrop-blur-xl border border-white/10 p-6"
             >
-              <h2 className="text-xl font-semibold text-[#1A1A1A] mb-4">Preguntas y respuestas</h2>
+              <h2 className="text-xl font-[family-name:var(--font-playfair)] text-white mb-4">Preguntas y respuestas</h2>
               
               <div className="space-y-3 mb-4">
-                <div className="border-b border-gray-200 pb-3">
-                  <p className="text-sm font-medium text-[#1A1A1A] mb-1">¿Cuánto tarda el envío?</p>
-                  <p className="text-xs text-[#1A1A1A]/70">El tiempo de entrega es de 3 a 5 días hábiles.</p>
+                <div className="border-b border-white/10 pb-3">
+                  <p className="text-sm font-[family-name:var(--font-inter)] text-white mb-1">¿Cuánto tarda el envío?</p>
+                  <p className="text-xs font-[family-name:var(--font-inter)] text-white/70">El tiempo de entrega es de 3 a 5 días hábiles.</p>
                 </div>
-                <div className="border-b border-gray-200 pb-3">
-                  <p className="text-sm font-medium text-[#1A1A1A] mb-1">¿Tiene garantía?</p>
-                  <p className="text-xs text-[#1A1A1A]/70">Sí, todos nuestros productos cuentan con 1 año de garantía.</p>
+                <div className="border-b border-white/10 pb-3">
+                  <p className="text-sm font-[family-name:var(--font-inter)] text-white mb-1">¿Tiene garantía?</p>
+                  <p className="text-xs font-[family-name:var(--font-inter)] text-white/70">Sí, todos nuestros productos cuentan con 1 año de garantía.</p>
                 </div>
               </div>
 
-              <button className="flex items-center gap-2 text-sm text-[#3A6EA5] font-medium hover:underline">
+              <button className="flex items-center gap-2 text-sm text-white font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase hover:opacity-70 transition-opacity">
                 <MessageCircle className="w-4 h-4" />
                 Hacer una pregunta
               </button>
@@ -510,20 +511,20 @@ export default function ProductoDetalle() {
             transition={{ duration: 0.4 }}
             className="lg:sticky lg:top-24 h-fit"
           >
-            <div className="bg-white rounded-md shadow-sm p-6 space-y-5"
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 space-y-5"
             >
               {/* Nuevo/Usado Badge */}
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-[#1A1A1A]/60">
+                <span className="text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white/60">
                   {producto.strEstado || 'Nuevo'} | +100 vendidos
                 </span>
-                <span className="text-xs font-semibold text-[#3A6EA5] bg-[#3A6EA5]/10 px-2 py-1 rounded">
+                <span className="text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white bg-white/10 px-2 py-1">
                   {producto.tbCategoria.strNombre}
                 </span>
               </div>
 
               {/* Título */}
-              <h1 className="text-xl font-normal text-[#1A1A1A] leading-tight">
+              <h1 className="text-xl font-[family-name:var(--font-playfair)] text-white leading-tight">
                 {producto.strNombre}
               </h1>
 
@@ -533,11 +534,11 @@ export default function ProductoDetalle() {
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-4 h-4 ${i < 4 ? "text-[#FFD700] fill-[#FFD700]" : "text-gray-300"}`}
+                      className={`w-4 h-4 ${i < 4 ? "text-white fill-white" : "text-white/30"}`}
                     />
                   ))}
                 </div>
-                <span className="text-xs text-[#1A1A1A]/60">(0)</span>
+                <span className="text-xs font-[family-name:var(--font-inter)] text-white/60">(0)</span>
               </div>
 
               {/* Precio */}
@@ -545,19 +546,19 @@ export default function ProductoDetalle() {
                 {esDescuentoActivo(producto) ? (
                   <>
                     <div className="flex items-center gap-2">
-                      <span className="text-3xl font-light text-[#1A1A1A]">
+                      <span className="text-3xl font-[family-name:var(--font-playfair)] text-white">
                         ${(
                           (producto.dblPrecioDescuento || 0) + 
                           (varianteSeleccionada?.dblPrecioAdicional || 0)
                         ).toLocaleString()}
                       </span>
                       {producto.intPorcentajeDescuento && (
-                        <span className="px-2 py-0.5 rounded bg-green-100 text-green-700 text-xs font-semibold">
+                        <span className="px-2 py-0.5 bg-white text-black text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase">
                           {producto.intPorcentajeDescuento}% OFF
                         </span>
                       )}
                     </div>
-                    <span className="text-sm text-[#1A1A1A]/50 line-through">
+                    <span className="text-sm font-[family-name:var(--font-inter)] text-white/50 line-through">
                       ${(
                         producto.dblPrecio + 
                         (varianteSeleccionada?.dblPrecioAdicional || 0)
@@ -565,7 +566,7 @@ export default function ProductoDetalle() {
                     </span>
                   </>
                 ) : (
-                  <span className="text-3xl font-light text-[#1A1A1A]">
+                  <span className="text-3xl font-[family-name:var(--font-playfair)] text-white">
                     ${(
                       producto.dblPrecio + 
                       (varianteSeleccionada?.dblPrecioAdicional || 0)
@@ -573,19 +574,19 @@ export default function ProductoDetalle() {
                   </span>
                 )}
                 {varianteSeleccionada?.dblPrecioAdicional && varianteSeleccionada.dblPrecioAdicional > 0 && (
-                  <p className="text-xs text-blue-600 font-medium">
+                  <p className="text-xs font-[family-name:var(--font-inter)] text-white/80">
                     +${varianteSeleccionada.dblPrecioAdicional.toLocaleString()} por esta variante
                   </p>
                 )}
-                <p className="text-xs text-green-600 font-medium">Envío gratis a todo el país</p>
+                <p className="text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white/80">Envío gratis a todo el país</p>
               </div>
 
               {/* Disponibilidad */}
-              <div className="flex items-start gap-2 p-3 bg-green-50 rounded-md">
-                <Check className="w-5 h-5 text-green-600 mt-0.5" />
+              <div className="flex items-start gap-2 p-3 bg-white/10 border border-white/20">
+                <Check className="w-5 h-5 text-white mt-0.5" />
                 <div>
-                  <p className="text-sm font-semibold text-green-700">Stock disponible</p>
-                  <p className="text-xs text-[#1A1A1A]/70">Última disponible</p>
+                  <p className="text-sm font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white">Stock disponible</p>
+                  <p className="text-xs font-[family-name:var(--font-inter)] text-white/70">Última disponible</p>
                 </div>
               </div>
 
@@ -611,89 +612,89 @@ export default function ProductoDetalle() {
 
               {/* Cantidad */}
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-[#1A1A1A]">Cantidad:</h3>
+                <h3 className="text-sm font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white">Cantidad:</h3>
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setCantidad(Math.max(1, cantidad - 1))}
-                    className="w-8 h-8 rounded border border-gray-300 hover:bg-gray-100 text-[#1A1A1A] font-medium transition-all"
+                    className="w-8 h-8 border border-white/20 hover:bg-white/10 text-white font-[family-name:var(--font-inter)] transition-all"
                   >
                     -
                   </button>
-                  <span className="text-lg font-normal text-[#1A1A1A] w-8 text-center">{cantidad}</span>
+                  <span className="text-lg font-[family-name:var(--font-inter)] text-white w-8 text-center">{cantidad}</span>
                   <button
                     onClick={() => setCantidad(cantidad + 1)}
-                    className="w-8 h-8 rounded border border-gray-300 hover:bg-gray-100 text-[#1A1A1A] font-medium transition-all"
+                    className="w-8 h-8 border border-white/20 hover:bg-white/10 text-white font-[family-name:var(--font-inter)] transition-all"
                   >
                     +
                   </button>
-                  <span className="text-xs text-[#1A1A1A]/60 ml-2">({cantidad} {cantidad === 1 ? 'unidad' : 'unidades'})</span>
+                  <span className="text-xs font-[family-name:var(--font-inter)] text-white/60 ml-2">({cantidad} {cantidad === 1 ? 'unidad' : 'unidades'})</span>
                 </div>
               </div>
 
               {/* Botones de acción */}
-              <div className="space-y-3 pt-4 border-t border-gray-200">
+              <div className="space-y-3 pt-4 border-t border-white/10">
                 <button
                   onClick={handleAgregarCarrito}
-                  className="w-full py-3 rounded bg-[#3483FA] text-white text-sm font-semibold hover:bg-[#2968C8] transition-all"
+                  className="w-full py-3 bg-white text-black text-sm font-[family-name:var(--font-inter)] tracking-[0.15em] uppercase hover:bg-white/90 transition-all"
                 >
                   Comprar ahora
                 </button>
                 <button
                   onClick={handleAgregarCarrito}
-                  className="w-full py-3 rounded bg-[#E6F2FF] text-[#3483FA] text-sm font-semibold hover:bg-[#D6E9FF] transition-all"
+                  className="w-full py-3 bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-[family-name:var(--font-inter)] tracking-[0.15em] uppercase hover:bg-white/20 transition-all"
                 >
                   Agregar al carrito
                 </button>
               </div>
 
               {/* Garantías y Beneficios */}
-              <div className="space-y-3 pt-4 border-t border-gray-200">
-                <h3 className="text-sm font-semibold text-[#1A1A1A] mb-2">Lo que tienes que saber</h3>
+              <div className="space-y-3 pt-4 border-t border-white/10">
+                <h3 className="text-sm font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white mb-2">Lo que tienes que saber</h3>
                 
-                <div className="flex items-start gap-3 p-3 bg-green-50 rounded-md">
-                  <Shield className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                <div className="flex items-start gap-3 p-3 bg-white/10 border border-white/20">
+                  <Shield className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-xs font-semibold text-[#1A1A1A]">Compra Protegida</p>
-                    <p className="text-xs text-[#1A1A1A]/70">Recibe el producto que esperabas o te devolvemos tu dinero</p>
+                    <p className="text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white">Compra Protegida</p>
+                    <p className="text-xs font-[family-name:var(--font-inter)] text-white/70">Recibe el producto que esperabas o te devolvemos tu dinero</p>
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-md">
-                  <Truck className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                <div className="flex items-start gap-3 p-3 bg-white/10 border border-white/20">
+                  <Truck className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-xs font-semibold text-[#1A1A1A]">Envío gratis</p>
-                    <p className="text-xs text-[#1A1A1A]/70">Conoce los tiempos y formas de envío</p>
+                    <p className="text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white">Envío gratis</p>
+                    <p className="text-xs font-[family-name:var(--font-inter)] text-white/70">Conoce los tiempos y formas de envío</p>
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-md">
-                  <RotateCcw className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                <div className="flex items-start gap-3 p-3 bg-white/10 border border-white/20">
+                  <RotateCcw className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-xs font-semibold text-[#1A1A1A]">Devolución gratis</p>
-                    <p className="text-xs text-[#1A1A1A]/70">Tenés 30 días desde que lo recibís</p>
+                    <p className="text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white">Devolución gratis</p>
+                    <p className="text-xs font-[family-name:var(--font-inter)] text-white/70">Tenés 30 días desde que lo recibís</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 pt-2">
-                  <Lock className="w-4 h-4 text-green-600" />
-                  <span className="text-xs text-[#1A1A1A]/70">Compra protegida</span>
+                  <Lock className="w-4 h-4 text-white" />
+                  <span className="text-xs font-[family-name:var(--font-inter)] text-white/70">Compra protegida</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Award className="w-4 h-4 text-purple-600" />
-                  <span className="text-xs text-[#1A1A1A]/70">12 meses de garantía de fábrica</span>
+                  <Award className="w-4 h-4 text-white" />
+                  <span className="text-xs font-[family-name:var(--font-inter)] text-white/70">12 meses de garantía de fábrica</span>
                 </div>
               </div>
 
               {/* Medios de pago */}
-              <div className="space-y-3 pt-4 border-t border-gray-200">
-                <h3 className="text-sm font-semibold text-[#1A1A1A] mb-2">Medios de pago</h3>
+              <div className="space-y-3 pt-4 border-t border-white/10">
+                <h3 className="text-sm font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white mb-2">Medios de pago</h3>
                 
                 <div className="space-y-3">
                   <div>
-                    <p className="text-xs text-[#1A1A1A]/70 mb-2">Tarjetas de crédito y débito</p>
+                    <p className="text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white/70 mb-2">Tarjetas de crédito y débito</p>
                     <div className="flex gap-2 flex-wrap">
                       {/* Visa */}
-                      <div className="w-12 h-8 bg-white border border-gray-200 rounded flex items-center justify-center p-1">
+                      <div className="w-12 h-8 bg-white/10 border border-white/20 flex items-center justify-center p-1">
                          <img 
                           src="https://http2.mlstatic.com/storage/logos-api-admin/a5f047d0-9be0-11ec-aad4-c3381f368aaf-m.svg" 
                           alt="Mercado Pago" 
@@ -702,7 +703,7 @@ export default function ProductoDetalle() {
                       </div>
                       
                       {/* Mastercard */}
-                      <div className="w-12 h-8 bg-white border border-gray-200 rounded flex items-center justify-center p-1">
+                      <div className="w-12 h-8 bg-white/10 border border-white/20 flex items-center justify-center p-1">
                          <img 
                           src="https://http2.mlstatic.com/storage/logos-api-admin/9cf818e0-723a-11f0-a459-cf21d0937aeb-m.svg" 
                           alt="Mercado Pago" 
@@ -711,7 +712,7 @@ export default function ProductoDetalle() {
                       </div>
                       
                       {/* American Express */}
-                      <div className="w-12 h-8 bg-white border border-gray-200 rounded flex items-center justify-center p-1">
+                      <div className="w-12 h-8 bg-white/10 border border-white/20 flex items-center justify-center p-1">
                         <svg viewBox="0 0 48 32" className="w-full h-full">
                           <rect width="48" height="32" rx="2" fill="#006FCF"/>
                           <text x="24" y="20" fill="white" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="Arial">AMEX</text>
@@ -720,7 +721,7 @@ export default function ProductoDetalle() {
 
                       
                       {/* Mercado Pago */}
-                      <div className="w-12 h-8 bg-white border border-gray-200 rounded flex items-center justify-center p-1">
+                      <div className="w-12 h-8 bg-white/10 border border-white/20 flex items-center justify-center p-1">
                         <img 
                           src="https://http2.mlstatic.com/storage/logos-api-admin/f3e8e940-f549-11ef-bad6-e9962bcd76e5-m.svg" 
                           alt="Mercado Pago" 
@@ -730,7 +731,7 @@ export default function ProductoDetalle() {
                     </div>
                   </div>
 
-                  <button className="flex items-center gap-2 text-xs text-[#3A6EA5] font-medium hover:underline">
+                  <button className="flex items-center gap-2 text-xs text-white font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase hover:opacity-70 transition-opacity">
                     <CreditCard className="w-4 h-4" />
                     Ver todos los medios de pago
                   </button>

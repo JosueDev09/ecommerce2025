@@ -4,19 +4,19 @@ import { useState } from "react";
 const footerLinks = {
   company: [
     { name: "Sobre Nosotros", href: "/about" },
-    { name: "Contacto", href: "/contact" },
-    { name: "Blog", href: "/blog" },
+    { name: "Contact", href: "/contact" },
+    { name: "Careers", href: "/careers" },
   ],
   help: [
-    { name: "Centro de Ayuda", href: "/help" },
-    { name: "Envíos", href: "/shipping" },
+    { name: "Ayuda", href: "/help" },
+    { name: "Envío", href: "/shipping" },
     { name: "Devoluciones", href: "/returns" },
-    { name: "Seguimiento", href: "/tracking" },
+    { name: "Seguimiento de Pedido", href: "/tracking" },
   ],
   legal: [
     { name: "Términos y Condiciones", href: "/terms" },
     { name: "Política de Privacidad", href: "/privacy" },
-    { name: "Quejas y Sugerencias", href: "/quejas" },
+    { name: "Servicio al Cliente", href: "/quejas" },
   ],
 };
 
@@ -63,142 +63,139 @@ export function Footer() {
   };
 
   return(
-    <footer className="relative bg-gradient-to-b from-[#1A1A1A] to-[#0F0F0F] text-white overflow-hidden">
-      {/* Decoraciones de fondo */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-[#3A6EA5]/10 rounded-full blur-[150px]" />
-      <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#E6C89C]/10 rounded-full blur-[130px]" />
+    <footer className="relative bg-black text-white">
+      <div className="border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 pt-16 pb-8">
+          {/* Newsletter */}
+          <div className="border-b border-white/10 pb-12 mb-12">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <h3 className="font-[family-name:var(--font-playfair)] text-3xl md:text-4xl text-white mb-3 tracking-tight">
+                  Unete a nuestra Newsletter
+                </h3>
+                <p className="font-[family-name:var(--font-inter)] text-white/60 text-sm tracking-wide">
+                  Suscribite y recibe ofertas exclusivas y actualizaciones
+                </p>
+              </div>
+              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  required
+                  className="flex-1 px-0 py-3 bg-transparent border-b border-white/20 text-white font-[family-name:var(--font-inter)] text-sm tracking-wide focus:outline-none focus:border-white/60 transition-colors placeholder:text-white/30"
+                />
+                <button
+                  type="submit"
+                  className="px-6 py-3 bg-white text-black font-[family-name:var(--font-inter)] text-xs tracking-[0.15em] uppercase font-medium hover:bg-white/90 transition-all duration-300 whitespace-nowrap"
+                >
+                  Suscribite
+                </button>
+              </form>
+            </div>
+          </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 pt-16 pb-8">
-        {/* Newsletter */}
-        <div className="bg-gradient-to-br from-[#3A6EA5] to-[#8BAAAD] rounded-2xl p-8 md:p-10 mb-12 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-[100px]" />
-          <div className="relative grid md:grid-cols-2 gap-6 items-center">
-            <div>
-              <h3 className="text-2xl md:text-3xl font-bold mb-2">
-                Suscríbete a Nuestro Newsletter
-              </h3>
-              <p className="text-white/90 text-sm">
-                Recibe ofertas exclusivas y novedades directamente en tu correo.
+          {/* Links del footer */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-12 mb-12">
+            {/* Logo y descripción */}
+            <div className="col-span-2 md:col-span-2">
+              <h2 className="font-[family-name:var(--font-playfair)] text-3xl text-white mb-4 tracking-tight">
+                ESYMBEL
+              </h2>
+              <p className="font-[family-name:var(--font-inter)] text-white/60 text-sm tracking-wide mb-6 max-w-xs">
+               Donde el lujo se encuentra con la artesanía. Experimenta la mejor selección de productos premium.
               </p>
+              {/* Redes sociales */}
+              <div className="flex gap-4">
+                {socialLinks.map((social) => (
+                  <a
+                    key={social.name}
+                    href={social.href}
+                    className="text-white/60 hover:text-white transition-colors duration-300"
+                    aria-label={social.name}
+                  >
+                    {social.icon}
+                  </a>
+                ))}
+              </div>
             </div>
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="tu@email.com"
-                required
-                className="flex-1 px-5 py-3 rounded-lg bg-white/95 text-[#1A1A1A] placeholder:text-[#1A1A1A]/50 focus:outline-none focus:ring-2 focus:ring-white"
-              />
-              <button
-                type="submit"
-                className="px-6 py-3 rounded-lg bg-white text-[#3A6EA5] font-medium hover:bg-white/90 transition-all duration-300 shadow-lg hover:shadow-xl whitespace-nowrap"
-              >
-                Suscribirme
-              </button>
-            </form>
-          </div>
-        </div>
 
-        {/* Links del footer */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
-          {/* Logo y descripción */}
-          <div className="col-span-2 md:col-span-1">
-            <div className="text-2xl font-bold bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] bg-clip-text text-transparent mb-3">
-              Esymbel Store
+            {/* Columna Empresa */}
+            <div>
+              <h4 className="font-[family-name:var(--font-inter)] text-white/50 text-xs tracking-[0.15em] uppercase mb-4">Empresa</h4>
+              <ul className="space-y-3">
+                {footerLinks.company.map((link) => (
+                  <li key={link.name}>
+                    <a
+                      href={link.href}
+                      className="font-[family-name:var(--font-inter)] text-white/70 hover:text-white transition-colors duration-300 text-sm tracking-wide"
+                    >
+                      {link.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <p className="text-white/70 text-sm mb-4">
-              Tu tienda online de confianza. Calidad, rapidez y el mejor servicio al cliente.
+
+            {/* Columna Ayuda */}
+            <div>
+              <h4 className="font-[family-name:var(--font-inter)] text-white/50 text-xs tracking-[0.15em] uppercase mb-4">Ayuda</h4>
+              <ul className="space-y-3">
+                {footerLinks.help.map((link) => (
+                  <li key={link.name}>
+                    <a
+                      href={link.href}
+                      className="font-[family-name:var(--font-inter)] text-white/70 hover:text-white transition-colors duration-300 text-sm tracking-wide"
+                    >
+                      {link.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Columna Legal */}
+            <div>
+              <h4 className="font-[family-name:var(--font-inter)] text-white/50 text-xs tracking-[0.15em] uppercase mb-4">Legal</h4>
+              <ul className="space-y-3">
+                {footerLinks.legal.map((link) => (
+                  <li key={link.name}>
+                    <a
+                      href={link.href}
+                      className="font-[family-name:var(--font-inter)] text-white/70 hover:text-white transition-colors duration-300 text-sm tracking-wide"
+                    >
+                      {link.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Métodos de pago */}
+          <div className="border-t border-white/10 pt-8 mb-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <span className="font-[family-name:var(--font-inter)] text-white/50 text-xs tracking-[0.15em] uppercase">Métodos de Pago</span>
+              <div className="flex gap-4">
+                {["Visa", "Mastercard", "PayPal", "Amex"].map((method) => (
+                  <div
+                    key={method}
+                    className="px-4 py-2 border border-white/20 text-white/60 font-[family-name:var(--font-inter)] text-xs tracking-wide"
+                  >
+                    {method}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Copyright */}
+          <div className="border-t border-white/10 pt-8 text-center">
+            <p className="font-[family-name:var(--font-inter)] text-white/40 text-xs tracking-wide">
+              © 2025 ESYMBEL. Todos los derechos reservados.
             </p>
-            {/* Redes sociales */}
-            <div className="flex gap-3">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.href}
-                  className="p-2 rounded-lg bg-white/10 hover:bg-[#3A6EA5] text-white transition-all duration-300 hover:scale-110"
-                  aria-label={social.name}
-                >
-                  {social.icon}
-                </a>
-              ))}
-            </div>
           </div>
-
-          {/* Columna Empresa */}
-          <div>
-            <h4 className="text-base font-semibold mb-4">Empresa</h4>
-            <ul className="space-y-2">
-              {footerLinks.company.map((link) => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-white/70 hover:text-[#8BAAAD] transition-colors duration-300 text-sm"
-                  >
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Columna Ayuda */}
-          <div>
-            <h4 className="text-base font-semibold mb-4">Ayuda</h4>
-            <ul className="space-y-2">
-              {footerLinks.help.map((link) => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-white/70 hover:text-[#8BAAAD] transition-colors duration-300 text-sm"
-                  >
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Columna Legal */}
-          <div>
-            <h4 className="text-base font-semibold mb-4">Legal</h4>
-            <ul className="space-y-2">
-              {footerLinks.legal.map((link) => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-white/70 hover:text-[#8BAAAD] transition-colors duration-300 text-sm"
-                  >
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Métodos de pago */}
-        <div className="border-t border-white/10 pt-6 mb-6">
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <span className="text-white/50 text-xs">Métodos de pago:</span>
-            <div className="flex gap-3">
-              {["Visa", "Mastercard", "PayPal", "Amex"].map((method) => (
-                <div
-                  key={method}
-                  className="px-3 py-1.5 rounded bg-white/10 text-white/70 text-xs font-medium"
-                >
-                  {method}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Copyright */}
-        <div className="border-t border-white/10 pt-6 text-center">
-          <p className="text-white/50 text-sm">
-            © 2025 Esymbel Store. Todos los derechos reservados.
-          </p>
         </div>
       </div>
     </footer>

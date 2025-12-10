@@ -156,7 +156,7 @@ export function VariantesSelector({ product, onVariantChange }: VariantesCompone
         {/* 🎨 Colores */}
         {colores.length > 0 && (
           <div>
-            <p className="text-sm text-[#1A1A1A]/80 mb-2 font-medium">
+            <p className="text-sm text-white mb-2 font-medium">
               Color: {selectedColor && <span className="text-[#3A6EA5]">{selectedColor}</span>}
               {usarVariantesTabla && selectedColor && (
                 <span className="text-xs text-gray-500 ml-2">
@@ -164,7 +164,7 @@ export function VariantesSelector({ product, onVariantChange }: VariantesCompone
                 </span>
               )}
             </p>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 flex-wrap ">
               {colores.map((color, idx) => {
                 const sinStock = !tieneStock(color);
                 return (
@@ -177,7 +177,7 @@ export function VariantesSelector({ product, onVariantChange }: VariantesCompone
                         : "cursor-pointer hover:scale-110"
                     } ${
                       selectedColor === color 
-                        ? "border-[#3A6EA5] ring-2 ring-[#3A6EA5] ring-offset-2 scale-110" 
+                        ? "border-[#3A6EA5] ring-2 ring-[#3A6EA5] ring-offset-2 scale-110 " 
                         : "border-[#1A1A1A]/20 hover:border-[#3A6EA5]"
                     }`}
                     style={{
@@ -188,7 +188,7 @@ export function VariantesSelector({ product, onVariantChange }: VariantesCompone
                     title={`${color}${sinStock ? " (Sin stock)" : ""}`}
                   >
                     {sinStock && (
-                      <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="absolute inset-0 flex items-center justify-center text-white">
                         <div className="w-full h-0.5 bg-red-500 rotate-45"></div>
                       </div>
                     )}
@@ -202,10 +202,10 @@ export function VariantesSelector({ product, onVariantChange }: VariantesCompone
         {/* 👕 Tallas (solo ropa) */}
         {isRopa && tallas.length > 0 && (
           <div>
-            <p className="text-sm text-[#1A1A1A]/80 mb-2 font-medium">
-              Talla: {selectedTalla && <span className="text-[#3A6EA5]">{selectedTalla}</span>}
+            <p className="text-sm text-white mb-2 font-medium">
+              Talla: {selectedTalla && <span className="text-white">{selectedTalla}</span>}
             </p>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 flex-wrap text-white">
               {tallas.map((talla, idx) => {
                 const sinStock = selectedColor ? !tieneStock(selectedColor, talla) : false;
                 return (
@@ -220,7 +220,7 @@ export function VariantesSelector({ product, onVariantChange }: VariantesCompone
                     } ${
                       selectedTalla === talla
                         ? "border-[#3A6EA5] text-white bg-[#3A6EA5] font-semibold shadow-md"
-                        : "border-[#1A1A1A]/20 hover:border-[#3A6EA5] hover:text-[#3A6EA5]"
+                        : "border-[#1A1A1A]/20 hover:border-[#3A6EA5] hover:text-white"
                     }`}
                   >
                     {talla}
