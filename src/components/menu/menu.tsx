@@ -182,6 +182,7 @@ export default function Menu() {
               href={item.href}
               onClick={(e) => handleSmoothScroll(e, item.href)}
               className={`text-sm font-medium leading-normal hover:opacity-70 transition-opacity duration-200 cursor-pointer ${pathname === '/cart' ? 'text-black' : 'text-white'}`}
+               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               {item.name}
             </a>
@@ -490,6 +491,7 @@ export default function Menu() {
               href={item.href}
               onClick={(e) => handleSmoothScroll(e, item.href)}
               className="flex flex-col items-center justify-center min-w-[60px] py-1"
+               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               <span className="text-[10px] text-[#1d1d1f] font-normal leading-tight">{item.name}</span>
             </a>

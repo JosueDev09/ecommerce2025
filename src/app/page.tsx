@@ -3,6 +3,7 @@ import CategoriesSection from "@/components/CategoriesSection/CategoriesSection"
 import AppleGrid from "@/components/productsSection/productSection";
 import BenefitsSection from "@/components/benefictsSection/BenefitsSection";
 import ProcessBuy from "@/components/processBuy/processBuy";
+import Hero2 from "@/components/hero2/hero2";
 
 export default function InicioPage() {
     return (
@@ -10,8 +11,10 @@ export default function InicioPage() {
             <Hero />
              <CategoriesSection />
              <AppleGrid />
-             {/* <BenefitsSection /> */}
+            
              {/* <ProcessBuy /> */}
+             <Hero2 />
+              <BenefitsSection />
              
         </div>
     );

@@ -289,7 +289,7 @@ export default function DashboardPage() {
                   />
                 </svg>
               </button>
-              <h1 className="text-lg font-normal text-gray-800">Mi cuenta</h1>
+              <h1 className="text-lg font-normal text-gray-800" style={{ fontFamily: "'Playfair Display', serif" }}>Mi cuenta</h1>
             </div>
           </div>
         </div>
@@ -302,21 +302,21 @@ export default function DashboardPage() {
             {/* Card de usuario */}
             <div className="bg-white rounded-lg p-4 mb-4 shadow-sm">
               <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-200">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                  <span className="text-white text-lg font-semibold">
+                <div className="w-12 h-12 rounded-full bg-black/60 flex items-center justify-center">
+                  <span className="text-white text-lg font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>
                     {user?.strNombre?.charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-gray-500">Hola</p>
-                  <p className="font-semibold text-gray-900 truncate">
+                  <p className="font-semibold text-gray-900 truncate" style={{ fontFamily: "'Playfair Display', serif" }}>
                     {user?.strNombre}
                   </p>
                 </div>
               </div>
               <button
                 onClick={handleLogout}
-                className="w-full text-sm text-blue-600 hover:text-blue-700 font-normal text-left"
+                className="w-full text-sm text-black hover:text-gray-700 font-normal text-left"
               >
                 Salir
               </button>
@@ -331,6 +331,7 @@ export default function DashboardPage() {
                   className={`w-full px-4 py-3 text-left flex items-center justify-between hover:bg-gray-50 transition-colors ${
                     index !== menuItems.length - 1 ? "border-b border-gray-100" : ""
                   }`}
+                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
                   <div className="flex items-center gap-3">
                     <item.icono className="w-5 h-5 text-gray-600" />
@@ -356,10 +357,10 @@ export default function DashboardPage() {
                   <div className="flex items-start justify-between mb-2">
                     <stat.icono className="w-5 h-5 text-gray-400" />
                   </div>
-                  <p className="text-2xl font-semibold text-gray-900 mb-1">
+                  <p className="text-2xl font-semibold text-gray-900 mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
                     {stat.valor}
                   </p>
-                  <p className="text-xs text-gray-600">{stat.titulo}</p>
+                  <p className="text-xs text-gray-600" style={{ fontFamily: "'Playfair Display', serif" }}>{stat.titulo}</p>
                   <p className="text-xs text-green-600 mt-1">{stat.tendencia}</p>
                 </div>
               ))}
@@ -369,12 +370,13 @@ export default function DashboardPage() {
             <div className="bg-white rounded-lg shadow-sm">
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-gray-900">
+                  <h2 className="text-lg font-semibold text-gray-900"  style={{ fontFamily: "'Playfair Display', serif" }}>
                     Compras
                   </h2>
                   <button
                     onClick={() => router.push("/dashboard/pedidos")}
-                    className="text-sm text-blue-600 hover:text-blue-700 font-normal"
+                    className="text-sm text-black hover:text-gray-700 font-normal"
+                     style={{ fontFamily: "'Playfair Display', serif" }}
                   >
                     Ver historial
                   </button>
@@ -434,7 +436,7 @@ export default function DashboardPage() {
                     <p className="text-gray-500 text-sm">No tienes pedidos aún</p>
                     <button
                       onClick={() => router.push("/products")}
-                      className="mt-4 text-blue-600 hover:text-blue-700 text-sm font-medium"
+                      className="mt-4 text-black hover:text-gray-700 text-sm font-medium"
                     >
                       Explorar productos
                     </button>
@@ -444,10 +446,10 @@ export default function DashboardPage() {
             </div>
 
             {/* Banner promocional estilo ML */}
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 shadow-sm text-white">
+            <div className="bg-black rounded-lg p-6 shadow-sm text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-xl font-semibold mb-2">
+                  <h3 className="text-xl font-semibold mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
                     ¡Descubre productos increíbles!
                   </h3>
                   <p className="text-blue-100 text-sm mb-4">
@@ -455,13 +457,14 @@ export default function DashboardPage() {
                   </p>
                   <button
                     onClick={() => router.push("/products")}
-                    className="bg-white text-blue-600 px-6 py-2 rounded-md font-medium hover:bg-blue-50 transition-colors text-sm"
+                    className="bg-white text-black px-6 py-2 rounded-md font-medium hover:bg-blue-50 transition-colors text-sm"
+                    style={{ fontFamily: "'Playfair Display', serif" }}
                   >
                     Ver productos
                   </button>
                 </div>
                 <div className="hidden md:block">
-                  <ShoppingBag className="w-24 h-24 text-blue-300 opacity-50" />
+                  <ShoppingBag className="w-24 h-24 text-white/30 opacity-50" />
                 </div>
               </div>
             </div>
@@ -469,12 +472,13 @@ export default function DashboardPage() {
             {/* Información de la cuenta */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: "'Playfair Display', serif" }}>
                   Datos de tu cuenta
                 </h3>
                 <button
                   onClick={() => router.push("/dashboard/perfil")}
-                  className="text-sm text-blue-600 hover:text-blue-700 font-normal"
+                  className="text-sm text-black hover:text-gray-700 font-normal"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
                 >
                   Editar
                 </button>
@@ -482,26 +486,26 @@ export default function DashboardPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="border border-gray-200 rounded-lg p-4">
-                  <p className="text-xs text-gray-500 mb-1">Nombre</p>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-xs text-gray-500 mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>Nombre</p>
+                  <p className="text-sm font-medium text-gray-900" style={{ fontFamily: "'Playfair Display', serif" }}>
                     {user?.strNombre}
                   </p>
                 </div>
                 <div className="border border-gray-200 rounded-lg p-4">
-                  <p className="text-xs text-gray-500 mb-1">Email</p>
-                  <p className="text-sm font-medium text-gray-900 truncate">
+                  <p className="text-xs text-gray-500 mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>Email</p>
+                  <p className="text-sm font-medium text-gray-900 truncate" style={{ fontFamily: "'Playfair Display', serif" }}>
                     {user?.strCorreo || user?.strUsuario}
                   </p>
                 </div>
                 <div className="border border-gray-200 rounded-lg p-4">
-                  <p className="text-xs text-gray-500 mb-1">Teléfono</p>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-xs text-gray-500 mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>Teléfono</p>
+                  <p className="text-sm font-medium text-gray-900" style={{ fontFamily: "'Playfair Display', serif" }}>
                     {user?.strTelefono || "No registrado"}
                   </p>
                 </div>
                 <div className="border border-gray-200 rounded-lg p-4">
-                  <p className="text-xs text-gray-500 mb-1">Miembro desde</p>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-xs text-gray-500 mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>Miembro desde</p>
+                  <p className="text-sm font-medium text-gray-900" style={{ fontFamily: "'Playfair Display', serif" }}>
                     {new Date().toLocaleDateString("es-MX", {
                       month: "long",
                       year: "numeric",

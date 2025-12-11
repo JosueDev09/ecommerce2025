@@ -125,10 +125,10 @@ export default function PedidosPage() {
 
   if (!mounted || !isAuthenticated || isGuest || loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A6EA5] mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white mx-auto mb-6"></div>
+          <p className="font-[family-name:var(--font-inter)] text-white/70 text-sm tracking-wide">Cargando pedidos...</p>
         </div>
       </div>
     );
@@ -222,15 +222,15 @@ export default function PedidosPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#EDEDEE]">
-      {/* Header estilo Mercado Libre */}
-      <div className="bg-[#FFFF] shadow-sm">
+    <div className="min-h-screen bg-black">
+      {/* Header */}
+      <div className="bg-black/95 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between h-20">
+            <div className="flex items-center gap-6">
               <button
                 onClick={() => router.push("/dashboard")}
-                className="text-gray-700 hover:text-gray-900 transition-colors"
+                className="text-white/70 hover:text-white transition-colors"
               >
                 <svg
                   className="w-5 h-5"
@@ -241,45 +241,45 @@ export default function PedidosPage() {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                     d="M15 19l-7-7 7-7"
                   />
                 </svg>
               </button>
               <div>
-                <h1 className="text-lg font-normal text-gray-800">Compras</h1>
+                <h1 className="font-[family-name:var(--font-playfair)] text-2xl text-white tracking-tight">Mis Pedidos</h1>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Buscador */}
-        <div className="mb-4">
+        <div className="mb-8">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-white/50 w-5 h-5" />
             <input
               type="text"
-              placeholder="Buscar en tus compras"
+              placeholder="Buscar en tus pedidos"
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-md bg-white border-0 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              className="w-full pl-14 pr-6 py-4 bg-white/5 backdrop-blur-xl border border-white/10 text-white placeholder:text-white/50 focus:outline-none focus:border-white/30 transition-colors font-[family-name:var(--font-inter)] text-sm tracking-wide"
             />
           </div>
         </div>
 
-        {/* Filtros estilo tabs */}
-        <div className="bg-white rounded-md shadow-sm mb-4 overflow-x-auto">
-          <div className="flex border-b border-gray-200">
+        {/* Filtros */}
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 mb-8 overflow-x-auto">
+          <div className="flex border-b border-white/10">
             {filtros.map((f) => (
               <button
                 key={f.id}
                 onClick={() => setFiltro(f.id)}
-                className={`flex-1 min-w-[120px] px-4 py-3 text-sm font-normal transition-colors whitespace-nowrap ${
+                className={`flex-1 min-w-[120px] px-6 py-4 font-[family-name:var(--font-inter)] text-xs tracking-wider uppercase transition-colors whitespace-nowrap ${
                   filtro === f.id
-                    ? "text-blue-600 border-b-2 border-blue-600"
-                    : "text-gray-600 hover:text-gray-900"
+                    ? "text-white border-b-2 border-white"
+                    : "text-white/60 hover:text-white"
                 }`}
               >
                 {f.nombre}
@@ -291,48 +291,55 @@ export default function PedidosPage() {
         {/* Lista de Pedidos */}
         <AnimatePresence mode="wait">
           {pedidosFiltrados.length === 0 ? (
-            <div className="bg-white rounded-md shadow-sm p-12 text-center">
-              <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No se encontraron compras
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white/5 backdrop-blur-xl border border-white/10 p-16 text-center"
+            >
+              <Package className="w-20 h-20 text-white/30 mx-auto mb-6" />
+              <h3 className="font-[family-name:var(--font-playfair)] text-2xl text-white mb-3 tracking-tight">
+                No se encontraron pedidos
               </h3>
-              <p className="text-gray-500 text-sm">
+              <p className="font-[family-name:var(--font-inter)] text-white/60 text-sm tracking-wide">
                 {busqueda
                   ? "Intenta con otra búsqueda"
-                  : "No tienes compras en esta categoría"}
+                  : "No tienes pedidos en esta categoría"}
               </p>
-            </div>
+            </motion.div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               {pedidosFiltrados.map((pedido, index) => {
                 const estadoConfig = getEstadoConfig(pedido.strEstado);
 
                 return (
-                  <div
+                  <motion.div
                     key={pedido.intPedido}
-                    className="bg-white rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="bg-white/5 backdrop-blur-xl border border-white/10 overflow-hidden hover:border-white/20 transition-all group"
                   >
-                    <div className="p-5">
+                    <div className="p-6">
                       {/* Header del pedido */}
-                      <div className="flex items-start justify-between mb-4 pb-4 border-b border-gray-100">
+                      <div className="flex items-start justify-between mb-6 pb-6 border-b border-white/10">
                         <div>
-                          <div className="flex items-center gap-3 mb-2">
+                          <div className="flex items-center gap-4 mb-3">
                             <span
-                              className={`px-2.5 py-1 rounded text-xs font-medium ${estadoConfig.color} border`}
+                              className={`px-3 py-1.5 text-xs font-[family-name:var(--font-inter)] tracking-wider uppercase border ${estadoConfig.color.replace('bg-', 'bg-white/').replace('text-', 'text-white/').replace('border-', 'border-white/')} bg-white/5 text-white border-white/20`}
                             >
                               {estadoConfig.texto}
                             </span>
-                            <span className="text-sm text-gray-500">
+                            <span className="font-[family-name:var(--font-inter)] text-sm text-white/60 tracking-wide">
                              {formatFecha(pedido.datPedido)}
                             </span>
                           </div>
-                          <p className="text-xs text-gray-500">
+                          <p className="font-[family-name:var(--font-inter)] text-xs text-white/50 tracking-wider uppercase">
                             Pedido #{pedido.intPedido.toString().padStart(8, '0')}
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm text-gray-500 mb-1">Total</p>
-                          <p className="text-xl font-semibold text-gray-900">
+                          <p className="font-[family-name:var(--font-inter)] text-xs text-white/50 tracking-wider uppercase mb-2">Total</p>
+                          <p className="font-[family-name:var(--font-playfair)] text-2xl text-white tracking-tight">
                             $
                             {pedido.dblTotal.toLocaleString("es-MX", {
                               minimumFractionDigits: 2,
@@ -342,69 +349,57 @@ export default function PedidosPage() {
                       </div>
 
                       {/* Productos */}
-                      <div className="mb-4">
+                      <div className="mb-6 space-y-4">
                         {pedido.tbItems.map((item, idx) => (
                           <div
                             key={idx}
-                            className="flex items-center justify-between py-2"
+                            className="flex items-center gap-5 py-3 hover:bg-white/5 transition-colors -mx-2 px-2"
                           >
-                            <div className="flex items-center gap-3">
-                              <div 
-                                className="w-16 h-16 rounded bg-cover bg-center"
-                                style={{
-                                  backgroundImage: item.tbProducto.strImagen
-                                    ? `url(${item.tbProducto.strImagen})`
-                                    : 'none',
-                                  backgroundColor: !item.tbProducto.strImagen ? '#f3f4f6' : 'transparent'
-                                }}
-                              >
-                                {!item.tbProducto.strImagen && (
-                                  <div className="w-full h-full flex items-center justify-center">
-                                    <ShoppingBag className="w-6 h-6 text-gray-400" />
-                                  </div>
-                                )}
-                              </div>
-                              <div>
-                                <p className="text-sm text-gray-900 font-normal">
-                                  {item.tbProducto.strNombre}
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                  Cantidad: {item.intCantidad}
-                                </p>
-                                <p className="text-xs text-gray-600 font-medium">
-                                  ${item.dblSubtotal.toLocaleString("es-MX", {
-                                    minimumFractionDigits: 2,
-                                  })}
-                                </p>
-                              </div>
+                            <div 
+                              className="w-20 h-20 bg-white/5 bg-cover bg-center border border-white/10 flex-shrink-0"
+                              style={{
+                                backgroundImage: item.tbProducto.strImagen
+                                  ? `url(${item.tbProducto.strImagen})`
+                                  : 'none',
+                              }}
+                            >
+                              {!item.tbProducto.strImagen && (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <ShoppingBag className="w-6 h-6 text-white/30" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-[family-name:var(--font-playfair)] text-base text-white mb-2">
+                                {item.tbProducto.strNombre}
+                              </p>
+                              <p className="font-[family-name:var(--font-inter)] text-xs text-white/60 tracking-wide mb-1">
+                                Cantidad: {item.intCantidad}
+                              </p>
+                              <p className="font-[family-name:var(--font-playfair)] text-sm text-white">
+                                ${item.dblSubtotal.toLocaleString("es-MX", {
+                                  minimumFractionDigits: 2,
+                                })}
+                              </p>
                             </div>
                           </div>
                         ))}
                       </div>
 
                       {/* Acciones */}
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                        {/* {pedido.strNumeroRastreo && (
-                          <div className="text-sm text-gray-600">
-                            <span className="text-xs text-gray-500">
-                              Seguimiento: 
-                            </span>
-                            <span className="font-medium ml-1">
-                              {pedido.strNumeroRastreo}
-                            </span>
-                          </div>
-                        )} */}
+                      <div className="flex items-center justify-between pt-6 border-t border-white/10">
                         <button
                           onClick={() =>
                             router.push(`/pedido/confirmacion/${pedido.intPedido}`)
                           }
-                          className="ml-auto text-sm text-blue-600 hover:text-blue-700 font-normal"
+                          className="ml-auto font-[family-name:var(--font-inter)] text-sm text-white tracking-wider uppercase hover:opacity-70 transition-opacity flex items-center gap-2"
                         >
-                          Ver compra
+                          Ver Detalles
+                          <ChevronRight className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>

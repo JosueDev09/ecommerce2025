@@ -197,13 +197,13 @@ export default function PaymentMethodSection({
             completedSections.includes(4)
               ? "bg-green-500 text-white"
               : openSection === 4
-              ? "bg-[#3A6EA5] text-white"
+              ? "bg-black text-white"
               : "bg-gray-200 text-gray-600"
           }`}>
             {completedSections.includes(4) ? <Check className="w-5 h-5" /> : "4"}
           </div>
           <div className="text-left">
-            <h3 className="font-bold text-gray-900">Método de pago</h3>
+            <h3 className="font-bold text-gray-900" style={{ fontFamily: "'Playfair Display', serif" }}>Método de pago</h3>
             {completedSections.includes(4) && formData.metodoPago && (
               <p className="text-sm text-gray-500">
                 {formData.metodoPago === "tarjeta" && "Tarjeta de crédito/débito"}
@@ -231,7 +231,7 @@ export default function PaymentMethodSection({
           >
             <div className="p-6 space-y-4">
               <div className="space-y-3">
-                <label className="block p-4 border-2 rounded-lg cursor-pointer hover:border-[#3A6EA5] transition-all has-[:checked]:border-[#3A6EA5] has-[:checked]:bg-[#3A6EA5]/5">
+                <label className="block p-4 border-2 cursor-pointer hover:border-black transition-all has-[:checked]:border-black has-[:checked]:bg-black/5">
                   <div className="flex items-center gap-3">
                     <input
                       type="radio"
@@ -249,7 +249,7 @@ export default function PaymentMethodSection({
                   </div>
                 </label>
 
-                <label className="block p-4 border-2 rounded-lg cursor-pointer hover:border-[#3A6EA5] transition-all has-[:checked]:border-[#3A6EA5] has-[:checked]:bg-[#3A6EA5]/5">
+                <label className="block p-4 border-2 cursor-pointer hover:border-black transition-all has-[:checked]:border-black has-[:checked]:bg-black/5">
                   <div className="flex items-center gap-3">
                     <input
                       type="radio"
@@ -269,7 +269,7 @@ export default function PaymentMethodSection({
                   </div>
                 </label>
 
-                <label className="block p-4 border-2 rounded-lg cursor-pointer hover:border-[#3A6EA5] transition-all has-[:checked]:border-[#3A6EA5] has-[:checked]:bg-[#3A6EA5]/5">
+                <label className="block p-4 border-2 cursor-pointer hover:border-black transition-all has-[:checked]:border-black has-[:checked]:bg-black/5">
                   <div className="flex items-center gap-3">
                     <input
                       type="radio"
@@ -297,7 +297,7 @@ export default function PaymentMethodSection({
                         <h4 className="text-sm font-semibold text-gray-700">Mis tarjetas guardadas</h4>
                         <button
                           onClick={handleNewCard}
-                          className="text-sm text-[#3A6EA5] hover:text-[#2E5A8C] font-medium flex items-center gap-1"
+                          className="text-sm text-black hover:text-gray-700 font-medium flex items-center gap-1"
                         >
                           <Plus className="w-4 h-4" />
                           Nueva tarjeta
@@ -312,9 +312,9 @@ export default function PaymentMethodSection({
                           return (
                           <div key={card.intTarjeta} className="relative">
                             <label
-                              className={`block p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                              className={`block p-4 border-2 cursor-pointer transition-all ${
                                 selectedCardId === card.intTarjeta
-                                  ? "border-[#3A6EA5] bg-blue-50"
+                                  ? "border-black bg-black/5"
                                   : "border-gray-200 hover:border-gray-300"
                               }`}
                             >
@@ -381,7 +381,7 @@ export default function PaymentMethodSection({
 
                       {/* Mensaje de error si hay */}
                       {error && (
-                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm">
                           {error}
                         </div>
                       )}
@@ -389,7 +389,7 @@ export default function PaymentMethodSection({
                       {/* Campo CVV para tarjeta seleccionada */}
                       {selectedCardId && (
                         <div className="space-y-3">
-                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                          <div className="bg-blue-50 border border-blue-200  p-4">
                             <p className="text-sm text-gray-700 mb-3">
                               🔒 Por seguridad, ingresa el CVV de tu tarjeta para continuar
                             </p>
@@ -407,7 +407,7 @@ export default function PaymentMethodSection({
                                 onChange={handleInputChange}
                                 placeholder="123"
                                 maxLength={4}
-                                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm"
+                                className="w-full px-4 py-2.5  border border-gray-300 focus:border-black focus:ring-1 focus:ring-black outline-none transition-all text-sm"
                                 required
                               />
                               <p className="text-xs text-gray-500 mt-1">
@@ -422,7 +422,7 @@ export default function PaymentMethodSection({
                       <button
                         onClick={() => handleSectionComplete(4)}
                         disabled={!selectedCardId || !formData.cvv || formData.cvv.length < 3}
-                        className="w-full py-3 rounded-lg bg-[#3A6EA5] text-white font-semibold hover:bg-[#2E5A8C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full py-3  bg-black text-white font-semibold hover:bg-[#2E5A8C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Continuar con esta tarjeta
                       </button>
@@ -454,7 +454,7 @@ export default function PaymentMethodSection({
 
                       {/* Mensaje de error si hay */}
                       {error && (
-                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3  text-sm">
                           {error}
                         </div>
                       )}
@@ -462,7 +462,7 @@ export default function PaymentMethodSection({
                       <button
                         onClick={handleSaveNewCard}
                         disabled={!formData.numeroTarjeta || !formData.nombreTarjeta || !formData.fechaExpiracion || !formData.cvv || loading}
-                        className="w-full py-3 rounded-lg bg-[#3A6EA5] text-white font-semibold hover:bg-[#2E5A8C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="w-full py-3  bg-black text-white font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       >
                         {loading ? (
                           <>
@@ -483,7 +483,7 @@ export default function PaymentMethodSection({
                 <button
                   onClick={() => handleSectionComplete(4)}
                   disabled={!isFormValid}
-                  className="w-full py-3 rounded-lg bg-[#3A6EA5] text-white font-semibold hover:bg-[#2E5A8C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3  bg-black text-white font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Confirmar método de pago
                 </button>

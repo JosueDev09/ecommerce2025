@@ -148,7 +148,7 @@ export default function PaymentLoadingSteps({
               >
                 <XCircle className="w-10 h-10 text-red-600" />
               </motion.div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
                 Pago Rechazado
               </h2>
               <p className="text-gray-600 text-sm mb-4">
@@ -227,7 +227,7 @@ export default function PaymentLoadingSteps({
             >
               <CreditCard className="w-8 h-8 text-white" />
             </motion.div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
               Procesando tu Compra
             </h2>
             <p className="text-gray-600 text-sm">

@@ -118,13 +118,13 @@ export default function ShippingAddressSection({
             completedSections.includes(2)
               ? "bg-green-500 text-white"
               : openSection === 2
-              ? "bg-[#3A6EA5] text-white"
+              ? "bg-black text-white"
               : "bg-gray-200 text-gray-600"
           }`}>
             {completedSections.includes(2) ? <Check className="w-5 h-5" /> : "2"}
           </div>
           <div className="text-left">
-            <h3 className="font-bold text-gray-900">Dirección de envío</h3>
+            <h3 className="font-bold text-gray-900" style={{ fontFamily: "'Playfair Display', serif" }}>Dirección de envío</h3>
             {completedSections.includes(2) && (
               <p className="text-sm text-gray-500">{formData.calle} {formData.numeroExterior}, {formData.ciudad}</p>
             )}
@@ -204,7 +204,7 @@ export default function ShippingAddressSection({
                   <button
                     onClick={() => handleSectionComplete(2)}
                     disabled={!selectedAddressId}
-                    className="w-full py-3 rounded-lg bg-[#3A6EA5] text-white font-semibold hover:bg-[#2E5A8C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-3 bg-black text-white font-semibold hover:bg-[#2E5A8C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Continuar con esta dirección
                   </button>
@@ -237,7 +237,7 @@ export default function ShippingAddressSection({
                     value={formData.calle}
                     onChange={handleInputChange}
                     placeholder="Av. Insurgentes"
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm"
+                    className="w-full px-4 py-2.5  border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm"
                     required
                   />
                 </div>
@@ -252,7 +252,7 @@ export default function ShippingAddressSection({
                     value={formData.numeroExterior}
                     onChange={handleInputChange}
                     placeholder="123"
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm"
+                    className="w-full px-4 py-2.5  border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm"
                     required
                   />
                 </div>
@@ -269,7 +269,7 @@ export default function ShippingAddressSection({
                     value={formData.numeroInterior}
                     onChange={handleInputChange}
                     placeholder="Depto 4B"
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm"
+                    className="w-full px-4 py-2.5  border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm"
                   />
                 </div>
 
@@ -283,7 +283,7 @@ export default function ShippingAddressSection({
                     value={formData.colonia}
                     onChange={handleInputChange}
                     placeholder="Roma Norte"
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm"
+                    className="w-full px-4 py-2.5  border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm"
                     required
                   />
                 </div>
@@ -301,7 +301,7 @@ export default function ShippingAddressSection({
                     onChange={handleInputChange}
                     placeholder="06700"
                     maxLength={5}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm"
+                    className="w-full px-4 py-2.5  border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm"
                     required
                   />
                 </div>
@@ -316,7 +316,7 @@ export default function ShippingAddressSection({
                     value={formData.ciudad}
                     onChange={handleInputChange}
                     placeholder="CDMX"
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm"
+                    className="w-full px-4 py-2.5  border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm"
                     required
                   />
                 </div>
@@ -331,7 +331,7 @@ export default function ShippingAddressSection({
                     value={formData.estado}
                     onChange={handleInputChange}
                     placeholder="CDMX"
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm"
+                    className="w-full px-4 py-2.5  border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm"
                     required
                   />
                 </div>
@@ -347,7 +347,7 @@ export default function ShippingAddressSection({
                   onChange={handleInputChange}
                   placeholder="Entre qué calles está, color de casa, etc."
                   rows={3}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm resize-none"
+                  className="w-full px-4 py-2.5  border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all text-sm resize-none"
                 />
               </div>
 
@@ -361,7 +361,7 @@ export default function ShippingAddressSection({
               <button
                 onClick={handleContinue}
                 disabled={!isFormValid || loading}
-                className="w-full py-3 rounded-lg bg-[#3A6EA5] text-white font-semibold hover:bg-[#2E5A8C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full py-3  bg-black text-white font-semibold hover:bg-[#2E5A8C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>

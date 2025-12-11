@@ -267,7 +267,7 @@ export default function CartPage() {
                 {/* Botón de checkout */}
                 <button 
                   onClick={handleCheckout}
-                  className="w-full py-4 bg-[#4C6EF5] text-white text-center font-[family-name:var(--font-inter)] text-sm font-medium tracking-wider uppercase hover:bg-[#3D5FE6] transition-colors duration-300 mb-6"
+                  className="w-full py-4 bg-black text-white text-center font-[family-name:var(--font-inter)] text-sm font-medium tracking-wider uppercase hover:bg-[#3D5FE6] transition-colors duration-300 mb-6"
                 >
                   Proceder al Pago
                 </button>
@@ -277,11 +277,36 @@ export default function CartPage() {
                   <p className="font-[family-name:var(--font-inter)] text-xs text-gray-400 mb-4 tracking-wide">
                     Aceptamos:
                   </p>
-                  <div className="flex justify-center gap-3 opacity-40">
-                    <div className="w-10 h-7 bg-gray-200 rounded"></div>
-                    <div className="w-10 h-7 bg-gray-200 rounded"></div>
-                    <div className="w-10 h-7 bg-gray-200 rounded"></div>
-                    <div className="w-10 h-7 bg-gray-200 rounded"></div>
+                  <div className="flex justify-center gap-3">
+                    <div className="w-12 h-8 bg-white/10 border border-white/20 flex items-center justify-center p-1">
+                       <img 
+                          src="https://http2.mlstatic.com/storage/logos-api-admin/a5f047d0-9be0-11ec-aad4-c3381f368aaf-m.svg" 
+                          alt="Mercado Pago" 
+                          className="w-full h-full object-contain"
+                        />
+                    </div>
+                      <div className="w-12 h-8 bg-white/10 border border-white/20 flex items-center justify-center p-1">
+                         <img 
+                          src="https://http2.mlstatic.com/storage/logos-api-admin/9cf818e0-723a-11f0-a459-cf21d0937aeb-m.svg" 
+                          alt="Mercado Pago" 
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                     {/* American Express */}
+                      <div className="w-12 h-8 bg-white/10 border border-white/20 flex items-center justify-center p-1">
+                        <svg viewBox="0 0 48 32" className="w-full h-full">
+                          <rect width="48" height="32" rx="2" fill="#006FCF"/>
+                          <text x="24" y="20" fill="white" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="Arial">AMEX</text>
+                        </svg>
+                      </div>
+                   {/* Mercado Pago */}
+                      <div className="w-12 h-8 bg-white/10 border border-white/20 flex items-center justify-center p-1">
+                        <img 
+                          src="https://http2.mlstatic.com/storage/logos-api-admin/f3e8e940-f549-11ef-bad6-e9962bcd76e5-m.svg" 
+                          alt="Mercado Pago" 
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
                   </div>
                 </div>
               </div>

@@ -101,7 +101,7 @@ export default function ProcessBuy() {
               </span>
             </motion.div>
 
-            <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
               Proceso de Compra{" "}
               <span className="bg-gradient-to-r from-[#3A6EA5] via-[#8BAAAD] to-[#E6C89C] bg-clip-text text-transparent">
                 en 4 Pasos
@@ -144,7 +144,7 @@ export default function ProcessBuy() {
                     </div>
 
                     {/* Contenido */}
-                    <h3 className="text-xl font-bold text-[#1A1A1A] mb-3 group-hover:text-[#3A6EA5] transition-colors duration-300">
+                    <h3 className="text-xl font-bold text-[#1A1A1A] mb-3 group-hover:text-[#3A6EA5] transition-colors duration-300" style={{ fontFamily: "'Playfair Display', serif" }}>
                       {step.title}
                     </h3>
                     <p className="text-[#1A1A1A]/70 leading-relaxed">

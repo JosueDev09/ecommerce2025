@@ -42,7 +42,7 @@ export default function CreditCardForm({
               onChange={handleInputChange}
               placeholder="1234 5678 9012 3456"
               maxLength={23}
-              className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all text-base font-mono"
+              className="w-full px-4 py-3  border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all text-base font-mono"
               required
             />
             <CreditCard className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -59,7 +59,7 @@ export default function CreditCardForm({
             value={formData.nombreTarjeta}
             onChange={handleInputChange}
             placeholder="Nombre como aparece en la tarjeta"
-            className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all uppercase text-base"
+            className="w-full px-4 py-3  border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all uppercase text-base"
             required
           />
         </div>
@@ -73,7 +73,7 @@ export default function CreditCardForm({
             name="tipoTarjeta"
             value={formData.tipoTarjeta}
             onChange={handleInputChange}
-            className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all text-base"
+            className="w-full px-4 py-3  border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all text-base"
             required
           >
             <option value="">Selecciona el tipo</option>
@@ -94,7 +94,7 @@ export default function CreditCardForm({
               onChange={handleInputChange}
               placeholder="MM/AA"
               maxLength={5}
-              className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all font-mono text-base"
+              className="w-full px-4 py-3  border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all font-mono text-base"
               required
             />
           </div>
@@ -111,7 +111,7 @@ export default function CreditCardForm({
                 onChange={handleInputChange}
                 placeholder="123"
                 maxLength={4}
-                className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all font-mono text-base"
+                className="w-full px-4 py-3  border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all font-mono text-base"
                 required
               />
               <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -146,7 +146,7 @@ export default function CreditCardForm({
                 name="mesesSinIntereses"
                 value={formData.mesesSinIntereses}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all text-base"
+                className="w-full px-4 py-3  border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 outline-none transition-all text-base"
               >
                 <option value="0">Pago de contado</option>
                 <option value="3">3 meses sin intereses</option>
@@ -160,7 +160,7 @@ export default function CreditCardForm({
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="p-3 bg-gray-50 rounded-lg border border-gray-200"
+                className="p-3 bg-gray-50  border border-gray-200"
               >
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Pago mensual:</span>
@@ -183,7 +183,7 @@ export default function CreditCardForm({
         )}
 
         {/* Mensaje de seguridad */}
-        <div className="flex items-start gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+        <div className="flex items-start gap-3 p-3 bg-green-50 border border-green-200 ">
           <Shield className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-medium text-green-900">Pago 100% seguro</p>

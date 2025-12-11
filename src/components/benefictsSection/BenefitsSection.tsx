@@ -115,18 +115,8 @@ export default function WhyChooseUs() {
   return (
     <section
       ref={ref}
-      className="relative w-full py-20 md:py-32 bg-gradient-to-b from-[#FFFFFF] via-[#F5F5F5] to-[#FFFFFF] overflow-hidden"
+      className="relative w-full py-20 md:py-32 bg-black overflow-hidden"
     >
-      {/* 🔹 Decoraciones de fondo animadas */}
-      <motion.div
-        style={{ y }}
-        className="absolute top-40 -right-20 w-[500px] h-[500px] bg-[#3A6EA5]/10 rounded-full blur-[150px]"
-      />
-      <motion.div
-        style={{ y: useTransform(scrollYProgress, [0, 1], [-50, 50]) }}
-        className="absolute bottom-20 -left-20 w-[400px] h-[400px] bg-[#E6C89C]/20 rounded-full blur-[130px]"
-      />
-
       <div className="relative max-w-7xl mx-auto px-6">
         {/* 🔹 Encabezado */}
         <motion.div
@@ -141,22 +131,21 @@ export default function WhyChooseUs() {
             whileInView={{ scale: 1, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="inline-block mb-4 px-6 py-2 rounded-full bg-[#3A6EA5]/10 border border-[#3A6EA5]/20"
+            className="inline-block mb-8"
           >
-            <span className="text-[#3A6EA5] font-semibold text-sm tracking-wide uppercase">
-              ¿Por qué nosotros?
+            <span className="text-white/50 font-[family-name:var(--font-inter)] text-xs tracking-[0.2em] uppercase">
+              Excellence
             </span>
           </motion.div>
           
-          <h2 className="text-4xl md:text-6xl font-bold text-[#1A1A1A] mb-6 leading-tight">
-            La mejor experiencia{" "}
-            <span className="bg-gradient-to-r from-[#3A6EA5] via-[#8BAAAD] to-[#E6C89C] bg-clip-text text-transparent">
-              de compra online
+          <h2 className="text-4xl md:text-6xl font-[family-name:var(--font-playfair)] text-white mb-6 leading-tight tracking-tight">
+            La Excelencia{" "}
+            <span className="text-white/60">
+              en Cada Detalle
             </span>
           </h2>
-          <p className="text-[#1A1A1A]/70 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-            Nos dedicamos a brindarte el mejor servicio, calidad y atención personalizada.
-            Tu satisfacción es nuestra prioridad número uno.
+          <p className="text-white/60 font-[family-name:var(--font-inter)] text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+            Compromiso inquebrantable con la calidad, el servicio y la experiencia excepcional.
           </p>
         </motion.div>
 
@@ -166,43 +155,38 @@ export default function WhyChooseUs() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-20"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[1px] bg-white/10 mb-20"
         >
           {features.map((feature, idx) => (
             <motion.div
               key={idx}
               variants={itemVariants}
-              whileHover={{ scale: 1.03, y: -8 }}
-              className="group relative bg-white rounded-2xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_12px_40px_rgba(58,110,165,0.15)] transition-all duration-500"
+              className="group relative bg-black p-8 md:p-10 hover:bg-white/5 transition-colors duration-500"
             >
-              {/* Icono con fondo degradado */}
-              <div className="relative inline-flex items-center justify-center mb-6">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#3A6EA5] to-[#8BAAAD] rounded-2xl opacity-10 group-hover:opacity-20 transition-opacity duration-300" />
-                <div className="relative p-4 rounded-2xl bg-gradient-to-br from-[#3A6EA5] to-[#8BAAAD] text-white group-hover:scale-110 transition-transform duration-300">
+              {/* Icono minimalista */}
+              <div className="mb-8">
+                <div className="text-white group-hover:scale-110 transition-transform duration-300 inline-block">
                   {feature.icon}
                 </div>
               </div>
 
               {/* Contenido */}
-              <h3 className="text-xl font-bold text-[#1A1A1A] mb-3 group-hover:text-[#3A6EA5] transition-colors duration-300">
+              <h3 className="text-xl font-[family-name:var(--font-playfair)] text-white mb-4 tracking-tight">
                 {feature.title}
               </h3>
-              <p className="text-[#1A1A1A]/70 leading-relaxed mb-6">
+              <p className="text-white/60 font-[family-name:var(--font-inter)] text-sm leading-relaxed mb-8">
                 {feature.description}
               </p>
 
               {/* Estadística */}
-              <div className="flex items-baseline gap-2 pt-4 border-t border-[#F5F5F5]">
-                <span className="text-3xl font-bold bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] bg-clip-text text-transparent">
+              <div className="flex items-baseline gap-2 pt-6 border-t border-white/10">
+                <span className="text-2xl font-[family-name:var(--font-playfair)] text-white">
                   {feature.stat}
                 </span>
-                <span className="text-sm text-[#1A1A1A]/60 font-medium">
+                <span className="text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white/50">
                   {feature.statLabel}
                 </span>
               </div>
-
-              {/* Borde animado */}
-              <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-[#3A6EA5]/20 transition-all duration-500" />
             </motion.div>
           ))}
         </motion.div>
@@ -213,12 +197,8 @@ export default function WhyChooseUs() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="relative bg-gradient-to-br from-[#3A6EA5] via-[#8BAAAD] to-[#3A6EA5] rounded-3xl p-8 md:p-12 shadow-[0_20px_60px_rgba(58,110,165,0.3)] overflow-hidden"
+          className="relative bg-white/5 backdrop-blur-xl border border-white/10 p-12 md:p-16 overflow-hidden"
         >
-          {/* Decoración de fondo */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-[100px]" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#E6C89C]/20 rounded-full blur-[100px]" />
-
           <div className="relative grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
             {stats.map((stat, idx) => (
               <motion.div
@@ -227,12 +207,12 @@ export default function WhyChooseUs() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: idx * 0.1 }}
-                className="text-center"
+                className="text-center border-r border-white/10 last:border-r-0"
               >
-                <div className="text-3xl md:text-5xl font-bold text-white mb-2">
+                <div className="text-3xl md:text-5xl font-[family-name:var(--font-playfair)] text-white mb-2">
                   {stat.value}
                 </div>
-                <div className="text-white/80 text-sm md:text-base font-medium">
+                <div className="text-white/60 font-[family-name:var(--font-inter)] text-xs md:text-sm tracking-[0.1em] uppercase">
                   {stat.label}
                 </div>
               </motion.div>
@@ -246,23 +226,23 @@ export default function WhyChooseUs() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-center mt-16"
+          className="text-center mt-20"
         >
-          <p className="text-[#1A1A1A]/70 text-lg mb-6">
-            Únete a miles de clientes satisfechos que confían en nosotros
+          <p className="text-white/60 font-[family-name:var(--font-inter)] text-sm md:text-base mb-8 tracking-wide">
+            Únete a miles de clientes que confían en nosotros
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href="/products"
-              className="px-8 py-3 rounded-full bg-[#3A6EA5] text-white font-medium hover:bg-[#2E5A8C] transition-all duration-300 shadow-md hover:shadow-lg"
+              className="px-10 py-4 bg-white text-black font-[family-name:var(--font-inter)] text-xs tracking-[0.15em] uppercase font-medium hover:bg-white/90 transition-all duration-300"
             >
               Explorar productos
             </a>
             <a
               href="/about"
-              className="px-8 py-3 rounded-full border-2 border-[#3A6EA5] text-[#3A6EA5] font-medium hover:bg-[#3A6EA5] hover:text-white transition-all duration-300"
+              className="px-10 py-4 border border-white/20 text-white font-[family-name:var(--font-inter)] text-xs tracking-[0.15em] uppercase font-medium hover:bg-white/10 transition-all duration-300"
             >
-              Conoce más sobre nosotros
+              Sobre Nosotros
             </a>
           </div>
         </motion.div>

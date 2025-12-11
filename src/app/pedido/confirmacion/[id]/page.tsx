@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { CheckCircle, Package, Mail, CreditCard, Truck, Copy, Check, MapPin, Calendar, Home, Phone, User, ArrowRight, Download, Share2, Star } from "lucide-react";
+import { CheckCircle, Package, Mail, CreditCard, Truck, Copy, Check, MapPin, Calendar, Home, Phone, User, ArrowRight, Download, Share2, Star, ChevronRight } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useTienda } from "@/context/TiendaContext";
 import OrderStatusTimeline from "@/components/order/OrderStatusTimeline";
@@ -14,6 +14,8 @@ interface OrderItem {
   dblPrecio: number;
   dblSubtotal: number;
   jsonImagenes?: string;
+  strTalla?: string;
+  strColor?: string;
 }
 
 interface OrderData {
@@ -56,7 +58,7 @@ export default function OrderConfirmationPage() {
   // 🧹 Limpiar carrito cuando se carga la página de confirmación
   useEffect(() => {
     if (orderData) {
-     console.log('datos',orderData);
+     //console.log('datos',orderData);
       limpiarCarrito();
     }
   }, [orderData]);
@@ -90,6 +92,8 @@ export default function OrderConfirmationPage() {
                             dblPrecio
                             jsonImagenes
                         }
+                        strTalla
+                        strColor
                     }
                     tbDirecciones {
                         intDireccion
@@ -110,7 +114,7 @@ export default function OrderConfirmationPage() {
       });
 
       const result = await response.json();
-      console.log("Resultado de obtener pedido:", result);
+      //console.log("Resultado de obtener pedido:", result);
       
       if (result.errors) {
         console.error("Errores de GraphQL:", result.errors);
@@ -128,6 +132,8 @@ export default function OrderConfirmationPage() {
           intCantidad: item.intCantidad,
           dblPrecio: item.tbProducto.dblPrecio,
           dblSubtotal: item.dblSubtotal,
+          strTalla: item.strTalla,
+          strColor: item.strColor,
         }));
         
         // Transformar dirección si existe
@@ -168,13 +174,14 @@ export default function OrderConfirmationPage() {
       setTimeout(() => setCopied(false), 2000);
     }
   };
+ // console.log('orderData',orderData);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F7F7] flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#3A6EA5] mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando información del pedido...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white mx-auto mb-6"></div>
+          <p className="font-[family-name:var(--font-inter)] text-white/70 text-sm tracking-wide">Cargando información del pedido...</p>
         </div>
       </div>
     );
@@ -182,14 +189,14 @@ export default function OrderConfirmationPage() {
 
   if (!orderData) {
     return (
-      <div className="min-h-screen bg-[#F7F7F7] flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Pedido no encontrado</h1>
+          <h1 className="font-[family-name:var(--font-playfair)] text-3xl text-white mb-6 tracking-tight">Order Not Found</h1>
           <button
             onClick={() => router.push("/")}
-            className="px-6 py-3 bg-[#3A6EA5] text-white rounded-lg font-semibold hover:bg-[#2E5A8C]"
+            className="px-8 py-4 bg-white text-black font-[family-name:var(--font-inter)] text-sm tracking-wider uppercase hover:bg-white/90 transition-colors"
           >
-            Volver al inicio
+            Back to Home
           </button>
         </div>
       </div>
@@ -197,18 +204,18 @@ export default function OrderConfirmationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7]">
+    <div className="min-h-screen bg-black">
       {/* 🔹 Menú Estático Superior */}
-      <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+      <header className="bg-black/95 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <div className="flex items-center">
               <button
                 onClick={() => router.push("/")}
-                className="text-2xl font-bold bg-gradient-to-r from-[#3A6EA5] to-[#8BAAAD] bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+                className="font-[family-name:var(--font-playfair)] text-2xl text-white hover:opacity-70 transition-opacity tracking-tight"
               >
-                Ecommerce
+                ESYMBEL
               </button>
             </div>
 
@@ -216,19 +223,19 @@ export default function OrderConfirmationPage() {
             <nav className="hidden md:flex items-center space-x-8">
               <button
                 onClick={() => router.push("/")}
-                className="text-gray-700 hover:text-[#3A6EA5] font-medium transition-colors"
+                className="font-[family-name:var(--font-inter)] text-sm text-white/80 hover:text-white tracking-wide uppercase transition-colors"
               >
                 Inicio
               </button>
               <button
                 onClick={() => router.push("/products")}
-                className="text-gray-700 hover:text-[#3A6EA5] font-medium transition-colors"
+                className="font-[family-name:var(--font-inter)] text-sm text-white/80 hover:text-white tracking-wide uppercase transition-colors"
               >
                 Productos
               </button>
               <button
                 onClick={() => router.push("/quejas")}
-                className="text-gray-700 hover:text-[#3A6EA5] font-medium transition-colors"
+                className="font-[family-name:var(--font-inter)] text-sm text-white/80 hover:text-white tracking-wide uppercase transition-colors"
               >
                 Contacto
               </button>
@@ -238,23 +245,11 @@ export default function OrderConfirmationPage() {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => router.push(user ? "/dashboard" : "/login")}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 border border-white/20 hover:bg-white/5 transition-colors"
               >
-                <svg
-                  className="w-6 h-6 text-[#3A6EA5]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5.121 17.804A9 9 0 0112 15a9 9 0 016.879 2.804M12 12a4 4 0 100-8 4 4 0 000 8z"
-                  />
-                </svg>
+                <User className="w-5 h-5 text-white" />
                 {user && (
-                  <span className="hidden lg:block text-sm font-medium text-gray-700">
+                  <span className="hidden lg:block text-sm font-[family-name:var(--font-inter)] text-white tracking-wide">
                     {user.strNombre}
                   </span>
                 )}
@@ -264,69 +259,69 @@ export default function OrderConfirmationPage() {
         </div>
       </header>
 
-      <main className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 bg-[#EDEDEE]">
+      <main className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12 bg-black">
         <div className="max-w-7xl mx-auto">
-          {/* Breadcrumb estilo ML */}
-          <div className="mb-4">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <button onClick={() => router.push("/")} className="hover:text-[#3A6EA5]">
+          {/* Breadcrumb */}
+          <div className="mb-8">
+            <div className="flex items-center gap-2 text-xs font-[family-name:var(--font-inter)] text-white/60 uppercase tracking-wider">
+              <button onClick={() => router.push("/")} className="hover:text-white transition-colors">
                 Inicio
               </button>
-              <span>/</span>
-              <button onClick={() => router.push("/dashboard/pedidos")} className="hover:text-[#3A6EA5]">
+              <ChevronRight className="w-3 h-3" />
+              <button onClick={() => router.push("/dashboard/pedidos")} className="hover:text-white transition-colors">
                 Mis compras
               </button>
-              <span>/</span>
-              <span className="text-gray-900">Detalle de compra</span>
+              <ChevronRight className="w-3 h-3" />
+              <span className="text-white">Confirmación</span>
             </div>
           </div>
 
-          {/* Header de confirmación estilo ML */}
+          {/* Header de confirmación */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-md shadow-sm p-6 mb-4"
+            className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 mb-6"
           >
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-6">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", stiffness: 200, damping: 15 }}
                 className="flex-shrink-0"
               >
-                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
-                  <CheckCircle className="w-8 h-8 text-green-600" />
+                <div className="w-20 h-20 border border-white/20 flex items-center justify-center bg-white/5">
+                  <CheckCircle className="w-10 h-10 text-white" />
                 </div>
               </motion.div>
               
               <div className="flex-1">
-                <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-                  ¡Listo! Ya recibimos tu pago
+                <h1 className="font-[family-name:var(--font-playfair)] text-3xl text-white mb-3 tracking-tight">
+                  Pedido Confirmado
                 </h1>
-                <p className="text-gray-600 mb-4">
-                  Te enviamos un email a <span className="font-medium">{user?.strCorreo || user?.strUsuario}</span> con los detalles de tu compra.
+                <p className="font-[family-name:var(--font-inter)] text-white/70 text-sm tracking-wide mb-6">
+                  Confirmación enviada a <span className="text-white">{user?.strCorreo || user?.strUsuario}</span>
                 </p>
                 
                 <div className="flex items-center gap-4 flex-wrap">
-                  <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-md">
-                    <Package className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm text-gray-700">
-                      Pedido <span className="font-semibold">#{orderData.intPedido.toString().padStart(8, '0')}</span>
+                  <div className="flex items-center gap-3 px-4 py-3 bg-white/5 border border-white/10">
+                    <Package className="w-4 h-4 text-white/70" />
+                    <span className="font-[family-name:var(--font-inter)] text-sm text-white/90 tracking-wide">
+                      Pedido <span className="text-white">#{orderData.intPedido.toString().padStart(8, '0')}</span>
                     </span>
                     <button
                       onClick={copyOrderNumber}
-                      className="text-gray-500 hover:text-[#3A6EA5] transition-colors ml-1"
+                      className="text-white/50 hover:text-white transition-colors ml-1"
                     >
-                      {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                      {copied ? <Check className="w-4 h-4 text-white" /> : <Copy className="w-4 h-4" />}
                     </button>
                   </div>
                   
-                  <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-md">
-                    <Calendar className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm text-gray-700">
-                      {new Date(orderData.strFechaCreacion).toLocaleDateString('es-MX', {
+                  <div className="flex items-center gap-3 px-4 py-3 bg-white/5 border border-white/10">
+                    <Calendar className="w-4 h-4 text-white/70" />
+                    <span className="font-[family-name:var(--font-inter)] text-sm text-white/90 tracking-wide">
+                      {new Date(orderData.strFechaCreacion).toLocaleDateString('en-US', {
+                        month: 'short',
                         day: 'numeric',
-                        month: 'long',
                         year: 'numeric'
                       })}
                     </span>
@@ -335,56 +330,66 @@ export default function OrderConfirmationPage() {
               </div>
 
               <div className="text-right">
-                <p className="text-sm text-gray-600 mb-1">Total pagado</p>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="font-[family-name:var(--font-inter)] text-xs text-white/60 tracking-wider uppercase mb-2">Total</p>
+                <p className="font-[family-name:var(--font-playfair)] text-4xl text-white tracking-tight">
                   ${orderData.dblTotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                 </p>
               </div>
             </div>
           </motion.div>
 
-          {/* Grid principal estilo ML */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Grid principal */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Columna izquierda - Productos y detalles */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="lg:col-span-2 space-y-4"
+              className="lg:col-span-2 space-y-6"
             >
               {/* Productos */}
-              <div className="bg-white rounded-md shadow-sm">
-                <div className="p-5 border-b border-gray-200">
-                  <h2 className="text-lg font-semibold text-gray-900">Productos</h2>
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10">
+                <div className="p-6 border-b border-white/10">
+                  <h2 className="font-[family-name:var(--font-playfair)] text-2xl text-white tracking-tight">Productos</h2>
                 </div>
 
-                <div className="divide-y divide-gray-200">
+                <div className="divide-y divide-white/10">
                   {orderData.items.map((item, index) => (
-                    <div key={index} className="p-5 hover:bg-gray-50 transition-colors">
-                      <div className="flex gap-4">
+                    <div key={index} className="p-6 hover:bg-white/5 transition-colors">
+                      <div className="flex gap-6">
                         <div
-                          className="w-24 h-24 rounded-md bg-gray-100 bg-cover bg-center flex-shrink-0 border border-gray-200"
+                          className="w-28 h-28 bg-white/5 bg-cover bg-center flex-shrink-0 border border-white/10"
                           style={{
                             backgroundImage: item.jsonImagenes ? `url(${item.jsonImagenes})` : undefined
                           }}
                         />
+                       
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-medium text-gray-900 mb-1 line-clamp-2">
+                          <h3 className="font-[family-name:var(--font-playfair)] text-lg text-white mb-2 line-clamp-2">
                             {item.strNombre}
                           </h3>
-                          <p className="text-sm text-gray-600 mb-2">
-                            Cantidad: <span className="font-medium">{item.intCantidad}</span>
+                          <p className="font-[family-name:var(--font-inter)] text-sm text-white/60 mb-3 tracking-wide">
+                            Cantidad: <span className="text-white">{item.intCantidad}</span>
                           </p>
+                          <p className="font-[family-name:var(--font-inter)] text-sm text-white/60 mb-3 tracking-wide">
+                            Talla: <span className="text-white">{item.strTalla?.toUpperCase()}</span>
+                          </p>
+                        { item.strColor && (
+                           <p className="font-[family-name:var(--font-inter)] text-sm text-white/60 mb-3 tracking-wide">
+                            Color: <span className="text-white">{item.strColor?.toUpperCase()}</span>
+                          </p>  
+                        )}
+                          
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="text-xs text-gray-500">Precio unitario</p>
-                              <p className="text-sm font-medium text-gray-900">
+                              <p className="font-[family-name:var(--font-inter)] text-xs text-white/50 tracking-wider uppercase mb-1">Precio Unitario</p>
+                              <p className="font-[family-name:var(--font-playfair)] text-base text-white">
                                 ${item.dblPrecio.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                               </p>
                             </div>
                             <div className="text-right">
-                              <p className="text-xs text-gray-500">Subtotal</p>
-                              <p className="text-lg font-semibold text-gray-900">
+                              <p className="font-[family-name:var(--font-inter)] text-xs text-white/50 tracking-wider uppercase mb-1">Subtotal</p>
+                              <p className="font-[family-name:var(--font-playfair)] text-xl text-white">
                                 ${item.dblSubtotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                               </p>
                             </div>
@@ -396,28 +401,28 @@ export default function OrderConfirmationPage() {
                 </div>
 
                 {/* Totales detallados */}
-                <div className="p-5 bg-gray-50 border-t border-gray-200">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">
+                <div className="p-6 bg-white/5 border-t border-white/10">
+                  <div className="space-y-3">
+                    <div className="flex justify-between font-[family-name:var(--font-inter)] text-sm tracking-wide">
+                      <span className="text-white/60">
                         Productos ({orderData.items.reduce((acc, item) => acc + item.intCantidad, 0)})
                       </span>
-                      <span className="font-medium text-gray-900">
+                      <span className="text-white">
                         ${orderData.dblSubtotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                       </span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Envío</span>
-                      <span className="font-medium text-green-600">
+                    <div className="flex justify-between font-[family-name:var(--font-inter)] text-sm tracking-wide">
+                      <span className="text-white/60">Envío</span>
+                      <span className="text-white">
                         {orderData.dblCostoEnvio === 0 
                           ? 'Gratis' 
                           : `$${orderData.dblCostoEnvio.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`
                         }
                       </span>
                     </div>
-                    <div className="flex justify-between pt-3 border-t border-gray-200">
-                      <span className="text-lg font-semibold text-gray-900">Total</span>
-                      <span className="text-2xl font-bold text-gray-900">
+                    <div className="flex justify-between pt-4 border-t border-white/20">
+                      <span className="font-[family-name:var(--font-playfair)] text-xl text-white">Total</span>
+                      <span className="font-[family-name:var(--font-playfair)] text-2xl text-white">
                         ${orderData.dblTotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                       </span>
                     </div>
@@ -427,36 +432,36 @@ export default function OrderConfirmationPage() {
 
               {/* Información de envío */}
               {orderData.strMetodoEnvio !== "recoger" && orderData.strDireccionEnvio && (
-                <div className="bg-white rounded-md shadow-sm p-5">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                      <Truck className="w-5 h-5 text-blue-600" />
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 border border-white/20 flex items-center justify-center bg-white/5">
+                      <Truck className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">Envío</h3>
-                      <p className="text-sm text-gray-600">
+                      <h3 className="font-[family-name:var(--font-playfair)] text-xl text-white tracking-tight">Envío</h3>
+                      <p className="font-[family-name:var(--font-inter)] text-sm text-white/60 tracking-wide">
                         {orderData.strMetodoEnvio === "express" 
-                          ? "Express (2-3 días hábiles)" 
-                          : "Estándar (5-7 días hábiles)"}
+                          ? "Express (2-3 business days)" 
+                          : "Standard (5-7 business days)"}
                       </p>
                     </div>
                   </div>
 
-                  <div className="pl-13 space-y-3">
+                  <div className="space-y-4">
                     <div>
-                      <p className="text-xs text-gray-500 mb-1">Dirección de entrega</p>
-                      <div className="text-sm text-gray-900">
-                        <p className="font-medium">{user?.strNombre || "Cliente"}</p>
+                      <p className="font-[family-name:var(--font-inter)] text-xs text-white/50 tracking-wider uppercase mb-2">Direccion de envío</p>
+                      <div className="font-[family-name:var(--font-inter)] text-sm text-white/80 space-y-1">
+                        <p className="text-white">{user?.strNombre || "Customer"}</p>
                         <p>{orderData.strDireccionEnvio.strCalle} {orderData.strDireccionEnvio.strNumeroExterior}</p>
                         <p>{orderData.strDireccionEnvio.strColonia}</p>
                         <p>{orderData.strDireccionEnvio.strCiudad}, {orderData.strDireccionEnvio.strEstado}</p>
-                        <p>C.P. {orderData.strDireccionEnvio.strCP}</p>
+                        <p>Código Postal {orderData.strDireccionEnvio.strCP}</p>
                       </div>
                     </div>
 
-                    <div className="p-3 bg-blue-50 rounded-md border border-blue-200">
-                      <p className="text-sm text-blue-800">
-                        <strong>Importante:</strong> Recibirás un email cuando tu pedido esté en camino con el número de seguimiento.
+                    <div className="p-4 bg-white/5 border border-white/10">
+                      <p className="font-[family-name:var(--font-inter)] text-sm text-white/70 tracking-wide">
+                        Recibirás un correo electrónico con la información de seguimiento una vez que tu pedido sea enviado.
                       </p>
                     </div>
                   </div>
@@ -495,79 +500,79 @@ export default function OrderConfirmationPage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="space-y-4"
+              className="space-y-6"
             >
               {/* Estado del pedido */}
-              <div className="bg-white rounded-md shadow-sm p-5">
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                    <Package className="w-5 h-5 text-green-600" />
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 border border-white/20 flex items-center justify-center bg-white/5">
+                    <Package className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">Estado del pedido</h3>
-                    <p className="text-sm text-green-600 font-medium">Confirmado</p>
+                    <h3 className="font-[family-name:var(--font-playfair)] text-xl text-white tracking-tight">Estado del pedido</h3>
+                    <p className="font-[family-name:var(--font-inter)] text-sm text-white tracking-wide">Confirmado</p>
                   </div>
                 </div>
                 
-                <OrderStatusTimeline currentStatus="confirmado" />
+                <OrderStatusTimeline currentStatus={orderData.strEstado} />
               </div>
 
               {/* Acciones rápidas */}
-              <div className="bg-white rounded-md shadow-sm p-5">
-                <h3 className="font-semibold text-gray-900 mb-4">Acciones</h3>
-                <div className="space-y-2">
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6">
+                <h3 className="font-[family-name:var(--font-playfair)] text-xl text-white mb-6 tracking-tight">Acciones</h3>
+                <div className="space-y-3">
                   <button
                     onClick={() => router.push("/dashboard/pedidos")}
-                    className="w-full py-3 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-between group"
+                    className="w-full py-4 px-5 border border-white/20 hover:bg-white/5 transition-colors flex items-center justify-between group"
                   >
                     <div className="flex items-center gap-3">
-                      <Package className="w-5 h-5 text-gray-600" />
-                      <span className="text-sm font-medium text-gray-900">Ver mis compras</span>
+                      <Package className="w-5 h-5 text-white/70" />
+                      <span className="font-[family-name:var(--font-inter)] text-sm text-white tracking-wide">Mis pedidos</span>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
+                    <ArrowRight className="w-4 h-4 text-white/50 group-hover:text-white" />
                   </button>
 
                   <button
                     onClick={() => window.print()}
-                    className="w-full py-3 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-between group"
+                    className="w-full py-4 px-5 border border-white/20 hover:bg-white/5 transition-colors flex items-center justify-between group"
                   >
                     <div className="flex items-center gap-3">
-                      <Download className="w-5 h-5 text-gray-600" />
-                      <span className="text-sm font-medium text-gray-900">Descargar recibo</span>
+                      <Download className="w-5 h-5 text-white/70" />
+                      <span className="font-[family-name:var(--font-inter)] text-sm text-white tracking-wide">Descargar recibo</span>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
+                    <ArrowRight className="w-4 h-4 text-white/50 group-hover:text-white" />
                   </button>
 
                   <button
                     onClick={() => router.push("/products")}
-                    className="w-full py-3 bg-[#3A6EA5] text-white rounded-md font-medium hover:bg-[#2E5A8C] transition-colors"
+                    className="w-full py-4 bg-white text-black font-[family-name:var(--font-inter)] text-sm tracking-wider uppercase hover:bg-white/90 transition-colors"
                   >
-                    Seguir comprando
+                    Continuar comprando
                   </button>
                 </div>
               </div>
 
               {/* Información de contacto */}
-              <div className="bg-white rounded-md shadow-sm p-5">
-                <h3 className="font-semibold text-gray-900 mb-4">¿Necesitas ayuda?</h3>
-                <div className="space-y-3 text-sm">
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6">
+                <h3 className="font-[family-name:var(--font-playfair)] text-xl text-white mb-6 tracking-tight">¿Necesitas ayuda?</h3>
+                <div className="space-y-4 font-[family-name:var(--font-inter)] text-sm">
                   <div className="flex items-start gap-3">
-                    <Phone className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
+                    <Phone className="w-4 h-4 text-white/70 mt-1 flex-shrink-0" />
                     <div>
-                      <p className="text-gray-600">Llámanos al</p>
-                      <p className="font-medium text-gray-900">01 800 123 4567</p>
+                      <p className="text-white/60 tracking-wide">Llámanos</p>
+                      <p className="text-white tracking-wide">01 800 123 4567</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <Mail className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
+                    <Mail className="w-4 h-4 text-white/70 mt-1 flex-shrink-0" />
                     <div>
-                      <p className="text-gray-600">Escríbenos a</p>
-                      <p className="font-medium text-gray-900">ayuda@ecommerce.com</p>
+                      <p className="text-white/60 tracking-wide">Envíanos un correo</p>
+                      <p className="text-white tracking-wide">help@esymbel.com</p>
                     </div>
                   </div>
                   <button
                     onClick={() => router.push("/quejas")}
-                    className="w-full mt-3 py-2 text-[#3A6EA5] hover:bg-blue-50 rounded-md transition-colors font-medium"
+                    className="w-full mt-4 py-3 border border-white/20 text-white hover:bg-white/5 transition-colors tracking-wider uppercase text-xs"
                   >
                     Centro de ayuda
                   </button>
@@ -575,18 +580,18 @@ export default function OrderConfirmationPage() {
               </div>
 
               {/* Banner promocional */}
-              <div className="bg-gradient-to-br from-[#3A6EA5] to-[#2E5A8C] rounded-md shadow-sm p-5 text-white">
-                <div className="flex items-start gap-3 mb-3">
-                  <Star className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6">
+                <div className="flex items-start gap-4 mb-4">
+                  <Star className="w-6 h-6 text-white flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="font-semibold mb-1">¡Gracias por tu compra!</h3>
-                    <p className="text-sm text-blue-100">
-                      Obtén 10% de descuento en tu próxima compra
+                    <h3 className="font-[family-name:var(--font-playfair)] text-lg text-white mb-2 tracking-tight">Gracias</h3>
+                    <p className="font-[family-name:var(--font-inter)] text-sm text-white/70 tracking-wide">
+                      Disfruta un 10% de descuento en tu próxima compra
                     </p>
                   </div>
                 </div>
-                <button className="w-full mt-3 py-2 bg-white text-[#3A6EA5] rounded-md font-medium hover:bg-blue-50 transition-colors text-sm">
-                  Ver promociones
+                <button className="w-full mt-4 py-3 bg-white text-black font-[family-name:var(--font-inter)] text-xs tracking-wider uppercase hover:bg-white/90 transition-colors">
+                  Ver ofertas
                 </button>
               </div>
             </motion.div>
@@ -597,38 +602,38 @@ export default function OrderConfirmationPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="mt-6 bg-white rounded-md shadow-sm p-6"
+            className="mt-8 bg-white/5 backdrop-blur-xl border border-white/10 p-8"
           >
             <div className="max-w-4xl mx-auto text-center">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                ¿Qué puedes hacer ahora?
+              <h3 className="font-[family-name:var(--font-playfair)] text-2xl text-white mb-8 tracking-tight">
+                ¿Qué sigue?
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                 <button
                   onClick={() => router.push("/dashboard/pedidos")}
-                  className="p-4 border border-gray-200 rounded-md hover:border-[#3A6EA5] hover:bg-blue-50 transition-all group"
+                  className="p-6 border border-white/10 hover:border-white/30 hover:bg-white/5 transition-all group"
                 >
-                  <Package className="w-8 h-8 text-gray-600 group-hover:text-[#3A6EA5] mx-auto mb-2" />
-                  <p className="text-sm font-medium text-gray-900">Seguir mi pedido</p>
-                  <p className="text-xs text-gray-500 mt-1">Ve el estado en tiempo real</p>
+                  <Package className="w-10 h-10 text-white/70 group-hover:text-white mx-auto mb-3" />
+                  <p className="font-[family-name:var(--font-playfair)] text-base text-white mb-2">Rastrea tu pedido</p>
+                  <p className="font-[family-name:var(--font-inter)] text-xs text-white/60 tracking-wide">Actualizaciones en tiempo real</p>
                 </button>
 
                 <button
                   onClick={() => router.push("/products")}
-                  className="p-4 border border-gray-200 rounded-md hover:border-[#3A6EA5] hover:bg-blue-50 transition-all group"
+                  className="p-6 border border-white/10 hover:border-white/30 hover:bg-white/5 transition-all group"
                 >
-                  <Package className="w-8 h-8 text-gray-600 group-hover:text-[#3A6EA5] mx-auto mb-2" />
-                  <p className="text-sm font-medium text-gray-900">Ver más productos</p>
-                  <p className="text-xs text-gray-500 mt-1">Descubre nuestra colección</p>
+                  <Package className="w-10 h-10 text-white/70 group-hover:text-white mx-auto mb-3" />
+                  <p className="font-[family-name:var(--font-playfair)] text-base text-white mb-2">Busca nuestra colección</p>
+                  <p className="font-[family-name:var(--font-inter)] text-xs text-white/60 tracking-wide">Descubre más</p>
                 </button>
 
                 <button
                   onClick={() => router.push("/quejas")}
-                  className="p-4 border border-gray-200 rounded-md hover:border-[#3A6EA5] hover:bg-blue-50 transition-all group"
+                  className="p-6 border border-white/10 hover:border-white/30 hover:bg-white/5 transition-all group"
                 >
-                  <Mail className="w-8 h-8 text-gray-600 group-hover:text-[#3A6EA5] mx-auto mb-2" />
-                  <p className="text-sm font-medium text-gray-900">Contactar soporte</p>
-                  <p className="text-xs text-gray-500 mt-1">Estamos para ayudarte</p>
+                  <Mail className="w-10 h-10 text-white/70 group-hover:text-white mx-auto mb-3" />
+                  <p className="font-[family-name:var(--font-playfair)] text-base text-white mb-2">Soporte</p>
+                  <p className="font-[family-name:var(--font-inter)] text-xs text-white/60 tracking-wide">Estamos aquí para ayudar</p>
                 </button>
               </div>
             </div>

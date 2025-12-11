@@ -289,7 +289,7 @@ export function TiendaProvider({ children }: { children: React.ReactNode }) {
       tieneDescuento: descuentoActivo,
       color: colorSeleccionado,
       talla: tallaSeleccionada,
-      imagen: producto.jsonImagenes || producto.strImagen || "",
+      imagen: producto.strImagen || "",
       categoria: producto.tbCategoria?.strNombre || "",
       cantidad: 1,
       stock: stockDisponible, // Stock de la variante específica

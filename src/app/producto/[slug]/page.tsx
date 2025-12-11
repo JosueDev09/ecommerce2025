@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Productos } from "@/types/types";
 import { useTienda } from "@/context/TiendaContext";
 import { VariantesSelector } from "@/lib/getVariantes";
+import { createProductSlug } from "@/lib/slugify";
 import { 
   Check, ShoppingCart, Heart, Star, Truck, Shield, RotateCcw, 
   ChevronRight, MapPin, CreditCard, Award, MessageCircle, Store,
@@ -15,7 +16,7 @@ export default function ProductoDetalle() {
   const params = useParams();
   const router = useRouter();
   const slug = params.slug as string;
-  const { agregarCarrito, handleVariantChange: updateContextVariant } = useTienda();
+  const { agregarCarrito, handleVariantChange: updateContextVariant, productos } = useTienda();
 
   const [producto, setProducto] = useState<Productos | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,6 +29,7 @@ export default function ProductoDetalle() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [showImageZoom, setShowImageZoom] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [sugerenciasIndex, setSugerenciasIndex] = useState(0);
 
   // Callback para manejar cambios de variantes
   const handleVariantChange = (
@@ -228,30 +230,50 @@ export default function ProductoDetalle() {
   }
 
   const imagenesAdicionales = getImagenes();
-  const todasLasImagenes = [producto.jsonImagenes, ...imagenesAdicionales];
+  console.log("🔍 Todas las imágenes del producto:", imagenesAdicionales);
+  const todasLasImagenes = [producto.strImagen, ...imagenesAdicionales];
 
-  //console.log("🔍 Todas las imágenes del producto:", todasLasImagenes);
+  console.log("🔍 Todas las imágenes del producto:", todasLasImagenes);
 
   return (
     <div className="min-h-screen bg-black py-6 px-4 md:px-6 pt-[100px]">
       {/* Toast de éxito */}
       {showSuccess && (
         <motion.div
-          initial={{ opacity: 0, x: 100, scale: 0.8 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
-          exit={{ opacity: 0, x: 100, scale: 0.8 }}
-          className="fixed top-6 right-6 z-[9999] bg-white border-l-4 border-emerald-500 shadow-lg p-4 flex items-center gap-3"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="fixed top-8 right-8 z-[9999] bg-black/95 backdrop-blur-xl border border-white/20 shadow-2xl p-6 min-w-[320px]"
         >
-          <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center">
-            <Check className="w-6 h-6 text-white" />
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 w-8 h-8 border border-white/30 flex items-center justify-center">
+              <Check className="w-4 h-4 text-white" strokeWidth={2.5} />
+            </div>
+            <div className="flex-1">
+              <p className="font-[family-name:var(--font-playfair)] text-white text-base mb-1 tracking-tight">
+                Agregado al carrito
+              </p>
+              <p className="font-[family-name:var(--font-inter)] text-xs text-white/60 tracking-wide">
+                El producto ha sido agregado exitosamente
+              </p>
+            </div>
+            <button 
+              onClick={() => setShowSuccess(false)} 
+              className="flex-shrink-0 text-white/40 hover:text-white transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-          <div>
-            <p className="font-[family-name:var(--font-inter)] font-semibold text-black text-sm">Agregado al carrito!</p>
-            <p className="font-[family-name:var(--font-inter)] text-xs text-black/60">Producto agregado exitosamente</p>
-          </div>
-          <button onClick={() => setShowSuccess(false)} className="ml-4 text-black/40 hover:text-black">
-            ✕
-          </button>
+          {/* Línea de progreso */}
+          <motion.div
+            initial={{ width: "100%" }}
+            animate={{ width: "0%" }}
+            transition={{ duration: 3, ease: "linear" }}
+            className="absolute bottom-0 left-0 h-[1px] bg-white/30"
+          />
         </motion.div>
       )}
 
@@ -389,7 +411,7 @@ export default function ProductoDetalle() {
               </div>
 
               {/* Miniaturas - Estilo Apple */}
-              {todasLasImagenes.length > 1 && (
+              {todasLasImagenes.length > 0 && (
                 <div className="p-4 bg-white/5 border-t border-white/10">
                   <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
                     {todasLasImagenes.map((img, idx) => (
@@ -474,34 +496,9 @@ export default function ProductoDetalle() {
               </div>
             </motion.div>
 
-            
-
             {/* Preguntas frecuentes */}
             {/* Preguntas y respuestas */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.4 }}
-              className="bg-white/5 backdrop-blur-xl border border-white/10 p-6"
-            >
-              <h2 className="text-xl font-[family-name:var(--font-playfair)] text-white mb-4">Preguntas y respuestas</h2>
-              
-              <div className="space-y-3 mb-4">
-                <div className="border-b border-white/10 pb-3">
-                  <p className="text-sm font-[family-name:var(--font-inter)] text-white mb-1">¿Cuánto tarda el envío?</p>
-                  <p className="text-xs font-[family-name:var(--font-inter)] text-white/70">El tiempo de entrega es de 3 a 5 días hábiles.</p>
-                </div>
-                <div className="border-b border-white/10 pb-3">
-                  <p className="text-sm font-[family-name:var(--font-inter)] text-white mb-1">¿Tiene garantía?</p>
-                  <p className="text-xs font-[family-name:var(--font-inter)] text-white/70">Sí, todos nuestros productos cuentan con 1 año de garantía.</p>
-                </div>
-              </div>
-
-              <button className="flex items-center gap-2 text-sm text-white font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase hover:opacity-70 transition-opacity">
-                <MessageCircle className="w-4 h-4" />
-                Hacer una pregunta
-              </button>
-            </motion.div>
+           
           </div>
 
           {/* Columna derecha: Panel de compra sticky */}
@@ -740,6 +737,117 @@ export default function ProductoDetalle() {
             </div>
           </motion.div>
         </div>
+
+        {/* Sección de Sugerencias - Carrusel Manual - Ancho Completo */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.5 }}
+          className="mt-12 bg-white/5 backdrop-blur-xl border border-white/10 p-8"
+        >
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl md:text-3xl font-[family-name:var(--font-playfair)] text-white tracking-tight">
+              También te puede interesar
+            </h2>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setSugerenciasIndex(Math.max(0, sugerenciasIndex - 1))}
+                disabled={sugerenciasIndex === 0}
+                className={`w-12 h-12 border border-white/20 flex items-center justify-center transition-all ${
+                  sugerenciasIndex === 0
+                    ? "opacity-30 cursor-not-allowed"
+                    : "hover:bg-white/10"
+                }`}
+              >
+                <ChevronRight className="w-6 h-6 text-white rotate-180" />
+              </button>
+              <button
+                onClick={() => setSugerenciasIndex(Math.min(productos.filter(p => p.intProducto !== producto?.intProducto && p.bolActivo && p.tbCategoria.intCategoria === producto?.tbCategoria.intCategoria).length - 5, sugerenciasIndex + 1))}
+                disabled={sugerenciasIndex >= productos.filter(p => p.intProducto !== producto?.intProducto && p.bolActivo && p.tbCategoria.intCategoria === producto?.tbCategoria.intCategoria).length - 5}
+                className={`w-12 h-12 border border-white/20 flex items-center justify-center transition-all ${
+                  sugerenciasIndex >= productos.filter(p => p.intProducto !== producto?.intProducto && p.bolActivo && p.tbCategoria.intCategoria === producto?.tbCategoria.intCategoria).length - 5
+                    ? "opacity-30 cursor-not-allowed"
+                    : "hover:bg-white/10"
+                }`}
+              >
+                <ChevronRight className="w-6 h-6 text-white" />
+              </button>
+            </div>
+          </div>
+
+          <div className="overflow-hidden">
+            <motion.div
+              className="flex gap-6"
+              animate={{ x: `-${sugerenciasIndex * 20}%` }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              {productos
+                .filter((p) => 
+                  p.intProducto !== producto?.intProducto && 
+                  p.bolActivo &&
+                  p.tbCategoria.intCategoria === producto?.tbCategoria.intCategoria
+                )
+                .slice(0, 5)
+                .map((sugerencia) => (
+                  <motion.div
+                    key={sugerencia.intProducto}
+                    className="w-[calc(20%-19.2px)] flex-shrink-0 group cursor-pointer"
+                    onClick={() => router.push(`/producto/${createProductSlug(sugerencia.strNombre)}`)}
+                    whileHover={{ y: -8 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="relative w-full h-[300px] overflow-hidden bg-white/5 border border-white/10 mb-4">
+                      <img
+                        src={sugerencia.strImagen}
+                        alt={sugerencia.strNombre}
+                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                      />
+                      {sugerencia.strEtiquetas && (
+                        <div className={`absolute top-3 left-3 px-3 py-1.5 text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase ${
+                          sugerencia.strEtiquetas === "Nuevo"
+                            ? "bg-white/90 text-black"
+                            : "bg-red-500/90 text-white"
+                        }`}>
+                          {sugerencia.strEtiquetas}
+                        </div>
+                      )}
+                    </div>
+                    <h3 className="font-[family-name:var(--font-playfair)] text-white text-base mb-2 line-clamp-2 group-hover:text-white/80 transition-colors">
+                      {sugerencia.strNombre}
+                    </h3>
+                    <p className="font-[family-name:var(--font-inter)] text-white/60 text-sm tracking-wide">
+                      ${sugerencia.dblPrecio.toLocaleString()}
+                    </p>
+                  </motion.div>
+                ))}
+            </motion.div>
+          </div>
+        </motion.div>
+           
+         <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.4 }}
+              className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 mt-10"
+            >
+              <h2 className="text-xl font-[family-name:var(--font-playfair)] text-white mb-4">Preguntas y respuestas</h2>
+              
+              <div className="space-y-3 mb-4">
+                <div className="border-b border-white/10 pb-3">
+                  <p className="text-sm font-[family-name:var(--font-inter)] text-white mb-1">¿Cuánto tarda el envío?</p>
+                  <p className="text-xs font-[family-name:var(--font-inter)] text-white/70">El tiempo de entrega es de 3 a 5 días hábiles.</p>
+                </div>
+                <div className="border-b border-white/10 pb-3">
+                  <p className="text-sm font-[family-name:var(--font-inter)] text-white mb-1">¿Tiene garantía?</p>
+                  <p className="text-xs font-[family-name:var(--font-inter)] text-white/70">Sí, todos nuestros productos cuentan con 1 año de garantía.</p>
+                </div>
+              </div>
+
+              <button className="flex items-center gap-2 text-sm text-white font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase hover:opacity-70 transition-opacity">
+                <MessageCircle className="w-4 h-4" />
+                Hacer una pregunta
+              </button>
+            </motion.div>
       </div>
     </div>
   );

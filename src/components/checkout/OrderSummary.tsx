@@ -44,11 +44,11 @@ export default function OrderSummary({
   return (
     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 sticky top-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-full bg-[#3A6EA5]/10 flex items-center justify-center">
-          <ShoppingBag className="w-5 h-5 text-[#3A6EA5]" />
+        <div className="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center">
+          <ShoppingBag className="w-5 h-5 text-black" />
         </div>
         <div>
-          <h3 className="font-bold text-gray-900">Resumen del pedido</h3>
+          <h3 className="font-bold text-gray-900" style={{ fontFamily: "'Playfair Display', serif" }}>Resumen del pedido</h3>
           <p className="text-xs text-gray-500">{carrito.length} {carrito.length === 1 ? 'producto' : 'productos'}</p>
         </div>
       </div>
@@ -56,7 +56,7 @@ export default function OrderSummary({
       <div className="space-y-3 mb-6 max-h-64 overflow-y-auto">
         {carrito.map((item, index) => (
           <div key={index} className="flex gap-3 pb-3 border-b border-gray-100 last:border-0">
-            <div className="w-16 h-16 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden">
+            <div className="w-16 h-16 bg-gray-100 flex-shrink-0 overflow-hidden">
               <img
                src={item.imagen}
                 alt={item.nombre}
@@ -98,12 +98,12 @@ export default function OrderSummary({
             onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
             placeholder="DESCUENTO10"
             disabled={promoApplied}
-            className="flex-1 px-3 py-2 text-sm rounded-lg border border-gray-300 focus:border-[#3A6EA5] focus:ring-1 focus:ring-[#3A6EA5] outline-none transition-all disabled:bg-gray-100 uppercase"
+            className="flex-1 px-3 py-2 text-sm  border border-gray-300 focus:border-black focus:ring-1 focus:ring-black outline-none transition-all disabled:bg-gray-100 uppercase"
           />
           <button
             onClick={applyPromo}
             disabled={!promoCode || promoApplied}
-            className="px-4 py-2 rounded-lg bg-[#3A6EA5] text-white text-sm font-medium hover:bg-[#2E5A8C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2  bg-black text-white text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Aplicar
           </button>
@@ -164,7 +164,7 @@ export default function OrderSummary({
         <div className="pt-3 mt-3 border-t-2 border-gray-200">
           <div className="flex justify-between items-center">
             <span className="font-bold text-gray-900">Total</span>
-            <span className="text-2xl font-bold text-[#3A6EA5]">
+            <span className="text-2xl font-bold text-black">
               ${total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
             </span>
           </div>

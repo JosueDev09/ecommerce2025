@@ -33,13 +33,13 @@ export default function ShippingMethodSection({
             completedSections.includes(3)
               ? "bg-green-500 text-white"
               : openSection === 3
-              ? "bg-[#3A6EA5] text-white"
+              ? "bg-black text-white"
               : "bg-gray-200 text-gray-600"
           }`}>
             {completedSections.includes(3) ? <Check className="w-5 h-5" /> : "3"}
           </div>
           <div className="text-left">
-            <h3 className="font-bold text-gray-900">Método de envío</h3>
+            <h3 className="font-bold text-gray-900" style={{ fontFamily: "'Playfair Display', serif" }}>Método de envío</h3>
             {completedSections.includes(3) && formData.metodoEnvio && (
               <p className="text-sm text-gray-500">
                 {formData.metodoEnvio === "express" && "Envío Express"}
@@ -66,7 +66,7 @@ export default function ShippingMethodSection({
             className="border-t border-gray-200"
           >
             <div className="p-6 space-y-3">
-              <label className="block p-4 border-2 rounded-lg cursor-pointer hover:border-[#3A6EA5] transition-all has-[:checked]:border-[#3A6EA5] has-[:checked]:bg-[#3A6EA5]/5">
+              <label className="block p-4 border-2 cursor-pointer hover:border-[#3A6EA5] transition-all has-[:checked]:border-[#3A6EA5] has-[:checked]:bg-[#3A6EA5]/5">
                 <div className="flex items-start gap-3">
                   <input
                     type="radio"
@@ -88,7 +88,7 @@ export default function ShippingMethodSection({
                 </div>
               </label>
 
-              <label className="block p-4 border-2 rounded-lg cursor-pointer hover:border-[#3A6EA5] transition-all has-[:checked]:border-[#3A6EA5] has-[:checked]:bg-[#3A6EA5]/5">
+              <label className="block p-4 border-2 cursor-pointer hover:border-[#3A6EA5] transition-all has-[:checked]:border-[#3A6EA5] has-[:checked]:bg-[#3A6EA5]/5">
                 <div className="flex items-start gap-3">
                   <input
                     type="radio"
@@ -118,7 +118,7 @@ export default function ShippingMethodSection({
                 </div>
               </label>
 
-              <label className="block p-4 border-2 rounded-lg cursor-pointer hover:border-[#3A6EA5] transition-all has-[:checked]:border-[#3A6EA5] has-[:checked]:bg-[#3A6EA5]/5">
+              <label className="block p-4 border-2 cursor-pointer hover:border-[#3A6EA5] transition-all has-[:checked]:border-[#3A6EA5] has-[:checked]:bg-[#3A6EA5]/5">
                 <div className="flex items-start gap-3">
                   <input
                     type="radio"
@@ -126,7 +126,7 @@ export default function ShippingMethodSection({
                     value="recoger"
                     checked={formData.metodoEnvio === "recoger"}
                     onChange={handleInputChange}
-                    className="mt-1 w-4 h-4 text-[#3A6EA5] focus:ring-[#3A6EA5]"
+                    className="mt-1 w-4 h-4 text-black focus:ring-black"
                   />
                   <Package className="w-5 h-5 text-gray-600 flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
@@ -143,7 +143,7 @@ export default function ShippingMethodSection({
               <button
                 onClick={() => handleSectionComplete(3)}
                 disabled={!formData.metodoEnvio}
-                className="w-full py-3 rounded-lg bg-[#3A6EA5] text-white font-semibold hover:bg-[#2E5A8C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-3 bg-black text-white font-semibold hover:bg-[#2E5A8C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continuar
               </button>
