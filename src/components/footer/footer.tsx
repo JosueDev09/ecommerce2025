@@ -4,8 +4,8 @@ import { useState } from "react";
 const footerLinks = {
   company: [
     { name: "Sobre Nosotros", href: "/about" },
-    { name: "Contact", href: "/contact" },
-    { name: "Careers", href: "/careers" },
+    { name: "Contacto", href: "/contact" },
+    { name: "Carreras", href: "/careers" },
   ],
   help: [
     { name: "Ayuda", href: "/help" },
@@ -74,7 +74,7 @@ export function Footer() {
                   Unete a nuestra Newsletter
                 </h3>
                 <p className="font-[family-name:var(--font-inter)] text-white/60 text-sm tracking-wide">
-                  Suscribite y recibe ofertas exclusivas y actualizaciones
+                  Suscríbete y recibe ofertas exclusivas y actualizaciones
                 </p>
               </div>
               <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
