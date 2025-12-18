@@ -56,7 +56,7 @@ export default function DashboardPage() {
 
   // Cargar datos reales del usuario
   useEffect(() => {
-    if (mounted && isAuthenticated && !isGuest && user?.intCliente) {
+    if (mounted && isAuthenticated && !isGuest && user) {
       fetchDashboardData();
     }
   }, [mounted, isAuthenticated, isGuest, user]);
@@ -99,9 +99,24 @@ export default function DashboardPage() {
 
       // Filtrar pedidos del usuario actual
       const todosPedidos = result.data?.obtenerPedidos || [];
-      const pedidos = todosPedidos.filter((p: any) => 
-        p.tbClientes?.intCliente === user?.intCliente
-      );
+      
+      // IMPORTANTE: Solo los clientes tienen pedidos
+      // Si el usuario es empleado sin intCliente, no tiene pedidos
+      const idUsuario = user?.intCliente; // Solo buscar por intCliente
+      
+      // console.log('🔍 Debug Dashboard:');
+      // console.log('Tipo de usuario:', user?.tipoUsuario);
+      // console.log('intCliente:', user?.intCliente);
+      // console.log('intEmpleado:', user?.intEmpleado);
+      // console.log('ID usado para filtrar:', idUsuario);
+      // console.log('Total pedidos en BD:', todosPedidos.length);
+      
+      // Si no tiene intCliente, no tiene pedidos
+      const pedidos = idUsuario
+        ? todosPedidos.filter((p: any) => p.tbClientes?.intCliente === idUsuario)
+        : [];
+      
+     // console.log('Pedidos filtrados:', pedidos.length);
       //console.log("Pedidos del usuario:", pedidos);
       // Calcular estadísticas
       const totalPedidos = pedidos.length;

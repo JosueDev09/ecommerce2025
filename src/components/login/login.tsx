@@ -28,7 +28,7 @@ export default function AuthPage() {
     e.preventDefault();
     setLoading(true);
     setError('');
-   console.log(formData);
+   //console.log(formData);
 
     if (mode === 'login') {
       try {
@@ -75,6 +75,7 @@ export default function AuthPage() {
        
         const result = await response.json();
         
+        console.log(result);
 
         if (result.errors) {
           setError(result.errors[0].message || 'Error al iniciar sesión');
@@ -88,11 +89,15 @@ export default function AuthPage() {
         
         // Construir objeto de usuario con la estructura correcta
         const usuario = {
-          intCliente: usuarioData.intCliente || usuarioData.intEmpleado, // ID del cliente/empleado
+          // Determinar tipo de usuario basado en qué campo está presente
+          intCliente: usuarioData.intCliente || undefined,
+          intEmpleado: usuarioData.intEmpleado || undefined,
+          tipoUsuario: usuarioData.intCliente ? 'cliente' as const : 'empleado' as const,
           strNombre: usuarioData.strNombre, // Usar el nombre real del servidor
           strUsuario: usuarioData.strUsuario,
           strCorreo: usuarioData.strEmail || usuarioData.strUsuario,
           strTelefono: usuarioData.strTelefono || "",
+          strRol: usuarioData.strRol || (usuarioData.intCliente ? 'cliente' : 'empleado'),
         };
 
        // console.log("✅ Usuario construido para login:", usuario);

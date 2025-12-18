@@ -55,7 +55,7 @@ export default function PedidosPage() {
 
   // Cargar pedidos reales del usuario
   useEffect(() => {
-    if (mounted && isAuthenticated && !isGuest && user?.intCliente) {
+    if (mounted && isAuthenticated && !isGuest && user) {
       fetchPedidos();
     }
   }, [mounted, isAuthenticated, isGuest, user]);
@@ -103,11 +103,21 @@ export default function PedidosPage() {
         return;
       }
 
-      // Filtrar pedidos del usuario actual
+      // Filtrar pedidos del usuario actual (cada usuario solo ve sus propios pedidos)
       const todosPedidos = result.data?.obtenerPedidos || [];
-      const pedidosUsuario = todosPedidos.filter(
-        (p: any) => p.tbClientes?.intCliente === user?.intCliente
-      );
+      
+      // IMPORTANTE: Solo los clientes tienen pedidos
+      // Si el usuario es empleado sin intCliente, no tiene pedidos
+      const idUsuario = user?.intCliente; // Solo buscar por intCliente
+      
+    
+      
+      // Si no tiene intCliente, no tiene pedidos
+      const pedidosUsuario = idUsuario 
+        ? todosPedidos.filter((p: any) => p.tbClientes?.intCliente === idUsuario)
+        : [];
+      
+     // console.log('Pedidos filtrados:', pedidosUsuario.length);
 
       // Ordenar por fecha más reciente
       const pedidosOrdenados = [...pedidosUsuario].sort(

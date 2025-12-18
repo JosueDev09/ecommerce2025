@@ -3,10 +3,13 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface User {
   intCliente?: number; // ID del cliente en la base de datos
+  intEmpleado?: number; // ID del empleado en la base de datos
   strNombre: string;
   strUsuario: string;
   strCorreo?: string;
   strTelefono?: string;
+  strRol?: string; // Rol del usuario: 'cliente', 'empleado', 'admin', etc.
+  tipoUsuario?: 'cliente' | 'empleado'; // Tipo de usuario para distinguir en consultas
 }
 
 interface AuthContextType {
@@ -57,9 +60,62 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     
     if (typeof window !== "undefined") {
+      // 🛒 MIGRAR CARRITO DE INVITADO AL USUARIO
+      const carritoInvitado = localStorage.getItem("carrito_guest");
+      const carritoUsuario = localStorage.getItem(`carrito_${userData.strUsuario}`);
+      
+      if (carritoInvitado) {
+        try {
+          const itemsInvitado = JSON.parse(carritoInvitado);
+          
+          if (carritoUsuario) {
+            // Si el usuario ya tiene un carrito, fusionar ambos
+            const itemsUsuario = JSON.parse(carritoUsuario);
+            const carritoFusionado = [...itemsUsuario];
+            
+            // Agregar items del invitado que no existan en el carrito del usuario
+            itemsInvitado.forEach((itemInvitado: any) => {
+              const existe = carritoFusionado.find(
+                (item: any) => 
+                  item.id === itemInvitado.id &&
+                  item.color === itemInvitado.color &&
+                  item.talla === itemInvitado.talla
+              );
+              
+              if (existe) {
+                // Si existe, sumar las cantidades (respetando el límite de stock)
+                existe.cantidad = Math.min(
+                  existe.cantidad + itemInvitado.cantidad,
+                  itemInvitado.stock || 999
+                );
+              } else {
+                // Si no existe, agregarlo
+                carritoFusionado.push(itemInvitado);
+              }
+            });
+            
+            localStorage.setItem(`carrito_${userData.strUsuario}`, JSON.stringify(carritoFusionado));
+            console.log(`🛒 Carrito fusionado: ${itemsInvitado.length} items de invitado + ${itemsUsuario.length} items existentes`);
+          } else {
+            // Si no tiene carrito previo, usar directamente el del invitado
+            localStorage.setItem(`carrito_${userData.strUsuario}`, carritoInvitado);
+            console.log(`🛒 Carrito de invitado migrado a usuario ${userData.strUsuario}: ${itemsInvitado.length} items`);
+          }
+          
+          // Limpiar carrito de invitado
+          localStorage.removeItem("carrito_guest");
+        } catch (error) {
+          console.error("Error al migrar carrito de invitado:", error);
+        }
+      }
+      
+      // Guardar datos de autenticación
       localStorage.setItem("authToken", newToken);
       localStorage.setItem("authUser", JSON.stringify(userData));
       localStorage.removeItem("isGuest");
+      
+      // 🔄 Disparar evento para que TiendaContext recargue el carrito
+      window.dispatchEvent(new Event("storage"));
     }
   };
 
@@ -119,7 +175,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
-        token,
+        token,  
         isAuthenticated,
         isGuest,
         login,
