@@ -191,12 +191,12 @@ export default function OrderConfirmationPage() {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <h1 className="font-[family-name:var(--font-playfair)] text-3xl text-white mb-6 tracking-tight">Order Not Found</h1>
+          <h1 className="font-[family-name:var(--font-playfair)] text-3xl text-white mb-6 tracking-tight">Orden no encontrada</h1>
           <button
             onClick={() => router.push("/")}
             className="px-8 py-4 bg-white text-black font-[family-name:var(--font-inter)] text-sm tracking-wider uppercase hover:bg-white/90 transition-colors"
           >
-            Back to Home
+            Volver al inicio.
           </button>
         </div>
       </div>

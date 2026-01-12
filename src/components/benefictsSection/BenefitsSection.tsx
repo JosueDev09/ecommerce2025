@@ -134,7 +134,7 @@ export default function WhyChooseUs() {
             className="inline-block mb-8"
           >
             <span className="text-white/50 font-[family-name:var(--font-inter)] text-xs tracking-[0.2em] uppercase">
-              Excellence
+              Excelencia.
             </span>
           </motion.div>
           

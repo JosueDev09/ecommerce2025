@@ -184,7 +184,7 @@ export default function ProductsPage() {
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="/assets/video/hero-video.mp4" type="video/mp4" />
+          <source src="https://assets.gymshark.com/wl6q2in9o7k3/3U3hDv0QJqE5xT7ssKuB2B/c2fd0a14bb025a2b7d70297f6ed3dfec/NPD_ENERGISED_BANNER_8x3.mp4" type="video/mp4" />
           {/* Fallback para navegadores que no soportan video */}
           Tu navegador no soporta el elemento de video.
         </video>
@@ -200,11 +200,11 @@ export default function ProductsPage() {
             transition={{ duration: 1, ease: "easeOut" }}
           >
             <h1 className="font-[family-name:var(--font-playfair)] text-5xl md:text-7xl lg:text-8xl text-white mb-6 tracking-tight">
-              ESYMBEL
+              Drop 01 · ESYMBEL
             </h1>
-            <p className="font-[family-name:var(--font-inter)] text-white/90 text-lg md:text-xl lg:text-2xl mb-8 tracking-[0.2em] uppercase">
+            {/* <p className="font-[family-name:var(--font-inter)] text-white/90 text-lg md:text-xl lg:text-2xl mb-8 tracking-[0.2em] uppercase">
               Colección 2025
-            </p>
+            </p> */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -214,7 +214,7 @@ export default function ProductsPage() {
                 href="#colecciones"
                 className="inline-block px-10 py-4 bg-white text-black font-[family-name:var(--font-inter)] text-xs tracking-[0.15em] uppercase font-medium hover:bg-white/90 transition-all duration-300"
               >
-                Explorar Colección
+                Explorar · Drop 01 
               </Link>
             </motion.div>
           </motion.div>
@@ -248,7 +248,7 @@ export default function ProductsPage() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-black tracking-tight text-4xl md:text-5xl lg:text-6xl font-[family-name:var(--font-playfair)] leading-tight px-4 text-center pb-8"
         >
-          Nuestras Colecciones
+          Nuestros DROPS
         </motion.h1>
       </div>
 

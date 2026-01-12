@@ -75,8 +75,8 @@ export function VariantesSelector({ product, onVariantChange }: VariantesCompone
   try {
     const categoria = product.tbCategoria?.strNombre?.toLowerCase() || "";
     const isRopa =
-      categoria.includes("ropa") ||
-      categoria.includes("moda") ||
+      categoria.includes("gymshark") ||
+      categoria.includes("youngla") ||
       categoria.includes("vestimenta");
 
     let colores: string[] = [];
@@ -287,6 +287,9 @@ const coloresHex: Record<string, string> = {
   celeste: "#87CEEB",
   dorado: "#FFD700",
   plateado: "#C0C0C0",
+  vino: "#722F37",
+  navy: "#000080",
+  "blanco suave": "#fafae5ff"
 };
 
 function getHexColor(nombre: string): string {

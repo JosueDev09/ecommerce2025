@@ -71,7 +71,7 @@ export default function Products() {
       <div className="w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-[1px] bg-white/10">
 
 
-        {productos.filter(product => product.bolActivo).map((product, index) => (
+        {productos.filter(product => product.bolActivo).slice(0,6).map((product, index) => (
             
               <motion.div 
                 key={product.intProducto} 

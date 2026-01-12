@@ -8,7 +8,7 @@ const heroMedia = [
   
   {
     type: "image", 
-    src: "https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=2400&auto=format&fit=crop",
+    src: "https://www.gymshark.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fwl6q2in9o7k3%2F61jgq09grDzH0pYJfxm9yP%2Fd283273c3570ebd1601ff1240aecb5a8%2FHeadless_Desktop_-_25268218.jpeg&w=1920&q=85",
     alt: "Premium craftsmanship"
   },
   

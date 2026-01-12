@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Productos } from "@/types/types";
@@ -9,7 +9,7 @@ import { createProductSlug } from "@/lib/slugify";
 import { 
   Check, ShoppingCart, Heart, Star, Truck, Shield, RotateCcw, 
   ChevronRight, MapPin, CreditCard, Award, MessageCircle, Store,
-  Clock, Lock, Tag, Share2, AlertCircle
+  Clock, Lock, Tag, Share2, AlertCircle,X
 } from "lucide-react";
 
 export default function ProductoDetalle() {
@@ -24,6 +24,8 @@ export default function ProductoDetalle() {
   const [selectedTalla, setSelectedTalla] = useState<string | null>(null);
   const [varianteSeleccionada, setVarianteSeleccionada] = useState<any>(null);
   const [cantidad, setCantidad] = useState(1);
+  const [talla, setTalla] = useState<string | null>(null);
+  const [color, setColor] = useState<string | null>(null);
   const [imagenActual, setImagenActual] = useState<string>("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -31,6 +33,41 @@ export default function ProductoDetalle() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [sugerenciasIndex, setSugerenciasIndex] = useState(0);
 
+  //Manejo de stock por talla y color 
+ 
+      const stockDisponible = useMemo(() => {
+        // console.log("🟡 useMemo ejecutado", {
+        //   talla,
+        //   color,
+        //   variantes: producto?.tbProductoVariantes
+        // });
+
+        if (!talla || !color || !producto?.tbProductoVariantes) return 0;
+
+        const variante = producto.tbProductoVariantes.find(
+          v => v.strTalla === talla && v.strColor === color
+        );
+
+        console.log("🔍 Variante encontrada:", variante);
+        return variante?.intStock ?? 0;
+      }, [talla, color, producto]);
+
+  useEffect(() => {
+            if (
+              producto?.tbProductoVariantes?.length &&
+              !talla &&
+              !color
+            ) {
+              const primeraDisponible = producto.tbProductoVariantes.find(
+                v => v.intStock > 0
+              );
+
+              if (primeraDisponible) {
+                setTalla(primeraDisponible.strTalla);
+                setColor(primeraDisponible.strColor);
+              }
+            }
+          }, [producto]);
   // Callback para manejar cambios de variantes
   const handleVariantChange = (
     color: string | null, 
@@ -91,6 +128,7 @@ export default function ProductoDetalle() {
                   strSKU
                   strMarca
                   strDescripcion
+                  strDescripcionLarga
                   dblPrecio
                   strImagen
                   bolActivo
@@ -105,7 +143,8 @@ export default function ProductoDetalle() {
                   jsonVariantes
                   jsonImagenes
                   datCreacion
-                  datActualizacion
+                  datActualizacion,
+                  intStock
                   tbCategoria {
                     intCategoria
                     strNombre
@@ -197,7 +236,10 @@ export default function ProductoDetalle() {
 
   const handleAgregarCarrito = () => {
     if (!producto) return;
-
+    if(selectedTalla === null || selectedColor === null){
+      alert("Por favor selecciona talla y color");
+      return;
+    }
     // Agregar el producto la cantidad de veces especificada
     for (let i = 0; i < cantidad; i++) {
       agregarCarrito(producto);
@@ -222,18 +264,25 @@ export default function ProductoDetalle() {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <h2 className="font-[family-name:var(--font-playfair)] text-2xl text-white mb-2">Product not found</h2>
-          <p className="font-[family-name:var(--font-inter)] text-white/70 text-sm">The product you are looking for does not exist</p>
+          <h2 className="font-[family-name:var(--font-playfair)] text-2xl text-white mb-2">Producto no encontrado</h2>
+          <p className="font-[family-name:var(--font-inter)] text-white/70 text-sm">El producto que buscas no existe.</p>
         </div>
       </div>
     );
   }
 
   const imagenesAdicionales = getImagenes();
-  console.log("🔍 Todas las imágenes del producto:", imagenesAdicionales);
-  const todasLasImagenes = [producto.strImagen, ...imagenesAdicionales];
+  //console.log("🔍 Todas las imágenes del producto:", imagenesAdicionales);
+  // const todasLasImagenes = [producto.strImagen, ...imagenesAdicionales];
+  
+  const todasLasImagenes = Array.from(
+  new Set([
+    producto.strImagen,
+    ...(imagenesAdicionales ?? [])
+  ])
+);
 
-  console.log("🔍 Todas las imágenes del producto:", todasLasImagenes);
+  //console.log("🔍 Todas las imágenes del producto:", todasLasImagenes);
 
   return (
     <div className="min-h-screen bg-black py-6 px-4 md:px-6 pt-[100px]">
@@ -453,8 +502,20 @@ export default function ProductoDetalle() {
               transition={{ duration: 0.4, delay: 0.1 }}
               className="bg-white/5 backdrop-blur-xl border border-white/10 p-6"
             >
-              <h2 className="text-xl font-[family-name:var(--font-playfair)] text-white mb-4">Descripción</h2>
-              <p className="text-white/80 font-[family-name:var(--font-inter)] leading-relaxed mb-4">{producto.strDescripcion}</p>
+              {/* <h2 className="text-xl font-[family-name:var(--font-playfair)] text-white mb-4">Descripción</h2>
+              <p className="text-white/80 font-[family-name:var(--font-inter)] leading-relaxed mb-4">{producto.strDescripcionLarga}</p>
+               */}
+               <div className="text-white/80 font-[family-name:var(--font-inter)] leading-relaxed space-y-2">
+                {producto.strDescripcionLarga 
+                  .split('\n')
+                  .map((linea, i) =>
+                    linea.trim() === '' ? (
+                      <div key={i} className="h-2" />
+                    ) : (
+                      <p key={i}>{linea}</p>
+                    )
+                  )}
+              </div>
               
               {/* Características */}
               <div className="border-t border-white/10 pt-4 mt-4">
@@ -513,7 +574,7 @@ export default function ProductoDetalle() {
               {/* Nuevo/Usado Badge */}
               <div className="flex items-center justify-between">
                 <span className="text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white/60">
-                  {producto.strEstado || 'Nuevo'} | +100 vendidos
+                  {producto.strEstado || 'Nuevo'}
                 </span>
                 <span className="text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white bg-white/10 px-2 py-1">
                   {producto.tbCategoria.strNombre}
@@ -579,13 +640,42 @@ export default function ProductoDetalle() {
               </div>
 
               {/* Disponibilidad */}
-              <div className="flex items-start gap-2 p-3 bg-white/10 border border-white/20">
-                <Check className="w-5 h-5 text-white mt-0.5" />
-                <div>
-                  <p className="text-sm font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white">Stock disponible</p>
-                  <p className="text-xs font-[family-name:var(--font-inter)] text-white/70">Última disponible</p>
+           {producto.intStock >= 10 && (
+                <div className="flex items-start gap-2 p-3 bg-green-900 border border-white/20">
+                  <Check className="w-5 h-5 text-white mt-0.5" />
+                  <div>
+                    <p className="text-sm font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white">
+                      Stock disponible
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {producto.intStock > 0 && producto.intStock < 6 && (
+                <div className="flex items-start gap-2 p-3 bg-yellow-900 border border-white/20">
+                  <Check className="w-5 h-5 text-white mt-0.5" />
+                  <div>
+                    <p className="text-sm font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white">
+                      Últimas piezas
+                    </p>
+                    <p className="text-xs font-[family-name:var(--font-inter)] text-white/70">
+                      Date prisa, se está agotando
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {producto.intStock === 0 && (
+                <div className="flex items-start gap-2 p-3 bg-red-900 border border-white/20">
+                  <X className="w-5 h-5 text-white mt-0.5" />
+                  <div>
+                    <p className="text-sm font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white">
+                      Agotado
+                    </p>
+                  </div>
+                </div>
+              )}
+
 
               {/* Ubicación de envío */}
               {/* <div className="flex items-center gap-2 text-sm">
@@ -608,25 +698,51 @@ export default function ProductoDetalle() {
               />
 
               {/* Cantidad */}
-              <div className="space-y-2">
-                <h3 className="text-sm font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white">Cantidad:</h3>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setCantidad(Math.max(1, cantidad - 1))}
-                    className="w-8 h-8 border border-white/20 hover:bg-white/10 text-white font-[family-name:var(--font-inter)] transition-all"
-                  >
-                    -
-                  </button>
-                  <span className="text-lg font-[family-name:var(--font-inter)] text-white w-8 text-center">{cantidad}</span>
-                  <button
-                    onClick={() => setCantidad(cantidad + 1)}
-                    className="w-8 h-8 border border-white/20 hover:bg-white/10 text-white font-[family-name:var(--font-inter)] transition-all"
-                  >
-                    +
-                  </button>
-                  <span className="text-xs font-[family-name:var(--font-inter)] text-white/60 ml-2">({cantidad} {cantidad === 1 ? 'unidad' : 'unidades'})</span>
+             <div className="space-y-2">
+                  <h3 className="text-sm font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase text-white">
+                    Cantidad:
+                  </h3>
+
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setCantidad(prev => Math.max(1, prev - 1))}
+                      disabled={cantidad <= 1}
+                      className="w-8 h-8 border border-white/20 hover:bg-white/10 disabled:opacity-40 text-white transition-all"
+                    >
+                      -
+                    </button>
+
+                    <span className="text-lg text-white w-8 text-center">
+                      {cantidad}
+                    </span>
+
+                    <button
+                      onClick={() =>
+                        setCantidad(prev => Math.min(stockDisponible, prev + 1))
+                      }
+                      disabled={cantidad >= stockDisponible}
+                      className="w-8 h-8 border border-white/20 hover:bg-white/10 disabled:opacity-40 text-white transition-all"
+                    >
+                      +
+                    </button>
+
+                    <span className="text-xs text-white/60 ml-2">
+                      ({cantidad} {cantidad === 1 ? 'unidad' : 'unidades'})
+                    </span>
+                  </div>
+
+                  {stockDisponible === 0 && (
+                    <p className="text-xs text-red-400">
+                      No disponible para esta combinación
+                    </p>
+                  )}
+
+                  {stockDisponible > 0 && stockDisponible <= 10 && (
+                    <p className="text-xs text-yellow-400">
+                      Últimas {stockDisponible} piezas
+                    </p>
+                  )}
                 </div>
-              </div>
 
               {/* Botones de acción */}
               <div className="space-y-3 pt-4 border-t border-white/10">
@@ -775,53 +891,46 @@ export default function ProductoDetalle() {
             </div>
           </div>
 
-          <div className="overflow-hidden">
-            <motion.div
-              className="flex gap-6"
-              animate={{ x: `-${sugerenciasIndex * 20}%` }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            >
-              {productos
-                .filter((p) => 
-                  p.intProducto !== producto?.intProducto && 
+         <div className="overflow-hidden">
+          <motion.div className="flex gap-4 overflow-x-auto lg:grid lg:grid-cols-5 lg:gap-6 lg:overflow-visible scrollbar-hide">
+            {productos
+              .filter(
+                p =>
+                  p.intProducto !== producto?.intProducto &&
                   p.bolActivo &&
                   p.tbCategoria.intCategoria === producto?.tbCategoria.intCategoria
-                )
-                .slice(0, 5)
-                .map((sugerencia) => (
-                  <motion.div
-                    key={sugerencia.intProducto}
-                    className="w-[calc(20%-19.2px)] flex-shrink-0 group cursor-pointer"
-                    onClick={() => router.push(`/producto/${createProductSlug(sugerencia.strNombre)}`)}
-                    whileHover={{ y: -8 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="relative w-full h-[300px] overflow-hidden bg-white/5 border border-white/10 mb-4">
-                      <img
-                        src={sugerencia.strImagen}
-                        alt={sugerencia.strNombre}
-                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                      />
-                      {sugerencia.strEtiquetas && (
-                        <div className={`absolute top-3 left-3 px-3 py-1.5 text-xs font-[family-name:var(--font-inter)] tracking-[0.1em] uppercase ${
-                          sugerencia.strEtiquetas === "Nuevo"
-                            ? "bg-white/90 text-black"
-                            : "bg-red-500/90 text-white"
-                        }`}>
-                          {sugerencia.strEtiquetas}
-                        </div>
-                      )}
-                    </div>
-                    <h3 className="font-[family-name:var(--font-playfair)] text-white text-base mb-2 line-clamp-2 group-hover:text-white/80 transition-colors">
-                      {sugerencia.strNombre}
-                    </h3>
-                    <p className="font-[family-name:var(--font-inter)] text-white/60 text-sm tracking-wide">
-                      ${sugerencia.dblPrecio.toLocaleString()}
-                    </p>
-                  </motion.div>
-                ))}
-            </motion.div>
-          </div>
+              )
+              .slice(0, 5)
+              .map(sugerencia => (
+                <motion.div
+                  key={sugerencia.intProducto}
+                  className="min-w-[80%] sm:min-w-[45%] lg:min-w-0 group cursor-pointer"
+                  onClick={() =>
+                    router.push(`/producto/${createProductSlug(sugerencia.strNombre)}`)
+                  }
+                  whileHover={{ y: -8 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="relative w-full h-[260px] lg:h-[300px] overflow-hidden bg-white/5 border border-white/10 mb-4">
+                    <img
+                      src={sugerencia.strImagen}
+                      alt={sugerencia.strNombre}
+                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+
+                  <h3 className="font-[family-name:var(--font-playfair)] text-white text-sm lg:text-base mb-2 line-clamp-2">
+                    {sugerencia.strNombre}
+                  </h3>
+
+                  <p className="font-[family-name:var(--font-inter)] text-white/60 text-sm tracking-wide">
+                    ${sugerencia.dblPrecio.toLocaleString()}
+                  </p>
+                </motion.div>
+              ))}
+          </motion.div>
+        </div>
+
         </motion.div>
            
          <motion.div

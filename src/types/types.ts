@@ -18,6 +18,7 @@ export interface Productos{
   strSKU?: string;
   strMarca?: string;
   strDescripcion: string;
+  strDescripcionLarga: string;
   dblPrecio: number;
   strImagen: string;
   bolActivo: boolean;
@@ -31,14 +32,15 @@ export interface Productos{
   strEtiquetas?: string;
   jsonVariantes?: string;
   jsonImagenes?: string;
-  intStock?: number; // 👈 Stock disponible
-  variantes?: ProductoVariante[]; // 👈 NUEVO: Array de variantes desde la tabla
+  intStock: number; // 👈 Stock disponible
+  variantes: ProductoVariante[]; // 👈 NUEVO: Array de variantes desde la tabla
   datCreacion: string;
   datActualizacion?: string;
   tbCategoria: {
     intCategoria: number;
     strNombre: string;
   };
+   tbProductoVariantes: ProductoVariante[]; // 👈 nombre real
  
 }
 
