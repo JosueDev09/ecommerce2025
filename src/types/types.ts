@@ -41,6 +41,8 @@ export interface Productos{
     strNombre: string;
   };
    tbProductoVariantes: ProductoVariante[]; // 👈 nombre real
+   tbProducto_Reviews: tbProducto_Reviews[]; // 👈 nombre real
+
  
 }
 
@@ -56,4 +58,13 @@ export interface ItemCarrito {
   categoria?: string;
   cantidad: number;
   stock?: number; // 👈 AGREGADO: Stock disponible al momento de agregar
+}
+
+export  interface tbProducto_Reviews {
+  intReview: number;
+  intProducto: number;
+  intCliente?: number;
+  intCalificacion: number;
+  strComentario: string;
+  datCreacion: string;
 }

@@ -67,7 +67,7 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="max-w-7xl mx-auto px-6 pt-16 pb-8">
           {/* Newsletter */}
-          <div className="border-b border-white/10 pb-12 mb-12">
+          {/* <div className="border-b border-white/10 pb-12 mb-12">
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div>
                 <h3 className="font-[family-name:var(--font-playfair)] text-3xl md:text-4xl text-white mb-3 tracking-tight">
@@ -94,7 +94,7 @@ export function Footer() {
                 </button>
               </form>
             </div>
-          </div>
+          </div> */}
 
           {/* Links del footer */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-12 mb-12">

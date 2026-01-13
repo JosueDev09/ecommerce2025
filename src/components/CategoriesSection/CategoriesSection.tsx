@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 
 
@@ -11,6 +12,7 @@ export default function Categories() {
   const [index, setIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -116,23 +118,38 @@ export default function Categories() {
                 ${i === index ? "blur-0 scale-100 opacity-100" : "blur-sm scale-95 opacity-60"}
               `}
               style={{
-                width: "75vw",
+                width: "90vw",
                 height: "100%",
                 backgroundImage: `url(${s.strImagen})`,
-                backgroundSize: "cover",
+                backgroundSize: "contain",
+                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "center"
               }}
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-
-              <div className="absolute bottom-6 left-6 text-white">
-                <button className="bg-white text-black font-semibold px-5 py-2 rounded-full">
-                  Ver ahora
-                </button>
+            { s.strNombre === "Gymshark" && (
+                 <div className="absolute bottom-6 left-6 text-white">
+                  <button className="bg-white text-black font-semibold px-5 py-2 rounded-full" 
+                    onClick={() => router.push(`/products`)}>
+                    Ver ahora
+                  </button>
                 <p className="mt-2 text-sm opacity-90">
                   <b>{s.strNombre}</b> — {s.strNombre}
                 </p>
               </div>
+            ) }
+
+            { s.strNombre === "YoungLA" && (
+                 <div className="absolute inse`t-0 flex items-center justify-center">
+                  <div className="bg-white/80 backdrop-blur-md px-8 py-4 rounded-full shadow-lg">
+                    <h2 className="text-black font-semibold text-lg tracking-wide">
+                      Próximamente
+                    </h2>
+                  </div>
+                </div>
+
+            ) }
+
             </div>
           ))}
         </div>

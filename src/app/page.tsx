@@ -4,6 +4,7 @@ import AppleGrid from "@/components/productsSection/productSection";
 import BenefitsSection from "@/components/benefictsSection/BenefitsSection";
 import ProcessBuy from "@/components/processBuy/processBuy";
 import Hero2 from "@/components/hero2/hero2";
+import BrandSuggestions from "@/components/brandSuggestions/suggestions";
 
 export default function InicioPage() {
     return (
@@ -15,6 +16,7 @@ export default function InicioPage() {
              {/* <ProcessBuy /> */}
              <Hero2 />
               <BenefitsSection />
+              <BrandSuggestions />
              
         </div>
     );
