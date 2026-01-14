@@ -6,6 +6,7 @@ import { CheckCircle, Package, Mail, CreditCard, Truck, Copy, Check, MapPin, Cal
 import { useAuth } from "@/context/AuthContext";
 import { useTienda } from "@/context/TiendaContext";
 import OrderStatusTimeline from "@/components/order/OrderStatusTimeline";
+import { formatFecha } from "@/utils/formatearFechas";
 
 interface OrderItem {
   intProducto: number;
@@ -16,6 +17,7 @@ interface OrderItem {
   jsonImagenes?: string;
   strTalla?: string;
   strColor?: string;
+  strImagen?: string;
 }
 
 interface OrderData {
@@ -91,6 +93,7 @@ export default function OrderConfirmationPage() {
                             strNombre
                             dblPrecio
                             jsonImagenes
+                            strImagen
                         }
                         strTalla
                         strColor
@@ -134,6 +137,7 @@ export default function OrderConfirmationPage() {
           dblSubtotal: item.dblSubtotal,
           strTalla: item.strTalla,
           strColor: item.strColor,
+          strImagen: item.tbProducto.strImagen,
         }));
         
         // Transformar dirección si existe
@@ -158,6 +162,7 @@ export default function OrderConfirmationPage() {
           strFechaCreacion: pedido.datPedido,
           strFechaEntregaEstimada: "", // Calcular en base a método de envío
           strNumeroRastreo: undefined,
+
         });
       }
     } catch (error) {
@@ -306,7 +311,7 @@ export default function OrderConfirmationPage() {
                   <div className="flex items-center gap-3 px-4 py-3 bg-white/5 border border-white/10">
                     <Package className="w-4 h-4 text-white/70" />
                     <span className="font-[family-name:var(--font-inter)] text-sm text-white/90 tracking-wide">
-                      Pedido <span className="text-white">#{orderData.intPedido.toString().padStart(8, '0')}</span>
+                      Pedido: <span className="text-white">#{orderData.intPedido.toString().padStart(8, '0')}</span>
                     </span>
                     <button
                       onClick={copyOrderNumber}
@@ -319,11 +324,7 @@ export default function OrderConfirmationPage() {
                   <div className="flex items-center gap-3 px-4 py-3 bg-white/5 border border-white/10">
                     <Calendar className="w-4 h-4 text-white/70" />
                     <span className="font-[family-name:var(--font-inter)] text-sm text-white/90 tracking-wide">
-                      {new Date(orderData.strFechaCreacion).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
-                      })}
+                      Fecha:  {formatFecha(Number(orderData.strFechaCreacion))}
                     </span>
                   </div>
                 </div>
@@ -360,7 +361,7 @@ export default function OrderConfirmationPage() {
                         <div
                           className="w-28 h-28 bg-white/5 bg-cover bg-center flex-shrink-0 border border-white/10"
                           style={{
-                            backgroundImage: item.jsonImagenes ? `url(${item.jsonImagenes})` : undefined
+                            backgroundImage: item.strImagen ? `url(${item.strImagen})` : undefined
                           }}
                         />
                        

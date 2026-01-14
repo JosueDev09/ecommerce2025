@@ -21,7 +21,7 @@ interface Pedido {
   datPedido: string;
   dblTotal: number;
   strEstado: string;
-  strNumeroRastreo?: string;
+  strNumeroSeguimiento?: string;
   tbItems: Array<{
     intCantidad: number;
     dblSubtotal: number;
@@ -77,6 +77,7 @@ export default function PedidosPage() {
                 datPedido
                 dblTotal
                 strEstado
+                strNumeroSeguimiento
                 tbItems {
                   intCantidad
                   dblSubtotal
@@ -346,6 +347,11 @@ export default function PedidosPage() {
                           <p className="font-[family-name:var(--font-inter)] text-xs text-white/50 tracking-wider uppercase">
                             Pedido #{pedido.intPedido.toString().padStart(8, '0')}
                           </p>
+                          {pedido.strNumeroSeguimiento && (
+                            <p className="font-[family-name:var(--font-inter)] text-xs text-white/50 tracking-wider uppercase">
+                              Numero de seguimiento: {pedido.strNumeroSeguimiento}
+                            </p>
+                          )}
                         </div>
                         <div className="text-right">
                           <p className="font-[family-name:var(--font-inter)] text-xs text-white/50 tracking-wider uppercase mb-2">Total</p>

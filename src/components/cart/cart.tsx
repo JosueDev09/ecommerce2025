@@ -54,8 +54,8 @@ export default function CartPage() {
 
   const subtotal = carrito.reduce((sum, item) => sum + obtenerPrecioFinal(item) * item.cantidad, 0);
   const discountAmount = subtotal * discount;
-  const shipping = subtotal > 5000 ? 0 : 299;
-  const total = subtotal - discountAmount + shipping;
+ // const shipping = subtotal > 5000 ? 0 : 299;
+  const total = subtotal - discountAmount //+ shipping;
 
   // No renderizar hasta que esté montado en el cliente
   if (!mounted) {
@@ -229,7 +229,7 @@ export default function CartPage() {
                       Envío
                     </span>
                     <span className="font-[family-name:var(--font-inter)] text-sm text-black">
-                      {shipping === 0 ? "Calculado al finalizar la compra" : `$${shipping}`}
+                      Calculado al finalizar la compra
                     </span>
                   </div>
 

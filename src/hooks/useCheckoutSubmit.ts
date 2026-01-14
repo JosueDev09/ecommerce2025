@@ -169,6 +169,8 @@ export const useCheckoutSubmit = () => {
       const items = carrito.map((item) => ({
         intProducto: item.id,
         intCantidad: item.cantidad,
+        strTalla: item.talla || "",
+        strColor: item.color || "",
         dblSubtotal: (item.tieneDescuento && item.precioDescuento 
           ? item.precioDescuento 
           : item.precio) * item.cantidad,
@@ -318,10 +320,12 @@ export const useCheckoutSubmit = () => {
         strImagenURL: item.imagen || "",
         strCategoriaId: "others",
         intCantidad: item.cantidad,
+        // strTalla: item.talla || "",
+        // strColor: item.color || "",
         dblPrecioUnitario: item.tieneDescuento && item.precioDescuento 
           ? item.precioDescuento 
           : item.precio,
-      }));
+      }));  
 
       // Construir datos de envío si aplica (formato backend)
       const shipments = formData.metodoEnvio !== "recoger" ? {

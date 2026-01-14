@@ -41,6 +41,8 @@ export default function OrderSummary({
     ? total / mesesSinIntereses 
     : "";
 
+   // console.log("metodoPago en OrderSummary:", carrito);
+
   return (
     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 sticky top-6">
       <div className="flex items-center gap-3 mb-6">
@@ -66,6 +68,9 @@ export default function OrderSummary({
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">{item.nombre}</p>
               <p className="text-xs text-gray-500 mt-0.5">Cantidad: {item.cantidad}</p>
+               <p className="text-xs text-gray-500 mt-0.5">Talla: {item.talla}</p>
+                <p className="text-xs text-gray-500 mt-0.5">Color: {item.color}</p>
+              
               <div className="flex items-center gap-2 mt-1">
                 <p className="text-sm font-bold text-gray-900">
                   ${obtenerPrecioFinal(item).toLocaleString()}
